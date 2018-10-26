@@ -50,19 +50,21 @@ CONNECTION = 'postgresql://jarvis:Bessel0@172.18.122.4:5432/resimulation_docker'
 #CONNECTION = 'postgresql://jarvis:Bessel0@toritos:5432/resimu_docker'
 engine = create_engine(CONNECTION)
 
+#estas son las fuentes simuladas
 try:
     simulated = store['simulated']
 except:
     simulated = pd.read_sql_query("""SELECT * FROM "Simulated" """, engine)
-    simulated = optimize_df(simulated)
+    simulated = cf.optimize_df(simulated)
     store['simulated'] = simulated
     store.flush()
 
+#estas son las simulaciones programadas
 try:
     simulations = store['simulations']
 except:
-    simulations = pd.read_sql_query("""SELECT * FROM "Simulations" """, engine)
-    simulations = optimize_df(simulations)
+    simulations = pd.read_sql_query("""SELECT * FROM "Simulation" """, engine)
+    simulations = cf.optimize_df(simulations)
     store['simulations'] = simulations
     store.flush()
 
