@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  02_plots_noML.py
+#  simu_dtree.py
 #
 #  Copyright 2018 Bruno S <bruno@oac.unc.edu.ar>
 #
@@ -22,6 +22,7 @@
 #
 #
 
+
 import os
 from sqlalchemy import create_engine
 
@@ -40,17 +41,34 @@ storefile = '/mnt/clemente/bos0109/table_store.h5'
 store = pd.HDFStore(storefile)
 store.open()
 
-plot_dir = os.path.abspath('./plots/.')
-if not os.path.isdir(plot_dir):
-    os.makedirs(plot_dir)
 
-#sns.set_context(font_scale=16)
-plt.rcParams["patch.force_edgecolor"] = True
-plt.rcParams['text.usetex'] = True
+simus = store['simulations']
+
+cols = ['id', 'code', 'executed', 'loaded', 'crossmatched',
+        'failed_to_subtract', 'possible_saturation', 'ref_starzp',
+        'ref_starslope', 'ref_fwhm', 'new_fwhm', 'm1_diam', 'm2_diam',
+        'eff_col', 'px_scale', 'ref_back_sbright', 'new_back_sbright',
+        'exp_time']
+
+y = simus['failed_to_subtract'].values.astype(int)
+
+x = ['ref_starzp', 'ref_starslope', 'ref_fwhm', 'new_fwhm', 'm1_diam', 'm2_diam',
+     'eff_col', 'px_scale', 'ref_back_sbright', 'new_back_sbright', 'exp_time']
+X = simus[x].values
+
+from sklearn.tree import DecisionTreeClassifier
+clf = DecisionTreeClassifier(criterion='entropy', min_samples_leaf=20)
+rslts_c45 = experiment(clf, X, y)
+
+tree = rslts_c45['model']
 
 
-def main(m1_diam=1.54):
+import graphviz
+dot_data = tree.export_graphviz(clf, out_file=None,
+                         feature_names=x,
+                         class_names=['simulated', 'failed'],
+                         filled=True, rounded=True,
+                         special_characters=True)
+graph = graphviz.Source(dot_data)
+graph.render('simluations.pdf')
 
-
-
-    return
