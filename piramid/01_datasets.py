@@ -79,7 +79,7 @@ def main(argv):
                                  FROM "Simulated" S INNER JOIN "Undetected" U
                                  ON S.id=U.simulated_id """,
                               engine)
-        und_z = optimize_df(und_z)
+        und_z = cf.optimize_df(und_z)
         und_z.drop_duplicates(inplace=True)
         store['und_z'] = und_z
         store.flush()
@@ -91,7 +91,7 @@ def main(argv):
                                  FROM "Simulated" S INNER JOIN "SUndetected" U
                                  ON S.id=U.simulated_id""",
                               engine)
-        und_s = optimize_df(und_s)
+        und_s = cf.optimize_df(und_s)
         und_s.drop_duplicates(inplace=True)
         store['und_s'] = und_s
         store.flush()
@@ -103,7 +103,7 @@ def main(argv):
                                  FROM "Simulated" S INNER JOIN "SCorrUndetected" U
                                  ON S.id=U.simulated_id""",
                               engine)
-        und_sc = optimize_df(und_sc)
+        und_sc = cf.optimize_df(und_sc)
         und_sc.drop_duplicates(inplace=True)
         store['und_sc'] = und_sc
         store.flush()
@@ -115,7 +115,7 @@ def main(argv):
                                  FROM "Simulated" S INNER JOIN "UndetectedOIS" U
                                  ON S.id=U.simulated_id""",
                               engine)
-        und_b = optimize_df(und_b)
+        und_b = cf.optimize_df(und_b)
         und_b.drop_duplicates(inplace=True)
         store['und_b'] = und_b
         store.flush()
@@ -127,7 +127,7 @@ def main(argv):
                                  FROM "Simulated" S INNER JOIN "UndetectedHOT" U
                                  ON S.id=U.simulated_id""",
                               engine)
-        und_h = optimize_df(und_h)
+        und_h = cf.optimize_df(und_h)
         und_h.drop_duplicates(inplace=True)
         store['und_h'] = und_h
         store.flush()
@@ -156,7 +156,7 @@ def main(argv):
                                           on='id', suffixes=('',''))
         dt_zps.IS_REAL = dt_zps.IS_REAL.astype('bool').astype(int)
         dt_zps.drop_duplicates(inplace=True)
-        dt_zps = optimize_df(dt_zps)
+        dt_zps = cf.optimize_df(dt_zps)
         store['dt_zps'] = dt_zps
         store.flush()
 
@@ -183,7 +183,7 @@ def main(argv):
                                           on='id', suffixes=('',''))
         dt_sps.IS_REAL = dt_sps.IS_REAL.astype('bool').astype(int)
         dt_sps.drop_duplicates(inplace=True)
-        dt_sps = optimize_df(dt_sps)
+        dt_sps = cf.optimize_df(dt_sps)
         store['dt_sps'] = dt_sps
         store.flush()
 
@@ -210,7 +210,7 @@ def main(argv):
                                           on='id', suffixes=('',''))
         dt_ois.IS_REAL = dt_ois.IS_REAL.astype('bool').astype(int)
         dt_ois.drop_duplicates(inplace=True)
-        dt_ois = optimize_df(dt_ois)
+        dt_ois = cf.optimize_df(dt_ois)
         store['dt_ois'] = dt_ois
         store.flush()
 
@@ -237,7 +237,7 @@ def main(argv):
                                           on='id', suffixes=('',''))
         dt_hot.IS_REAL = dt_hot.IS_REAL.astype('bool').astype(int)
         dt_hot.drop_duplicates(inplace=True)
-        dt_hot = optimize_df(dt_hot)
+        dt_hot = cf.optimize_df(dt_hot)
         store['dt_hot'] = dt_hot
         store.flush()
 
