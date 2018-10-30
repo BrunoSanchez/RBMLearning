@@ -214,9 +214,10 @@ plt.subplot(342)
 plot_data = []
 for new_fwhm in [1.3, 1.9, 2.5]:
     subcube = cube[np.round(cube.new_fwhm)==new_fwhm]
+    print(len(subcube))
     for new_back_sbright in [20, 19., 18]:
         subcube = subcube[np.round(subcube.new_back_sbright)==new_back_sbright]
-        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(subcube.goyet)
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(subcube.goyet.values)
         plot_data.append([new_fwhm, new_back_sbright,
                           mean_goyet, med_goyet, std_goyet])
 
