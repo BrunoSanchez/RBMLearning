@@ -54,7 +54,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     simulated = store['simulated']
     simulations = store['simulations']
 
-    simulations = simulations[simulations.m1_diam==m1_diam]
+    simulations = simulations[simulations.m1_diam=m1_diam]
 
     simulated = pd.merge(left=simulations, right=simulated,
                              right_on='simulation_id', left_on='id', how='left')
