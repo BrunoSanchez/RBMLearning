@@ -208,7 +208,7 @@ plt.savefig(os.path.join(plot_dir, 'simulated_goyet.svg'), dpi=400)
 
 plt.figure(figsize=(18, 18))
 
-plt.subplot(9, 4, 2)
+plt.subplot(9, 4, 1)
 plot_data = []
 for ref_starzp in [128e3, 256e3]:
     subcube = cube[np.abs(cube.ref_starzp-ref_starzp)<0.1]
@@ -225,7 +225,7 @@ plt.xlabel('$ref_{zp}$')
 plt.ylabel('$ref_{slope}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 3)
+plt.subplot(9, 4, 2)
 plot_data = []
 for ref_starzp in [128e3, 256e3]:
     subcube = cube[np.abs(cube.ref_starzp-ref_starzp)<0.1]
@@ -242,7 +242,7 @@ plt.xlabel('$ref_{zp}$')
 plt.ylabel('$ref_{fwhm}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 4)
+plt.subplot(9, 4, 3)
 plot_data = []
 for ref_starzp in [128e3, 256e3]:
     subcube = cube[np.abs(cube.ref_starzp-ref_starzp)<0.1]
@@ -259,7 +259,7 @@ plt.xlabel('$ref_{zp}$')
 plt.ylabel('$exptime$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 5)
+plt.subplot(9, 4, 4)
 plot_data = []
 for ref_starzp in [128e3, 256e3]:
     subcube = cube[np.abs(cube.ref_starzp-ref_starzp)<0.1]
@@ -379,7 +379,7 @@ plt.xlabel('$ref_{slope}$')
 plt.ylabel('$new_{fwhm}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 10)
+plt.subplot(9, 4, 11)
 plot_data = []
 for ref_starslope in [0.1, 0.5, 0.9]:
     subcube = cube[np.abs(cube.ref_starslope-ref_starslope)<0.1]
@@ -396,7 +396,7 @@ plt.xlabel('$ref_{slope}$')
 plt.ylabel('px scale')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 11)
+plt.subplot(9, 4, 12)
 plot_data = []
 for ref_starslope in [0.1, 0.5, 0.9]:
     subcube = cube[np.abs(cube.ref_starslope-ref_starslope)<0.1]
@@ -413,7 +413,7 @@ plt.xlabel('$ref_{slope}$')
 plt.ylabel('$ref_{backgorund}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 12)
+plt.subplot(9, 4, 13)
 plot_data = []
 for ref_starslope in [0.1, 0.5, 0.9]:
     subcube = cube[np.abs(cube.ref_starslope-ref_starslope)<0.1]
@@ -431,7 +431,7 @@ plt.ylabel('$new_{backgorund}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
 
-plt.subplot(9, 4, 9)
+plt.subplot(9, 4, 14)
 plot_data = []
 for ref_fwhm in [0.8, 1., 1.3]:
     subcube = cube[np.abs(cube.ref_fwhm-ref_fwhm)<0.1]
@@ -448,7 +448,7 @@ plt.xlabel('$ref_{fwhm}$')
 plt.ylabel('$exptime$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 10)
+plt.subplot(9, 4, 15)
 plot_data = []
 for ref_fwhm in [0.8, 1., 1.3]:
     subcube = cube[np.abs(cube.ref_fwhm-ref_fwhm)<0.1]
@@ -465,7 +465,7 @@ plt.xlabel('$ref_{fwhm}$')
 plt.ylabel('$new_{fwhm}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 10)
+plt.subplot(9, 4, 16)
 plot_data = []
 for ref_fwhm in [0.8, 1., 1.3]:
     subcube = cube[np.abs(cube.ref_fwhm-ref_fwhm)<0.1]
@@ -482,7 +482,7 @@ plt.xlabel('$ref_{fwhm}$')
 plt.ylabel('px scale')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 11)
+plt.subplot(9, 4, 17)
 plot_data = []
 for ref_fwhm in [0.8, 1., 1.3]:
     subcube = cube[np.abs(cube.ref_fwhm-ref_fwhm)<0.1]
@@ -499,7 +499,7 @@ plt.xlabel('$ref_{fwhm}$')
 plt.ylabel('$ref_{backgorund}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 12)
+plt.subplot(9, 4, 18)
 plot_data = []
 for ref_fwhm in [0.8, 1., 1.3]:
     subcube = cube[np.abs(cube.ref_fwhm-ref_fwhm)<0.1]
@@ -517,7 +517,7 @@ plt.ylabel('$new_{backgorund}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
 
-plt.subplot(9, 4, 10)
+plt.subplot(9, 4, 19)
 plot_data = []
 for exp_time in [120, 300]:
     subcube = cube[np.abs(cube.exp_time-exp_time)<0.1]
@@ -534,7 +534,7 @@ plt.xlabel('exptime')
 plt.ylabel('$new_{fwhm}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 10)
+plt.subplot(9, 4, 20)
 plot_data = []
 for exp_time in [120, 300]:
     subcube = cube[np.abs(cube.exp_time-exp_time)<0.1]
@@ -551,7 +551,7 @@ plt.xlabel('exptime')
 plt.ylabel('px scale')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 11)
+plt.subplot(9, 4, 21)
 plot_data = []
 for exp_time in [120, 300]:
     subcube = cube[np.abs(cube.exp_time-exp_time)<0.1]
@@ -568,7 +568,7 @@ plt.xlabel('exptime')
 plt.ylabel('$ref_{backgorund}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 12)
+plt.subplot(9, 4, 22)
 plot_data = []
 for exp_time in [120, 300]:
     subcube = cube[np.abs(cube.exp_time-exp_time)<0.1]
@@ -586,7 +586,7 @@ plt.ylabel('$new_{backgorund}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
 
-plt.subplot(9, 4, 10)
+plt.subplot(9, 4, 23)
 plot_data = []
 for new_fwhm in [1.3, 1.9, 2.5]:
     subcube = cube[np.abs(cube.new_fwhm-new_fwhm)<0.1]
@@ -603,7 +603,7 @@ plt.xlabel('$new_{fwhm}$')
 plt.ylabel('px scale')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 11)
+plt.subplot(9, 4, 24)
 plot_data = []
 for new_fwhm in [1.3, 1.9, 2.5]:
     subcube = cube[np.abs(cube.new_fwhm-new_fwhm)<0.1]
@@ -620,7 +620,7 @@ plt.xlabel('$new_{fwhm}$')
 plt.ylabel('$ref_{backgorund}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 12)
+plt.subplot(9, 4, 25)
 plot_data = []
 for new_fwhm in [1.3, 1.9, 2.5]:
     subcube = cube[np.abs(cube.new_fwhm-new_fwhm)<0.1]
@@ -637,7 +637,7 @@ plt.xlabel('$new_{fwhm}$')
 plt.ylabel('$new_{backgorund}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 11)
+plt.subplot(9, 4, 26)
 plot_data = []
 for px_scale in [0.3, 0.7, 1.4]:
     subcube = cube[np.abs(cube.px_scale-px_scale)<0.1]
@@ -654,7 +654,7 @@ plt.xlabel('px scale')
 plt.ylabel('$ref_{backgorund}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 12)
+plt.subplot(9, 4, 27)
 plot_data = []
 for px_scale in [0.3, 0.7, 1.4]:
     subcube = cube[np.abs(cube.px_scale-px_scale)<0.1]
@@ -671,7 +671,7 @@ plt.xlabel('px scale')
 plt.ylabel('$new_{backgorund}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
-plt.subplot(9, 4, 12)
+plt.subplot(9, 4, 28)
 plot_data = []
 for ref_back_sbright in [20., 21., 22.]:
     subcube = cube[np.abs(cube.ref_back_sbright-ref_back_sbright)<0.1]
