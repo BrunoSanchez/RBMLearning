@@ -689,7 +689,8 @@ plt.ylabel('$new_{backgorund}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
 plt.tight_layout()
-plt.savefig(os.path.join(plot_dir, 'delta_over_mags.svg'), dpi=400)
+plt.savefig(os.path.join(plot_dir, 'goyet_vs_pars.svg'), dpi=400)
+plt.clf()
 plt.show()
 #~ if __name__ == '__main__':
     #~ import sys
