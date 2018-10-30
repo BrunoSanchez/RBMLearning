@@ -62,14 +62,17 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     simus = pd.merge(left=simulations, right=simulated,
                      right_on='simulation_id', left_on='id', how='outer')
 
-# =============================================================================
-# tables
-# =============================================================================
+    # =============================================================================
+    # tables
+    # =============================================================================
     dt_zps = store['dt_ois']
     dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
     dt_zps = cf.optimize_df(dt_zps)
     dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
     dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+    mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
+    dt_zps['mag'] = dt_zps['MAG_APER'] + mean_offset
+    dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
     dt_ois = dt_zps
 
     dt_zps = store['dt_sps']
@@ -78,6 +81,9 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dt_zps['MAG_APER'] = -2.5*np.log10(dt_zps.cflux)
     dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
     dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+    mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
+    dt_zps['mag'] = dt_zps['MAG_APER'] + mean_offset
+    dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
     dt_sps = dt_zps
 
     dt_zps = store['dt_hot']
@@ -85,6 +91,9 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dt_zps = cf.optimize_df(dt_zps)
     dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
     dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+    mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
+    dt_zps['mag'] = dt_zps['MAG_APER'] + mean_offset
+    dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
     dt_hot = dt_zps
 
     dt_zps = store['dt_zps']
@@ -92,6 +101,9 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dt_zps = cf.optimize_df(dt_zps)
     dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
     dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+    mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
+    dt_zps['mag'] = dt_zps['MAG_APER'] + mean_offset
+    dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
 
 
 # =============================================================================
@@ -176,6 +188,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'delta_mags.svg'), dpi=400)
     plt.clf()
+
 
 # =============================================================================
 # plot de
