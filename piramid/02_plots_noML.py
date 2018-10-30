@@ -138,22 +138,26 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
     plt.figure(figsize=(9,3))
     plt.subplot(141)
-    dmag = dt_zps[(dt_zps.VALID_MAG==True)*(dt_zps.mag_offset!=np.nan)].mag_offset
+    dmag = dt_zps[(dt_zps.VALID_MAG==True)*
+                  (dt_zps.mag_offset!=np.nan)].mag_offset
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag')
 
     plt.subplot(142)
-    dmag = dt_ois[(dt_ois.VALID_MAG==True)*(dt_ois.mag_offset!=np.nan)].mag_offset
+    dmag = dt_ois[(dt_ois.VALID_MAG==True)*
+                  (dt_ois.mag_offset!=np.nan)].mag_offset
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag')
 
     plt.subplot(143)
-    dmag = dt_hot[(dt_hot.VALID_MAG==True)*(dt_hot.mag_offset!=np.nan)].mag_offset
+    dmag = dt_hot[(dt_hot.VALID_MAG==True)*
+                  (dt_hot.mag_offset!=np.nan)].mag_offset
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag')
 
     plt.subplot(144)
-    dmag = dt_sps[(dt_sps.VALID_MAG==True)*(dt_sps.mag_offset!=np.nan)].mag_offset
+    dmag = dt_sps[(dt_sps.VALID_MAG==True)*
+                  (dt_sps.mag_offset!=np.nan)].mag_offset
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag')
 
