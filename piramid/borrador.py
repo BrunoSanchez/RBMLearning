@@ -201,12 +201,12 @@ cube = data[['new_fwhm', 'ref_fwhm', 'ref_starzp','ref_starslope',
              'px_scale', 'ref_back_sbright','new_back_sbright',
              'exp_time', 'goyet']]
 
-
-plt.figure(figsize=(18, 18))
-plt.subplot(9, 4, 1)
 plt.plot(data.sim_mag, data.goyet, '.')
 plt.xlabel('simulated mag')
 plt.ylabel('goyet')
+plt.savefig(os.path.join(plot_dir, 'simulated_goyet.svg'), dpi=400)
+
+plt.figure(figsize=(18, 18))
 
 plt.subplot(9, 4, 2)
 plot_data = []
