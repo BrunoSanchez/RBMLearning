@@ -53,7 +53,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     simulated = store['simulated']
     simulations = store['simulations']
-    import ipdb; ipdb.set_trace()
+
     simulations = simulations[simulations.m1_diam==m1_diam]
 
     simulated = pd.merge(left=simulations, right=simulated,
