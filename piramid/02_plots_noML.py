@@ -82,7 +82,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dt_zps = dt_zps[dt_zps['MAG_APER']<30]
     dt_zps.dropna(axis='rows', inplace=True)
     delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-    plt.xlabel('delta_ mag')
+    plt.xlabel('delta mag')
     plt.hist(delta_mag, log=True)
 
     plt.subplot(142)
@@ -90,7 +90,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dt_zps = dt_zps[dt_zps['MAG_APER']<30]
     dt_zps.dropna(axis='rows', inplace=True)
     delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-    plt.xlabel('delta_ mag')
+    plt.xlabel('delta mag')
     plt.hist(delta_mag, log=True)
 
     plt.subplot(143)
@@ -98,7 +98,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dt_zps = dt_zps[dt_zps['MAG_APER']<30]
     dt_zps.dropna(axis='rows', inplace=True)
     delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-    plt.xlabel('delta_ mag')
+    plt.xlabel('delta mag')
     plt.hist(delta_mag, log=True)
 
     plt.subplot(144)
@@ -107,9 +107,8 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dt_zps = dt_zps[dt_zps['MAG_APER']<30]
     dt_zps.dropna(axis='rows', inplace=True)
     delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-    plt.xlabel('delta_ mag')
+    plt.xlabel('delta mag')
     plt.hist(delta_mag, log=True)
-
 
     plt.savefig(os.path.join(plot_dir, 'delta_mags_zps.svg'), dpi=400)
     plt.clf()
