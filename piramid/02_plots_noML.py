@@ -66,6 +66,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # tables
 # =============================================================================
     dt_zps = store['dt_ois']
+    dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
     dt_zps = cf.optimize_df(dt_zps)
     dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
     dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
