@@ -691,8 +691,13 @@ def goyet_vs_pars_plot(dataset, dia='zackay'):
 
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'goyet_vs_pars_{}.svg'.format(dia)), dpi=400)
-plt.clf()
-plt.show()
+    plt.clf()
+
+goyet_vs_pars_plot(dt_sps, dia='scorr')
+goyet_vs_pars_plot(dt_zps, dia='zackay')
+goyet_vs_pars_plot(dt_ois, dia='bramich')
+goyet_vs_pars_plot(dt_hot, dia='alard')
+
 #~ if __name__ == '__main__':
     #~ import sys
     #~ print(sys.argv)
