@@ -379,6 +379,23 @@ plt.xlabel('$ref_{slope}$')
 plt.ylabel('$new_{fwhm}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
+plt.subplot(9, 4, 10)
+plot_data = []
+for ref_starslope in [0.1, 0.5, 0.9]:
+    subcube = cube[np.abs(cube.ref_starslope-ref_starslope)<0.1]
+    for px_scale in [0.3, 0.7, 1.4]:
+        subcube2 = subcube[np.abs(subcube.px_scale-px_scale)<0.1]
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(
+            subcube2.goyet.values)
+        plot_data.append([ref_starslope, px_scale,
+                          mean_goyet, med_goyet, std_goyet])
+plot_data = np.asarray(plot_data)
+plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
+            c=plot_data[:,2], s=10./plot_data[:,4])
+plt.xlabel('$ref_{slope}$')
+plt.ylabel('px scale')
+plt.colorbar(label='goyet=$<\delta m /m>$')
+
 plt.subplot(9, 4, 11)
 plot_data = []
 for ref_starslope in [0.1, 0.5, 0.9]:
@@ -447,6 +464,24 @@ plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
 plt.xlabel('$ref_{slope}$')
 plt.ylabel('$new_{fwhm}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
+
+plt.subplot(9, 4, 10)
+plot_data = []
+for ref_fwhm in [0.8, 1., 1.3]:
+    subcube = cube[np.abs(cube.ref_fwhm-ref_fwhm)<0.1]
+    for px_scale in [0.3, 0.7, 1.4]:
+        subcube2 = subcube[np.abs(subcube.px_scale-px_scale)<0.1]
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(
+            subcube2.goyet.values)
+        plot_data.append([ref_fwhm, px_scale,
+                          mean_goyet, med_goyet, std_goyet])
+plot_data = np.asarray(plot_data)
+plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
+            c=plot_data[:,2], s=10./plot_data[:,4])
+plt.xlabel('$ref_{slope}$')
+plt.ylabel('px scale')
+plt.colorbar(label='goyet=$<\delta m /m>$')
+
 
 plt.subplot(9, 4, 11)
 plot_data = []
