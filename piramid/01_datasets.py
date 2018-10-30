@@ -143,7 +143,18 @@ def main(argv):
                                             S.gx_mag as gx_mag,
                                             S.id as sim_id,
                                             SI.m1_diam as m1_diam,
-                                            SI.*
+                                            SI.m2_diam as m2_diam,
+                                            SI.executed as executed,
+                                            SI.id as id_simulation,
+                                            SI.ref_starzp as ref_starzp,
+                                            SI.ref_starslope as ref_starslope,
+                                            SI.ref_fwhm as ref_fwhm,
+                                            SI.new_fwhm as new_fwhm,
+                                            SI.eff_col as eff_col,
+                                            SI.px_scale as px_scale,
+                                            SI.ref_back_sbright as ref_back_sbright,
+                                            SI.new_back_sbright as new_back_sbright,
+                                            SI.exp_time as exp_time
                                         FROM "Detected" D
                                             LEFT JOIN "Images" I
                                                 ON D.image_id=I.id
@@ -172,7 +183,18 @@ def main(argv):
                                             S.gx_mag as gx_mag,
                                             S.id as sim_id,
                                             SI.m1_diam as m1_diam,
-                                            SI.*
+                                            SI.m2_diam as m2_diam,
+                                            SI.executed as executed,
+                                            SI.id as id_simulation,
+                                            SI.ref_starzp as ref_starzp,
+                                            SI.ref_starslope as ref_starslope,
+                                            SI.ref_fwhm as ref_fwhm,
+                                            SI.new_fwhm as new_fwhm,
+                                            SI.eff_col as eff_col,
+                                            SI.px_scale as px_scale,
+                                            SI.ref_back_sbright as ref_back_sbright,
+                                            SI.new_back_sbright as new_back_sbright,
+                                            SI.exp_time as exp_time
                                         FROM "SDetected" D
                                             LEFT JOIN "SImages" I
                                                 ON D.image_id=I.id
@@ -200,7 +222,18 @@ def main(argv):
                                             S.gx_mag as gx_mag,
                                             S.id as sim_id,
                                             SI.m1_diam as m1_diam,
-                                            SI.*
+                                            SI.m2_diam as m2_diam,
+                                            SI.executed as executed,
+                                            SI.id as id_simulation,
+                                            SI.ref_starzp as ref_starzp,
+                                            SI.ref_starslope as ref_starslope,
+                                            SI.ref_fwhm as ref_fwhm,
+                                            SI.new_fwhm as new_fwhm,
+                                            SI.eff_col as eff_col,
+                                            SI.px_scale as px_scale,
+                                            SI.ref_back_sbright as ref_back_sbright,
+                                            SI.new_back_sbright as new_back_sbright,
+                                            SI.exp_time as exp_time
                                         FROM "DetectedOIS" D
                                             LEFT JOIN "ImagesOIS" I
                                                 ON D.image_id=I.id
@@ -228,7 +261,18 @@ def main(argv):
                                             S.gx_mag as gx_mag,
                                             S.id as sim_id,
                                             SI.m1_diam as m1_diam,
-                                            SI.*
+                                            SI.m2_diam as m2_diam,
+                                            SI.executed as executed,
+                                            SI.id as id_simulation,
+                                            SI.ref_starzp as ref_starzp,
+                                            SI.ref_starslope as ref_starslope,
+                                            SI.ref_fwhm as ref_fwhm,
+                                            SI.new_fwhm as new_fwhm,
+                                            SI.eff_col as eff_col,
+                                            SI.px_scale as px_scale,
+                                            SI.ref_back_sbright as ref_back_sbright,
+                                            SI.new_back_sbright as new_back_sbright,
+                                            SI.exp_time as exp_time
                                         FROM "DetectedHOT" D
                                             LEFT JOIN "ImagesHOT" I
                                                 ON D.image_id=I.id

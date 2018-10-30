@@ -40,17 +40,32 @@ storefile = '/mnt/clemente/bos0109/table_store.h5'
 store = pd.HDFStore(storefile)
 store.open()
 
-plot_dir = os.path.abspath('./plots/.')
-if not os.path.isdir(plot_dir):
-    os.makedirs(plot_dir)
-
 #sns.set_context(font_scale=16)
 plt.rcParams["patch.force_edgecolor"] = True
 plt.rcParams['text.usetex'] = True
 
 
-def main(m1_diam=1.54):
+def main(m1_diam=1.54, plots_path='./plots/.'):
+    plot_dir = os.path.abspath(plots_path)
+    if not os.path.isdir(plot_dir):
+        os.makedirs(plot_dir)
 
+
+    simulated = store['simulated']
+    simulations = store['simulations']
+
+    simulations = simulations[simulations.m1_diam==m1_diam]
+
+    simulated = pd.merge(left=simulations, right=simulated,
+                             right_on='simulation_id', left_on='id', how='left')
+
+    plt.figure(figsize=(6,3))
+    plt.hist(simulated['app_mag'], cumulative=False, bins=25, log=True)
+    plt.xlabel(r'$mag$', fontsize=16)
+    plt.tick_params(labelsize=15)
+    plt.ylabel(r'$N(m) dm$', fontsize=16)
+    #plt.ylabel(r'$\int_{-\infty}^{mag}\phi(m\prime)dm\prime$', fontsize=16)
+    plt.savefig(os.path.join(plot_dir, 'lum_fun_simulated.svg'), dpi=400)
 
 
     return
