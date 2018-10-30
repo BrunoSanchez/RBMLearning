@@ -75,4 +75,4 @@ if __name__ == '__main__':
     print(sys.argv)
     m1 = sys.argv[1]
     path = sys.argv[2]
-    sys.exit(main(m1, path))
+    sys.exit(main(float(m1), path))
