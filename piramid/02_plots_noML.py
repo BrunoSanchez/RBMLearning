@@ -82,24 +82,24 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dt_zps = dt_zps[dt_zps['MAG_APER']<30]
     dt_zps.dropna(axis='rows', inplace=True)
     delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-    plt.xlabel('delta mag')
     plt.hist(delta_mag, log=True)
+    plt.xlabel('delta mag')
 
     plt.subplot(142)
     dt_zps = store['dt_ois']
     dt_zps = dt_zps[dt_zps['MAG_APER']<30]
     dt_zps.dropna(axis='rows', inplace=True)
     delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-    plt.xlabel('delta mag')
     plt.hist(delta_mag, log=True)
+    plt.xlabel('delta mag')
 
     plt.subplot(143)
     dt_zps = store['dt_hot']
     dt_zps = dt_zps[dt_zps['MAG_APER']<30]
     dt_zps.dropna(axis='rows', inplace=True)
     delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-    plt.xlabel('delta mag')
     plt.hist(delta_mag, log=True)
+    plt.xlabel('delta mag')
 
     plt.subplot(144)
     dt_zps = store['dt_sps']
@@ -107,11 +107,56 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dt_zps = dt_zps[dt_zps['MAG_APER']<30]
     dt_zps.dropna(axis='rows', inplace=True)
     delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-    plt.xlabel('delta mag')
     plt.hist(delta_mag, log=True)
+    plt.xlabel('delta mag')
 
     plt.savefig(os.path.join(plot_dir, 'delta_mags_zps.svg'), dpi=400)
     plt.clf()
+
+# =============================================================================
+# plot de deltas de magnitud sobre magnitud (goyet)
+# =============================================================================
+    plt.figure(figsize=(9,3))
+    plt.subplot(141)
+    dt_zps = store['dt_zps']
+    dt_zps = dt_zps[dt_zps['MAG_APER']<30]
+    dt_zps.dropna(axis='rows', inplace=True)
+    delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+    delta_over_mag = delta_mag/dt_zps['sim_mag']
+    plt.hist(delta_over_mag, log=True)
+    plt.xlabel('delta mag')
+
+    plt.subplot(142)
+    dt_zps = store['dt_ois']
+    dt_zps = dt_zps[dt_zps['MAG_APER']<30]
+    dt_zps.dropna(axis='rows', inplace=True)
+    delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+    delta_over_mag = delta_mag/dt_zps['sim_mag']
+    plt.hist(delta_over_mag, log=True)
+    plt.xlabel('delta mag')
+
+    plt.subplot(143)
+    dt_zps = store['dt_hot']
+    dt_zps = dt_zps[dt_zps['MAG_APER']<30]
+    dt_zps.dropna(axis='rows', inplace=True)
+    delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+    delta_over_mag = delta_mag/dt_zps['sim_mag']
+    plt.hist(delta_over_mag, log=True)
+    plt.xlabel('delta mag')
+
+    plt.subplot(144)
+    dt_zps = store['dt_sps']
+    dt_zps['MAG_APER'] = -2.5*np.log10(dt_zps.cflux)
+    dt_zps = dt_zps[dt_zps['MAG_APER']<30]
+    dt_zps.dropna(axis='rows', inplace=True)
+    delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+    delta_over_mag = delta_mag/dt_zps['sim_mag']
+    plt.hist(delta_over_mag, log=True)
+    plt.xlabel('delta mag')
+
+    plt.savefig(os.path.join(plot_dir, 'delta_over_mags_zps.svg'), dpi=400)
+    plt.clf()
+
 
     return
 
