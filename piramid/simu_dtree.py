@@ -27,9 +27,11 @@ import os
 import numpy as np
 import seaborn as sns
 import pandas as pd
+from sklearn import tree
 
 from astropy.stats import sigma_clipped_stats
 import matplotlib.pyplot as plt
+import graphviz
 
 import custom_funs as cf
 
@@ -50,18 +52,21 @@ cols = ['id', 'code', 'executed', 'loaded', 'crossmatched',
 
 y = simus['failed_to_subtract'].values.astype(int)
 
-x = ['ref_starzp', 'ref_starslope', 'ref_fwhm', 'new_fwhm', 'm1_diam', 'm2_diam',
+x = ['ref_fwhm', 'new_fwhm', 'm1_diam','m2_diam','ref_starslope',
      'eff_col', 'px_scale', 'ref_back_sbright', 'new_back_sbright', 'exp_time']
 X = simus[x].values
 
-from sklearn.tree import DecisionTreeClassifier
-clf = DecisionTreeClassifier(criterion='entropy', min_samples_leaf=20)
-rslts_c45 = cf.experiment(clf, X, y)
 
-tree = rslts_c45['model']
+clf = tree.DecisionTreeClassifier(criterion='entropy',
+                                  min_impurity_decrease=0.005,
+                                  class_weight=None,
+                                  presort=True)
+rslts_c45 = cf.experiment(clf, X, y, printing=True)
+
+clf = rslts_c45['model']
 
 
-import graphviz
+
 dot_data = tree.export_graphviz(clf, out_file=None,
                          feature_names=x,
                          class_names=['simulated', 'failed'],
@@ -69,4 +74,15 @@ dot_data = tree.export_graphviz(clf, out_file=None,
                          special_characters=True)
 graph = graphviz.Source(dot_data)
 graph.render('simluations.pdf')
+
+
+#from sklearn import ensemble
+#clf2 = ensemble.RandomForestClassifier(criterion='entropy',
+#                                       min_impurity_decrease=0.0,
+#                                       n_estimators=300)
+#rslts_rforest = cf.experiment(clf2, X, y, printing=True)
+
+
+
+
 
