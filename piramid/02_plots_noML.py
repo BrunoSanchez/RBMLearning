@@ -67,5 +67,11 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     #plt.ylabel(r'$\int_{-\infty}^{mag}\phi(m\prime)dm\prime$', fontsize=16)
     plt.savefig(os.path.join(plot_dir, 'lum_fun_simulated.svg'), dpi=400)
 
-
     return
+
+
+if __name__ == '__main__':
+    import sys
+    m1 = sys.argv[1]
+    path = sys.argv[2]
+    sys.exit(main(m1, path))
