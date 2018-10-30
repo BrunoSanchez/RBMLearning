@@ -120,21 +120,17 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.xlabel('delta mag')
 
     plt.subplot(143)
-    dmag = dt_ois[(dt_ois.VALID_MAG==True)*(dt_ois.mag_offset!=np.nan)].mag_offset
+    dmag = dt_hot[(dt_hot.VALID_MAG==True)*(dt_hot.mag_offset!=np.nan)].mag_offset
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag')
 
     plt.subplot(144)
-    dt_zps = store['dt_sps']
-    dt_zps['MAG_APER'] = -2.5*np.log10(dt_zps.cflux)
-    dt_zps = dt_zps[dt_zps['MAG_APER']<30]
-    dt_zps.dropna(axis='rows', inplace=True)
-    delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-    plt.hist(delta_mag, log=True)
+    dmag = dt_sps[(dt_sps.VALID_MAG==True)*(dt_sps.mag_offset!=np.nan)].mag_offset
+    plt.hist(dmag, log=True)
     plt.xlabel('delta mag')
 
     plt.tight_layout()
-    plt.savefig(os.path.join(plot_dir, 'delta_mags_zps.svg'), dpi=400)
+    plt.savefig(os.path.join(plot_dir, 'delta_mags.svg'), dpi=400)
     plt.clf()
 
 # =============================================================================
