@@ -208,8 +208,113 @@ plt.plot(data.sim_mag, data.goyet, '.')
 plt.xlabel('simulated mag')
 plt.ylabel('goyet')
 
-# seeing new  brillo de cielo new
 plt.subplot(342)
+plot_data = []
+for ref_starzp in [128e3, 256e3]:
+    subcube = cube[np.abs(cube.ref_starzp-ref_starzp)<0.5]
+    for ref_starslope in [0.1, 0.5, 0.9]:
+        subcube2 = subcube[np.abs(subcube.ref_starslope-ref_starslope)<0.1]
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(
+            subcube2.goyet.values)
+        plot_data.append([ref_starzp, ref_starslope,
+                          mean_goyet, med_goyet, std_goyet])
+plot_data = np.asarray(plot_data)
+plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
+            c=plot_data[:,2], s=10./plot_data[:,4])
+plt.xlabel('$ref_{zp}$')
+plt.ylabel('$ref_{slope}$')
+plt.colorbar(label='goyet=$<\delta m /m>$')
+
+plt.subplot(343)
+plot_data = []
+for ref_starzp in [128e3, 256e3]:
+    subcube = cube[np.abs(cube.ref_starzp-ref_starzp)<0.5]
+    for ref_fwhm in [0.8, 1., 1.3]:
+        subcube2 = subcube[np.abs(subcube.ref_fwhm-ref_fwhm)<0.1]
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(
+            subcube2.goyet.values)
+        plot_data.append([ref_starzp, ref_fwhm,
+                          mean_goyet, med_goyet, std_goyet])
+plot_data = np.asarray(plot_data)
+plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
+            c=plot_data[:,2], s=10./plot_data[:,4])
+plt.xlabel('$ref_{zp}$')
+plt.ylabel('$ref_{fwhm}$')
+plt.colorbar(label='goyet=$<\delta m /m>$')
+
+plt.subplot(344)
+plot_data = []
+for ref_starzp in [128e3, 256e3]:
+    subcube = cube[np.abs(cube.ref_starzp-ref_starzp)<0.5]
+    for exp_time in [120, 300]:
+        subcube2 = subcube[np.abs(subcube.exp_time-exp_time)<0.1]
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(
+            subcube2.goyet.values)
+        plot_data.append([ref_starzp, exp_time,
+                          mean_goyet, med_goyet, std_goyet])
+plot_data = np.asarray(plot_data)
+plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
+            c=plot_data[:,2], s=10./plot_data[:,4])
+plt.xlabel('$ref_{zp}$')
+plt.ylabel('$exptime$')
+plt.colorbar(label='goyet=$<\delta m /m>$')
+
+plt.subplot(345)
+plot_data = []
+for ref_starzp in [128e3, 256e3]:
+    subcube = cube[np.abs(cube.ref_starzp-ref_starzp)<0.5]
+    for new_fwhm in [1.3, 1.9, 2.5]:
+        subcube2 = subcube[np.abs(subcube.new_fwhm-new_fwhm)<0.1]
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(
+            subcube2.goyet.values)
+        plot_data.append([ref_starzp, new_fwhm,
+                          mean_goyet, med_goyet, std_goyet])
+plot_data = np.asarray(plot_data)
+plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
+            c=plot_data[:,2], s=10./plot_data[:,4])
+plt.xlabel('$ref_{zp}$')
+plt.ylabel('$new_{fwhm}$')
+plt.colorbar(label='goyet=$<\delta m /m>$')
+
+plt.subplot(346)
+plot_data = []
+for ref_starzp in [128e3, 256e3]:
+    subcube = cube[np.abs(cube.ref_starzp-ref_starzp)<0.5]
+    for ref_back_sbright in [20., 21., 22.]:
+        subcube2 = subcube[np.abs(subcube.ref_back_sbright-ref_back_sbright)<0.1]
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(
+            subcube2.goyet.values)
+        plot_data.append([ref_starzp, ref_back_sbright,
+                          mean_goyet, med_goyet, std_goyet])
+plot_data = np.asarray(plot_data)
+plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
+            c=plot_data[:,2], s=10./plot_data[:,4])
+plt.xlabel('$ref_{zp}$')
+plt.ylabel('$ref_{backgorund}$')
+plt.colorbar(label='goyet=$<\delta m /m>$')
+
+plt.subplot(347)
+plot_data = []
+for ref_starzp in [128e3, 256e3]:
+    subcube = cube[np.abs(cube.ref_starzp-ref_starzp)<0.5]
+    for new_back_sbright in [20, 19., 18]:
+        subcube2 = subcube[np.abs(subcube.new_back_sbright-new_back_sbright)<0.1]
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(
+            subcube2.goyet.values)
+        plot_data.append([ref_starzp, new_back_sbright,
+                          mean_goyet, med_goyet, std_goyet])
+plot_data = np.asarray(plot_data)
+plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
+            c=plot_data[:,2], s=10./plot_data[:,4])
+plt.xlabel('$ref_{zp}$')
+plt.ylabel('$new_{backgorund}$')
+plt.colorbar(label='goyet=$<\delta m /m>$')
+
+plt.show()
+
+
+# seeing new  brillo de cielo new
+plt.subplot(348)
 plot_data = []
 for new_back_sbright in [20, 19., 18]:
     subcube = cube[np.abs(cube.new_back_sbright-new_back_sbright)<0.5]
@@ -221,13 +326,13 @@ for new_back_sbright in [20, 19., 18]:
                           mean_goyet, med_goyet, std_goyet])
 plot_data = np.asarray(plot_data)
 plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
-            c=plot_data[:,3], s=10./plot_data[:,4])
+            c=plot_data[:,2], s=10./plot_data[:,4])
 plt.xlabel('$N_{fwhm}$')
 plt.ylabel('$N_{backgorund}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
 
-plt.subplot(342)
+plt.subplot(349)
 plot_data = []
 for new_back_sbright in [20, 19., 18]:
     subcube = cube[np.abs(cube.new_back_sbright-new_back_sbright)<0.5]
@@ -236,17 +341,33 @@ for new_back_sbright in [20, 19., 18]:
         print(len(subcube2))
         mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(
             subcube2.goyet.values)
-        plot_data.append([new_fwhm, px_scale,
+        plot_data.append([new_back_sbright, px_scale,
                           mean_goyet, med_goyet, std_goyet])
 plot_data = np.asarray(plot_data)
 plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
-            c=plot_data[:,3], s=10./plot_data[:,4])
-plt.xlabel('$N_{fwhm}$')
+            c=plot_data[:,2], s=10./plot_data[:,4])
+plt.xlabel('$N_{background}$')
 plt.ylabel('px scale')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
+plot_data = []
+for new_back_sbright in [20, 19., 18]:
+    subcube = cube[np.abs(cube.new_back_sbright-new_back_sbright)<0.5]
+    for px_scale in [0.3, 0.7, 1.4]:
+        subcube2 = subcube[np.abs(subcube.px_scale-px_scale)<0.1]
+        print(len(subcube2))
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(
+            subcube2.goyet.values)
+        plot_data.append([new_back_sbright, px_scale,
+                          mean_goyet, med_goyet, std_goyet])
+plot_data = np.asarray(plot_data)
+plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
+            c=plot_data[:,2], s=10./plot_data[:,4])
+plt.xlabel('$N_{background}$')
+plt.ylabel('px scale')
+plt.colorbar(label='goyet=$<\delta m /m>$')
 
-
+plt.show()
 #~ if __name__ == '__main__':
     #~ import sys
     #~ print(sys.argv)
