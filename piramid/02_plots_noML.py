@@ -72,6 +72,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
 if __name__ == '__main__':
     import sys
+    print(sys.argv)
     m1 = sys.argv[1]
     path = sys.argv[2]
     sys.exit(main(m1, path))
