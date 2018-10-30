@@ -48,6 +48,8 @@ plt.rcParams['text.usetex'] = True
 
 
 #~ def main(m1_diam=1.54, plots_path='./plots/.'):
+m1_diam = 1.54
+plots_path='./plots_1540'
 plot_dir = os.path.abspath(plots_path)
 if not os.path.isdir(plot_dir):
     os.makedirs(plot_dir)
