@@ -76,11 +76,13 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     plt.figure(figsize=(6,3))
     dt_zps = store['dt_zps']
+    dt_zps = dt_zps[dt_zps['MAG_APER']<30]
     dt_zps.dropna(axis='rows', inplace=True)
     delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
 
     plt.hist(delta_mag, log=True)
     plt.savefig(os.path.join(plot_dir, 'delta_mags_zps.svg'), dpi=400)
+    plt.clf()
 
     return
 
