@@ -224,8 +224,27 @@ plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
             c=plot_data[:,3], s=10./plot_data[:,4])
 plt.xlabel('$N_{fwhm}$')
 plt.ylabel('$N_{backgorund}$')
-plt.colorbar(label='goyet=$\frac{dm}{m}$')
-plt.show()
+plt.colorbar(label='goyet=$<\delta m /m>$')
+
+
+plt.subplot(342)
+plot_data = []
+for new_back_sbright in [20, 19., 18]:
+    subcube = cube[np.abs(cube.new_back_sbright-new_back_sbright)<0.5]
+    for px_scale in [0.3, 0.7, 1.4]:
+        subcube2 = subcube[np.abs(subcube.px_scale-px_scale)<0.1]
+        print(len(subcube2))
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(
+            subcube2.goyet.values)
+        plot_data.append([new_fwhm, px_scale,
+                          mean_goyet, med_goyet, std_goyet])
+plot_data = np.asarray(plot_data)
+plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
+            c=plot_data[:,3], s=10./plot_data[:,4])
+plt.xlabel('$N_{fwhm}$')
+plt.ylabel('px scale')
+plt.colorbar(label='goyet=$<\delta m /m>$')
+
 
 
 #~ if __name__ == '__main__':
