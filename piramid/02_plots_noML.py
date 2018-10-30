@@ -23,6 +23,8 @@
 #
 
 import os
+import matplotlib
+matplotlib.use('Agg')
 from sqlalchemy import create_engine
 
 import numpy as np
