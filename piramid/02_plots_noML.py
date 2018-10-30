@@ -73,14 +73,44 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     #plt.ylabel(r'$\int_{-\infty}^{mag}\phi(m\prime)dm\prime$', fontsize=16)
     plt.savefig(os.path.join(plot_dir, 'lum_fun_simulated.svg'), dpi=400)
 
-
+# =============================================================================
+# plot de deltas de magnitud
+# =============================================================================
     plt.figure(figsize=(6,3))
+    plt.subplot(141)
     dt_zps = store['dt_zps']
     dt_zps = dt_zps[dt_zps['MAG_APER']<30]
     dt_zps.dropna(axis='rows', inplace=True)
     delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
 
     plt.hist(delta_mag, log=True)
+
+    plt.subplot(141)
+    dt_zps = store['dt_ois']
+    dt_zps = dt_zps[dt_zps['MAG_APER']<30]
+    dt_zps.dropna(axis='rows', inplace=True)
+    delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+
+    plt.hist(delta_mag, log=True)
+
+    plt.subplot(141)
+    dt_zps = store['dt_hot']
+    dt_zps = dt_zps[dt_zps['MAG_APER']<30]
+    dt_zps.dropna(axis='rows', inplace=True)
+    delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+
+    plt.hist(delta_mag, log=True)
+
+    plt.subplot(141)
+    dt_zps = store['dt_sps']
+    dt_zps.MAG_APER = -2.5*np.log10(dt_zps.cflux)
+    dt_zps = dt_zps[dt_zps['MAG_APER']<30]
+    dt_zps.dropna(axis='rows', inplace=True)
+    delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+
+    plt.hist(delta_mag, log=True)
+
+
     plt.savefig(os.path.join(plot_dir, 'delta_mags_zps.svg'), dpi=400)
     plt.clf()
 
