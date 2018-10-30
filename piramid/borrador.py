@@ -212,18 +212,23 @@ plt.ylabel('goyet')
 #  seeing new vale == 1.3, 1.9, 2.5
 plt.subplot(342)
 plot_data = []
-for new_fwhm in [1.3, 1.9, 2.5]:
-    subcube = cube[np.abs(cube.new_fwhm-new_fwhm)<0.1]
+for new_back_sbright in [20, 19., 18]:
+    subcube = cube[np.abs(cube.new_back_sbright-new_back_sbright)<0.5]
 
-    for new_back_sbright in [20, 19., 18]:
-        subcube = subcube[np.abs(subcube.new_back_sbright-new_back_sbright)<0.5]
+    for new_fwhm in [1.3, 1.9, 2.5]:
+        subcube2 = subcube[np.abs(subcube.new_fwhm-new_fwhm)<0.1]
+
         #subcube = subcube[subcube.new_back_sbright<=new_back_sbright+0.5]
-        print(len(subcube))
-        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(subcube.goyet.values)
+        print(len(subcube2))
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(
+            subcube2.goyet.values)
         plot_data.append([new_fwhm, new_back_sbright,
                           mean_goyet, med_goyet, std_goyet])
-
-
+plot_data = np.asarray(plot_data)
+plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
+            c=plot_data[:,3], s=10./plot_data[:,4])
+plt.colorbar()
+plt.show()
 
 
 #~ if __name__ == '__main__':
