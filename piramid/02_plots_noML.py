@@ -167,9 +167,8 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.subplot(144)
     dmag = dt_sps[(dt_sps.VALID_MAG==True)*
                   (dt_sps.mag_offset!=np.nan)].mag_offset
-    dmag = dmag/dt_zps[(dt_zps.VALID_MAG==True)*
-                  (dt_zps.mag_offset!=np.nan)].sim_mag
-
+    dmag = dmag/dt_zps[(dt_sps.VALID_MAG==True)*
+                       (dt_sps.mag_offset!=np.nan)].sim_mag
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag')
 
