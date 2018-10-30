@@ -56,13 +56,17 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     simulated = store['simulated']
     simulations = store['simulations']
 
+    simulations = simulations[simulations.failed_to_subtract==False]
     simulations = simulations[simulations.m1_diam==m1_diam]
 
-    simulated = pd.merge(left=simulations, right=simulated,
-                             right_on='simulation_id', left_on='id', how='left')
+    simus = pd.merge(left=simulations, right=simulated,
+                     right_on='simulation_id', left_on='id', how='outer')
+    #simus = simus[simus.failed_to_subtract==False]
+    #simus = simus[simus.m1_diam==m1_diam]
+
 
     plt.figure(figsize=(6,3))
-    plt.hist(simulated['app_mag'], cumulative=False, bins=25, log=True)
+    plt.hist(simus['app_mag'], cumulative=False, bins=25, log=True)
     plt.xlabel(r'$mag$', fontsize=16)
     plt.tick_params(labelsize=15)
     plt.ylabel(r'$N(m) dm$', fontsize=16)
