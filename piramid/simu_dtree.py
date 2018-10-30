@@ -24,8 +24,6 @@
 
 
 import os
-from sqlalchemy import create_engine
-
 import numpy as np
 import seaborn as sns
 import pandas as pd
@@ -58,7 +56,7 @@ X = simus[x].values
 
 from sklearn.tree import DecisionTreeClassifier
 clf = DecisionTreeClassifier(criterion='entropy', min_samples_leaf=20)
-rslts_c45 = experiment(clf, X, y)
+rslts_c45 = cf.experiment(clf, X, y)
 
 tree = rslts_c45['model']
 
