@@ -142,7 +142,8 @@ def main(argv):
                                             S.r_scales as r_scales,
                                             S.gx_mag as gx_mag,
                                             S.id as sim_id,
-                                            SI.m1_diam as m1_diam
+                                            SI.m1_diam as m1_diam,
+                                            SI.*
                                         FROM "Detected" D
                                             LEFT JOIN "Images" I
                                                 ON D.image_id=I.id
@@ -170,7 +171,8 @@ def main(argv):
                                             S.r_scales as r_scales,
                                             S.gx_mag as gx_mag,
                                             S.id as sim_id,
-                                            SI.m1_diam as m1_diam
+                                            SI.m1_diam as m1_diam,
+                                            SI.*
                                         FROM "SDetected" D
                                             LEFT JOIN "SImages" I
                                                 ON D.image_id=I.id
@@ -197,7 +199,8 @@ def main(argv):
                                             S.r_scales as r_scales,
                                             S.gx_mag as gx_mag,
                                             S.id as sim_id,
-                                            SI.m1_diam
+                                            SI.m1_diam as m1_diam,
+                                            SI.*
                                         FROM "DetectedOIS" D
                                             LEFT JOIN "ImagesOIS" I
                                                 ON D.image_id=I.id
@@ -224,7 +227,8 @@ def main(argv):
                                             S.r_scales as r_scales,
                                             S.gx_mag as gx_mag,
                                             S.id as sim_id,
-                                            SI.m1_diam
+                                            SI.m1_diam as m1_diam,
+                                            SI.*
                                         FROM "DetectedHOT" D
                                             LEFT JOIN "ImagesHOT" I
                                                 ON D.image_id=I.id
