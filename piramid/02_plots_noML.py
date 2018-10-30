@@ -110,7 +110,8 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
     plt.figure(figsize=(9,3))
     plt.subplot(141)
-    dmag = dt_zps[(dt_zps.VALID_MAG==True)*(dt_zps.mag_offset!=np.nan)].mag_offset
+    dmag = dt_zps[dt_zps.VALID_MAG==True].mag_offset
+    dmag = dmag.dropna()
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag zps')
 
