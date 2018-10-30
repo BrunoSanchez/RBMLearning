@@ -166,6 +166,7 @@ def main(argv):
                                                 ON SI.id=I.simulation_id
                                                 """, engine),
                                           on='id', suffixes=('',''))
+        dt_zps.executed = dt_zps.executed.astype('bool').astype(int)
         dt_zps.IS_REAL = dt_zps.IS_REAL.astype('bool').astype(int)
         dt_zps.drop_duplicates(inplace=True)
         dt_zps = cf.optimize_df(dt_zps)
@@ -205,6 +206,7 @@ def main(argv):
                                             LEFT JOIN "Simulation" SI
                                                 ON SI.id=I.simulation_id""", engine),
                                           on='id', suffixes=('',''))
+        dt_sps.executed = dt_sps.executed.astype('bool').astype(int)
         dt_sps.IS_REAL = dt_sps.IS_REAL.astype('bool').astype(int)
         dt_sps.drop_duplicates(inplace=True)
         dt_sps = cf.optimize_df(dt_sps)
@@ -244,6 +246,7 @@ def main(argv):
                                             LEFT JOIN "Simulation" SI
                                                 ON SI.id=I.simulation_id""", engine),
                                           on='id', suffixes=('',''))
+        dt_ois.executed = dt_ois.executed.astype('bool').astype(int)
         dt_ois.IS_REAL = dt_ois.IS_REAL.astype('bool').astype(int)
         dt_ois.drop_duplicates(inplace=True)
         dt_ois = cf.optimize_df(dt_ois)
@@ -283,6 +286,7 @@ def main(argv):
                                             LEFT JOIN "Simulation" SI
                                                 ON SI.id=I.simulation_id""", engine),
                                           on='id', suffixes=('',''))
+        dt_hot.executed = dt_hot.executed.astype('bool').astype(int)
         dt_hot.IS_REAL = dt_hot.IS_REAL.astype('bool').astype(int)
         dt_hot.drop_duplicates(inplace=True)
         dt_hot = cf.optimize_df(dt_hot)
