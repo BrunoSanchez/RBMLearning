@@ -206,7 +206,9 @@ plt.ylabel('goyet')
 plt.subplot(342)
 plt.plot(data.sim_mag, data.goyet, '.')
 
-
+plt.scatter(x=data.sim_mag,
+            y=data.ref_fwhm+(np.random.random(size=len(data))-0.5)*0.2,
+            c=data.goyet)
 
     #~ return
 
