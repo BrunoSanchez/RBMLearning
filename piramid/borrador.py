@@ -213,11 +213,11 @@ plt.ylabel('goyet')
 plt.subplot(342)
 plot_data = []
 for new_fwhm in [1.3, 1.9, 2.5]:
-    subcube = cube[cube.new_fwhm>=new_fwhm-0.1]
-    subcube = subcube[subcube.new_fwhm<=new_fwhm+0.1]
+    subcube = cube[np.abs(cube.new_fwhm-new_fwhm)<0.1]
+
     for new_back_sbright in [20, 19., 18]:
-        subcube = subcube[subcube.new_back_sbright>=new_back_sbright-0.1]
-        subcube = subcube[subcube.new_back_sbright<=new_back_sbright+0.1]
+        subcube = subcube[np.abs(subcube.new_back_sbright-new_back_sbright)<0.5]
+        #subcube = subcube[subcube.new_back_sbright<=new_back_sbright+0.5]
         print(len(subcube))
         mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(subcube.goyet.values)
         plot_data.append([new_fwhm, new_back_sbright,
