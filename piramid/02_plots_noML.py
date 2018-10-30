@@ -112,22 +112,22 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.subplot(141)
     dmag = dt_zps[(dt_zps.VALID_MAG==True)*(dt_zps.mag_offset!=np.nan)].mag_offset
     plt.hist(dmag, log=True)
-    plt.xlabel('delta mag')
+    plt.xlabel('delta mag zps')
 
     plt.subplot(142)
     dmag = dt_ois[(dt_ois.VALID_MAG==True)*(dt_ois.mag_offset!=np.nan)].mag_offset
     plt.hist(dmag, log=True)
-    plt.xlabel('delta mag')
+    plt.xlabel('delta mag ois')
 
     plt.subplot(143)
     dmag = dt_hot[(dt_hot.VALID_MAG==True)*(dt_hot.mag_offset!=np.nan)].mag_offset
     plt.hist(dmag, log=True)
-    plt.xlabel('delta mag')
+    plt.xlabel('delta mag hot')
 
     plt.subplot(144)
     dmag = dt_sps[(dt_sps.VALID_MAG==True)*(dt_sps.mag_offset!=np.nan)].mag_offset
     plt.hist(dmag, log=True)
-    plt.xlabel('delta mag')
+    plt.xlabel('delta mag sps')
 
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'delta_mags.svg'), dpi=400)
@@ -144,7 +144,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
                        (dt_zps.mag_offset!=np.nan)].sim_mag
 
     plt.hist(dmag, log=True)
-    plt.xlabel('delta mag')
+    plt.xlabel('delta mag zps')
 
     plt.subplot(142)
     dmag = dt_ois[(dt_ois.VALID_MAG==True)*
@@ -153,7 +153,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
                        (dt_ois.mag_offset!=np.nan)].sim_mag
 
     plt.hist(dmag, log=True)
-    plt.xlabel('delta mag')
+    plt.xlabel('delta mag ois')
 
     plt.subplot(143)
     dmag = dt_hot[(dt_hot.VALID_MAG==True)*
@@ -162,7 +162,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
                        (dt_hot.mag_offset!=np.nan)].sim_mag
 
     plt.hist(dmag, log=True)
-    plt.xlabel('delta mag')
+    plt.xlabel('delta mag hot')
 
     plt.subplot(144)
     dmag = dt_sps[(dt_sps.VALID_MAG==True)*
@@ -170,7 +170,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dmag = dmag/dt_zps[(dt_sps.VALID_MAG==True)*
                        (dt_sps.mag_offset!=np.nan)].sim_mag
     plt.hist(dmag, log=True)
-    plt.xlabel('delta mag')
+    plt.xlabel('delta mag sps')
 
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'delta_mags.svg'), dpi=400)
