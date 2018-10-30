@@ -63,6 +63,34 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
                      right_on='simulation_id', left_on='id', how='outer')
 
 # =============================================================================
+# tables
+# =============================================================================
+    dt_zps = store['dt_ois']
+    dt_zps = cf.optimize_df(dt_zps)
+    dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
+    dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+    dt_ois = dt_zps
+
+    dt_zps = store['dt_sps']
+    dt_zps = cf.optimize_df(dt_zps)
+    dt_zps['MAG_APER'] = -2.5*np.log10(dt_zps.cflux)
+    dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
+    dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+    dt_sps = dt_zps
+
+    dt_zps = store['dt_hot']
+    dt_zps = cf.optimize_df(dt_zps)
+    dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
+    dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+    dt_hot = dt_zps
+
+    dt_zps = store['dt_zps']
+    dt_zps = cf.optimize_df(dt_zps)
+    dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
+    dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+
+
+# =============================================================================
 # plot de funcion de luminosidad inyectada
 # =============================================================================
     plt.figure(figsize=(6,3))
@@ -157,6 +185,9 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.savefig(os.path.join(plot_dir, 'delta_over_mags_zps.svg'), dpi=400)
     plt.clf()
 
+# =============================================================================
+# plot de
+# =============================================================================
 
     return
 
