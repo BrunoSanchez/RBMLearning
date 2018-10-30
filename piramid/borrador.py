@@ -311,7 +311,6 @@ plt.ylabel('$new_{backgorund}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
 plt.tight_layout()
-plt.show()
 
 
 # seeing new  brillo de cielo new
