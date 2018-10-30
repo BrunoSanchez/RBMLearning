@@ -54,6 +54,30 @@ def optimize_df(df):
 
     return optimized_df
 
+def binning_res(data, bins, return_center_bins=False):
+    mean = np.zeros_like(bins[:-1])
+    stdv = np.zeros_like(bins[:-1])
+    sqrtn= np.zeros_like(mean)
+    mean_sim_mag = np.zeros_like(mean)
+    for i_bin, low in enumerate(bins[:-1]):
+        high = bins[i_bin+1]
+        f1data = data[data['mag']<90]
+        fdata = f1data[(f1data['sim_mag'] < high) * (f1data['sim_mag'] >= low)]
+        fdata_mag = fdata['mag'] - fdata['sim_mag']
+        if len(fdata) is 0:
+            sqrtn[i_bin] = 0
+            mean[i_bin] = np.mean(fdata_mag)
+            stdv[i_bin] = np.std(fdata_mag)
+            continue
+        mean_sim_mag[i_bin] = (high+low)/2.
+        sqrtn[i_bin] = np.sqrt(len(fdata_mag))
+        mean[i_bin] = np.mean(fdata_mag)
+        stdv[i_bin] = np.std(fdata_mag)
+    if return_center_bins:
+        return bins[:-1]+(high-low)*0.5, mean, stdv, sqrtn
+    else:
+        return mean, stdv, sqrtn, mean_sim_mag
+
 
 def custom_histogram(vector, bins=None, cumulative=False, errors=False):
     if bins is None:
