@@ -62,6 +62,9 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     simus = pd.merge(left=simulations, right=simulated,
                      right_on='simulation_id', left_on='id', how='outer')
 
+# =============================================================================
+# plot de funcion de luminosidad inyectada
+# =============================================================================
     plt.figure(figsize=(6,3))
     plt.hist(simus['app_mag'], cumulative=False, bins=25, log=True)
     plt.xlabel(r'$mag$', fontsize=16)
@@ -71,6 +74,13 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.savefig(os.path.join(plot_dir, 'lum_fun_simulated.svg'), dpi=400)
 
 
+    plt.figure(figsize=(6,3))
+    dt_zps = store['dt_zps']
+    dt_zps.dropna(axis='rows', inplace=True)
+    delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+
+    plt.hist(delta_mag, log=True)
+    plt.savefig(os.path.join(plot_dir, 'delta_mags_zps.svg'), dpi=400)
 
     return
 
