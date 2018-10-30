@@ -202,7 +202,7 @@ cube = data[['new_fwhm', 'ref_fwhm', 'ref_starzp','ref_starslope',
              'exp_time', 'goyet']]
 
 
-plt.figure(figsize=(8, 8))
+plt.figure(figsize=(18, 18))
 plt.subplot(341)
 plt.plot(data.sim_mag, data.goyet, '.')
 plt.xlabel('simulated mag')
@@ -310,6 +310,7 @@ plt.xlabel('$ref_{zp}$')
 plt.ylabel('$new_{backgorund}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
+plt.tight_layout()
 plt.show()
 
 
