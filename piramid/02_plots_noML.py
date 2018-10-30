@@ -76,7 +76,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
 # plot de deltas de magnitud
 # =============================================================================
-    plt.figure(figsize=(6,3))
+    plt.figure(figsize=(9,3))
     plt.subplot(141)
     dt_zps = store['dt_zps']
     dt_zps = dt_zps[dt_zps['MAG_APER']<30]
@@ -85,7 +85,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     plt.hist(delta_mag, log=True)
 
-    plt.subplot(141)
+    plt.subplot(142)
     dt_zps = store['dt_ois']
     dt_zps = dt_zps[dt_zps['MAG_APER']<30]
     dt_zps.dropna(axis='rows', inplace=True)
@@ -93,7 +93,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     plt.hist(delta_mag, log=True)
 
-    plt.subplot(141)
+    plt.subplot(143)
     dt_zps = store['dt_hot']
     dt_zps = dt_zps[dt_zps['MAG_APER']<30]
     dt_zps.dropna(axis='rows', inplace=True)
@@ -101,9 +101,9 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     plt.hist(delta_mag, log=True)
 
-    plt.subplot(141)
+    plt.subplot(144)
     dt_zps = store['dt_sps']
-    dt_zps.MAG_APER = -2.5*np.log10(dt_zps.cflux)
+    dt_zps['MAG_APER'] = -2.5*np.log10(dt_zps.cflux)
     dt_zps = dt_zps[dt_zps['MAG_APER']<30]
     dt_zps.dropna(axis='rows', inplace=True)
     delta_mag = dt_zps['sim_mag'] - dt_zps['MAG_APER']
