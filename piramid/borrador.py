@@ -193,9 +193,14 @@ plt.clf()
 # =============================================================================
 
 mag_range = [16, 20]
+mag_bins = np.arange(16, 20, 0.5)
 data = dt_zps[dt_zps.sim_mag<=20]
 data = data[data.sim_mag>=16]
 data = data[data.VALID_MAG==True]
+cube = data[['new_fwhm', 'ref_fwhm', 'ref_starzp','ref_starslope',
+             'px_scale', 'ref_back_sbright','new_back_sbright',
+             'exp_time', 'goyet']]
+
 
 plt.figure(figsize=(8, 8))
 plt.subplot(341)
@@ -203,14 +208,19 @@ plt.plot(data.sim_mag, data.goyet, '.')
 plt.xlabel('simulated mag')
 plt.ylabel('goyet')
 
+# seeing new  brillo de cielo new
+#  seeing new vale == 1.3, 1.9, 2.5
 plt.subplot(342)
-plt.plot(data.sim_mag, data.goyet, '.')
+plot_data = []
+for new_fwhm in [1.3, 1.9, 2.5]:
+    subcube = cube[np.round(cube.new_fwhm)==new_fwhm]
+    for new_back_sbright in [20, 19., 18]:
+        subcube = subcube[np.round(subcube.new_back_sbright)==new_back_sbright]
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(subcube.goyet)
+        plot_data.append([new_fwhm, new_back_sbright,
+                          mean_goyet, med_goyet, std_goyet])
 
-plt.scatter(x=data.sim_mag,
-            y=data.ref_fwhm+(np.random.random(size=len(data))-0.5)*0.2,
-            c=data.goyet)
 
-    #~ return
 
 
 #~ if __name__ == '__main__':
