@@ -61,9 +61,6 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     simus = pd.merge(left=simulations, right=simulated,
                      right_on='simulation_id', left_on='id', how='outer')
-    #simus = simus[simus.failed_to_subtract==False]
-    #simus = simus[simus.m1_diam==m1_diam]
-
 
     plt.figure(figsize=(6,3))
     plt.hist(simus['app_mag'], cumulative=False, bins=25, log=True)
