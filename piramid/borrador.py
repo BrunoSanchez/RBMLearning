@@ -444,7 +444,7 @@ for ref_fwhm in [0.8, 1., 1.3]:
 plot_data = np.asarray(plot_data)
 plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
             c=plot_data[:,2], s=10./plot_data[:,4])
-plt.xlabel('$ref_{slope}$')
+plt.xlabel('$ref_{fwhm}$')
 plt.ylabel('$exptime$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
@@ -461,7 +461,7 @@ for ref_fwhm in [0.8, 1., 1.3]:
 plot_data = np.asarray(plot_data)
 plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
             c=plot_data[:,2], s=10./plot_data[:,4])
-plt.xlabel('$ref_{slope}$')
+plt.xlabel('$ref_{fwhm}$')
 plt.ylabel('$new_{fwhm}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
@@ -478,10 +478,9 @@ for ref_fwhm in [0.8, 1., 1.3]:
 plot_data = np.asarray(plot_data)
 plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
             c=plot_data[:,2], s=10./plot_data[:,4])
-plt.xlabel('$ref_{slope}$')
+plt.xlabel('$ref_{fwhm}$')
 plt.ylabel('px scale')
 plt.colorbar(label='goyet=$<\delta m /m>$')
-
 
 plt.subplot(9, 4, 11)
 plot_data = []
@@ -496,7 +495,7 @@ for ref_fwhm in [0.8, 1., 1.3]:
 plot_data = np.asarray(plot_data)
 plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
             c=plot_data[:,2], s=10./plot_data[:,4])
-plt.xlabel('$ref_{slope}$')
+plt.xlabel('$ref_{fwhm}$')
 plt.ylabel('$ref_{backgorund}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
@@ -513,11 +512,78 @@ for ref_fwhm in [0.8, 1., 1.3]:
 plot_data = np.asarray(plot_data)
 plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
             c=plot_data[:,2], s=10./plot_data[:,4])
-plt.xlabel('$ref_{slope}$')
+plt.xlabel('$ref_{fwhm}$')
 plt.ylabel('$new_{backgorund}$')
 plt.colorbar(label='goyet=$<\delta m /m>$')
 
 
+plt.subplot(9, 4, 10)
+plot_data = []
+for exp_time in [120, 300]:
+    subcube = cube[np.abs(cube.exp_time-exp_time)<0.1]
+    for new_fwhm in [1.3, 1.9, 2.5]:
+        subcube2 = subcube[np.abs(subcube.new_fwhm-new_fwhm)<0.1]
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(
+            subcube2.goyet.values)
+        plot_data.append([exp_time, new_fwhm,
+                          mean_goyet, med_goyet, std_goyet])
+plot_data = np.asarray(plot_data)
+plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
+            c=plot_data[:,2], s=10./plot_data[:,4])
+plt.xlabel('exptime')
+plt.ylabel('$new_{fwhm}$')
+plt.colorbar(label='goyet=$<\delta m /m>$')
+
+plt.subplot(9, 4, 10)
+plot_data = []
+for exp_time in [120, 300]:
+    subcube = cube[np.abs(cube.exp_time-exp_time)<0.1]
+    for px_scale in [0.3, 0.7, 1.4]:
+        subcube2 = subcube[np.abs(subcube.px_scale-px_scale)<0.1]
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(
+            subcube2.goyet.values)
+        plot_data.append([exp_time, px_scale,
+                          mean_goyet, med_goyet, std_goyet])
+plot_data = np.asarray(plot_data)
+plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
+            c=plot_data[:,2], s=10./plot_data[:,4])
+plt.xlabel('exptime')
+plt.ylabel('px scale')
+plt.colorbar(label='goyet=$<\delta m /m>$')
+
+plt.subplot(9, 4, 11)
+plot_data = []
+for exp_time in [120, 300]:
+    subcube = cube[np.abs(cube.exp_time-exp_time)<0.1]
+    for ref_back_sbright in [20., 21., 22.]:
+        subcube2 = subcube[np.abs(subcube.ref_back_sbright-ref_back_sbright)<0.1]
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(
+            subcube2.goyet.values)
+        plot_data.append([exp_time, ref_back_sbright,
+                          mean_goyet, med_goyet, std_goyet])
+plot_data = np.asarray(plot_data)
+plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
+            c=plot_data[:,2], s=10./plot_data[:,4])
+plt.xlabel('exptime')
+plt.ylabel('$ref_{backgorund}$')
+plt.colorbar(label='goyet=$<\delta m /m>$')
+
+plt.subplot(9, 4, 12)
+plot_data = []
+for exp_time in [120, 300]:
+    subcube = cube[np.abs(cube.exp_time-exp_time)<0.1]
+    for new_back_sbright in [20, 19., 18]:
+        subcube2 = subcube[np.abs(subcube.new_back_sbright-new_back_sbright)<0.1]
+        mean_goyet, med_goyet, std_goyet = sigma_clipped_stats(
+            subcube2.goyet.values)
+        plot_data.append([exp_time, new_back_sbright,
+                          mean_goyet, med_goyet, std_goyet])
+plot_data = np.asarray(plot_data)
+plt.scatter(x=plot_data[:,0], y=plot_data[:,1],
+            c=plot_data[:,2], s=10./plot_data[:,4])
+plt.xlabel('exptime')
+plt.ylabel('$new_{backgorund}$')
+plt.colorbar(label='goyet=$<\delta m /m>$')
 
 
 
