@@ -295,6 +295,31 @@ comb_merge = pd.merge(left=combined_merge1, right=combined_merge2,
 # Ahora a ver que muestra quedo
 # =============================================================================
 
+#  checkings
+print(np.any(comb_merge['id_simulation_zps']!=comb_merge['id_simulation_sps']))
+print(np.any(comb_merge['id_simulation_zps']!=comb_merge['id_simulation_ois']))
+print(np.any(comb_merge['id_simulation_zps']!=comb_merge['id_simulation_hot']))
+print(np.any(comb_merge['ref_starslope_zps']!=comb_merge['ref_starslope_sps']))
+print(np.any(comb_merge['ref_starslope_zps']!=comb_merge['ref_starslope_ois']))
+print(np.any(comb_merge['ref_starslope_zps']!=comb_merge['ref_starslope_hot']))
+print(np.any(comb_merge['px_scale_zps']!=comb_merge['px_scale_ois']))
+print(np.any(comb_merge['px_scale_zps']!=comb_merge['px_scale_hot']))
+print(np.any(comb_merge['px_scale_zps']!=comb_merge['px_scale_sps']))
+
+comb_merge = comb_merge[['image_id', 'id_simulation_zps',
+                         'ref_starzp_zps', 'ref_starslope_zps',
+                         'ref_fwhm_zps', 'new_fwhm_zps',
+                         'm1_diam_zps', 'm2_diam_zps', 'eff_col_zps',
+                         'px_scale_zps', 'ref_back_sbright_zps',
+                         'new_back_sbright_zps', 'exp_time_zps', 'mean_goyet_zps',
+                         'mean_goyet_sps', 'mean_goyet_hot', 'mean_goyet_ois']]
+
+pd.plotting.scatter_matrix(comb_merge[['ref_starzp_zps', 'ref_starslope_zps',
+                         'ref_fwhm_zps', 'new_fwhm_zps','px_scale_zps', 'ref_back_sbright_zps',
+                         'new_back_sbright_zps', 'exp_time_zps', 'mean_goyet_zps',
+                         'mean_goyet_sps', 'mean_goyet_hot', 'mean_goyet_ois']],
+                         alpha=0.1, diagonal='hist')
+
 # =============================================================================
 # Distribuciones de goyet vs pars
 # =============================================================================
