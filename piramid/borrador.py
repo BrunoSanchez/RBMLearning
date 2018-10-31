@@ -59,7 +59,7 @@ simulated = store['simulated']
 simulations = store['simulations']
 
 simulations = simulations[simulations.failed_to_subtract==False]
-simulations = simulations[simulations.m1_diam==m1_diam]
+#simulations = simulations[simulations.m1_diam==m1_diam]
 
 simus = pd.merge(left=simulations, right=simulated,
                  right_on='simulation_id', left_on='id', how='outer')
@@ -242,28 +242,24 @@ plt.title('mean goyet')
 plt.subplot(141)
 dmag = subset_zps.mean_goyet
 dmag = dmag.dropna()
-#dmag = dmag.mag_offset/dmag.sim_mag
 plt.hist(dmag, log=True)
 plt.xlabel('mean goyet zps')
 
 plt.subplot(142)
 dmag = subset_ois.mean_goyet
 dmag = dmag.dropna()
-#dmag = dmag.mag_offset/dmag.sim_mag
 plt.hist(dmag, log=True)
 plt.xlabel('mean goyet ois')
 
 plt.subplot(143)
 dmag = subset_hot.mean_goyet
 dmag = dmag.dropna()
-#dmag = dmag.mag_offset/dmag.sim_mag
 plt.hist(dmag, log=True)
 plt.xlabel('mean goyet hot')
 
 plt.subplot(144)
 dmag = subset_sps.mean_goyet
 dmag = dmag.dropna()
-#dmag = dmag.mag_offset/dmag.sim_mag
 plt.hist(dmag, log=True)
 plt.xlabel('mean goyet sps')
 
@@ -275,6 +271,26 @@ plt.clf()
 # =============================================================================
 # Distribuciones de goyet vs pars
 # =============================================================================
+
+mag_range = [16, 20]
+mag_bins = np.arange(16, 20, 0.5)
+dataset =
+data = dataset[dataset.sim_mag<=20]
+data = data[data.sim_mag>=16]
+data = data[data.VALID_MAG==True]
+cube = data[['r_scales', 'gx_mag', 'm1_diam',
+'m2_diam', 'ref_starzp', 'ref_starslope',
+'ref_fwhm', 'new_fwhm', 'eff_col', 'px_scale', 'ref_back_sbright',
+'new_back_sbright', 'exp_time', 'mag_offset', 'goyet']]
+
+cols = ['r_scales', 'gx_mag', 'm1_diam', 'ref_starzp', 'ref_starslope',
+        'ref_fwhm', 'new_fwhm', 'eff_col', 'px_scale', 'ref_back_sbright',
+        'new_back_sbright', 'exp_time', 'mag_offset']
+
+for a_par in cols:
+    subplot()
+
+
 
 def goyet_vs_pars_plot(dataset, dia='zackay'):
     mag_range = [16, 20]
