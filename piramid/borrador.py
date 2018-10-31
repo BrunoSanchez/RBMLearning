@@ -207,33 +207,61 @@ plt.savefig(os.path.join(plot_dir, 'delta_over_mags.svg'), dpi=400)
 plt.clf()
 
 # =============================================================================
+# Vetamos por mean goyet
+# =============================================================================
+
+subset_zps = dt_zps[['mean_goyet', 'image_id', 'id_simulation']]
+subset_zps = subset_zps[subset_zps.mean_goyet<=0.25]
+subset_zps.drop_duplicates(inplace=True)
+
+subset_ois = dt_ois[['mean_goyet', 'image_id', 'id_simulation']]
+subset_ois = subset_ois[subset_ois.mean_goyet<=0.25]
+subset_ois.drop_duplicates(inplace=True)
+
+subset_sps = dt_sps[['mean_goyet', 'image_id', 'id_simulation']]
+subset_sps = subset_sps[subset_sps.mean_goyet<=0.25]
+subset_sps.drop_duplicates(inplace=True)
+
+subset_hot = dt_hot[['mean_goyet', 'image_id', 'id_simulation']]
+subset_hot = subset_hot[subset_hot.mean_goyet<=0.25]
+subset_hot.drop_duplicates(inplace=True)
+
+merged = pd.merge(left=subset_zps, right=simulations,
+                  left_on='id_simulation', right_on='id',
+                  how='left')
+
+merged = pd.merge(left=merged, right=subset_ois, on='id_simulation', how='inner')
+merged = pd.merge(left=subset_zps, right=subset_ois, on='id_simulation', how='inner')
+
+
+# =============================================================================
 # Distribuciones de goyet
 # =============================================================================
 plt.figure(figsize=(9,3))
 plt.title('mean goyet')
 plt.subplot(141)
-dmag = dt_zps.mean_goyet
+dmag = subset_zps.mean_goyet
 dmag = dmag.dropna()
 #dmag = dmag.mag_offset/dmag.sim_mag
 plt.hist(dmag, log=True)
 plt.xlabel('mean goyet zps')
 
 plt.subplot(142)
-dmag = dt_ois.mean_goyet
+dmag = subset_ois.mean_goyet
 dmag = dmag.dropna()
 #dmag = dmag.mag_offset/dmag.sim_mag
 plt.hist(dmag, log=True)
 plt.xlabel('mean goyet ois')
 
 plt.subplot(143)
-dmag = dt_hot.mean_goyet
+dmag = subset_hot.mean_goyet
 dmag = dmag.dropna()
 #dmag = dmag.mag_offset/dmag.sim_mag
 plt.hist(dmag, log=True)
 plt.xlabel('mean goyet hot')
 
 plt.subplot(144)
-dmag = dt_sps.mean_goyet
+dmag = subset_sps.mean_goyet
 dmag = dmag.dropna()
 #dmag = dmag.mag_offset/dmag.sim_mag
 plt.hist(dmag, log=True)
@@ -242,20 +270,6 @@ plt.xlabel('mean goyet sps')
 plt.tight_layout()
 plt.savefig(os.path.join(plot_dir, 'mean_goyet.svg'), dpi=400)
 plt.clf()
-
-# =============================================================================
-# Vetamos por mean goyet
-# =============================================================================
-
-subset_zps = dt_zps[dt_zps.mean_goyet<=0.25]
-subset_ois = dt_ois[dt_ois.mean_goyet<=0.25]
-subset_sps = dt_sps[dt_sps.mean_goyet<=0.25]
-subset_hot = dt_hot[dt_hot.mean_goyet<=0.25]
-
-merged = pd.merge(left=subset_zps, right=subset_ois, on='id_simulation', how='inner')
-merged = pd.merge(left=merged, right=subset_ois, on='id_simulation', how='inner')
-merged = pd.merge(left=subset_zps, right=subset_ois, on='id_simulation', how='inner')
-
 
 
 # =============================================================================
