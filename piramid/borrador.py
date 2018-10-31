@@ -336,10 +336,10 @@ def goyet_vs_pars_plot(dataset, dia='zackay'):
                  'px_scale', 'ref_back_sbright','new_back_sbright',
                  'exp_time', 'goyet']]
 
-    plt.plot(data.sim_mag, data.goyet, '.')
-    plt.xlabel('simulated mag')
-    plt.ylabel('goyet')
-    plt.savefig(os.path.join(plot_dir, 'simulated_goyet_{}.svg'.format(dia)), dpi=400)
+    #~ plt.plot(data.sim_mag, data.goyet, '.')
+    #~ plt.xlabel('simulated mag')
+    #~ plt.ylabel('goyet')
+    #~ plt.savefig(os.path.join(plot_dir, 'simulated_goyet_{}.svg'.format(dia)), dpi=400)
 
     plt.figure(figsize=(18, 18))
 
