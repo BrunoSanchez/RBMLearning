@@ -75,6 +75,10 @@ dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
 mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
 dt_zps['mag'] = dt_zps['MAG_APER'] + mean_offset
 dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
+grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
+dd.name = 'mean_goyet'
+dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
 dt_ois = dt_zps
 
 dt_zps = store['dt_sps']
@@ -86,6 +90,10 @@ dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
 mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
 dt_zps['mag'] = dt_zps['MAG_APER'] + mean_offset
 dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
+grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
+dd.name = 'mean_goyet'
+dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
 dt_sps = dt_zps
 
 dt_zps = store['dt_hot']
@@ -96,6 +104,10 @@ dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
 mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
 dt_zps['mag'] = dt_zps['MAG_APER'] + mean_offset
 dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
+grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
+dd.name = 'mean_goyet'
+dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
 dt_hot = dt_zps
 
 dt_zps = store['dt_zps']
@@ -106,6 +118,10 @@ dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
 mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
 dt_zps['mag'] = dt_zps['MAG_APER'] + mean_offset
 dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
+grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
+dd.name = 'mean_goyet'
+dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
 
 
 # =============================================================================
@@ -189,6 +205,80 @@ plt.xlabel('delta mag sps')
 plt.tight_layout()
 plt.savefig(os.path.join(plot_dir, 'delta_over_mags.svg'), dpi=400)
 plt.clf()
+
+# =============================================================================
+# Distribuciones de goyet
+# =============================================================================
+plt.figure(figsize=(9,3))
+plt.title('mean goyet')
+plt.subplot(141)
+dmag = dt_zps.mean_goyet
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('mean goyet zps')
+
+plt.subplot(142)
+dmag = dt_ois.mean_goyet
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('mean goyet ois')
+
+plt.subplot(143)
+dmag = dt_hot.mean_goyet
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('mean goyet hot')
+
+plt.subplot(144)
+dmag = dt_sps.mean_goyet
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('mean goyet sps')
+
+plt.tight_layout()
+plt.savefig(os.path.join(plot_dir, 'mean_goyet.svg'), dpi=400)
+plt.clf()
+
+# =============================================================================
+# Vetamos por mean goyet
+# =============================================================================
+
+subset_zps = dt_zps[dt_zps.mean_goyet<=0.25]
+subset_ois = dt_ois[dt_ois.mean_goyet<=0.25]
+subset_sps = dt_sps[dt_sps.mean_goyet<=0.25]
+subset_hot = dt_hot[dt_hot.mean_goyet<=0.25]
+
+merged = pd.merge(left=subset_zps, right=subset_ois, on='id_simulation', how='inner')
+merged = pd.merge(left=merged, right=subset_ois, on='id_simulation', how='inner')
+merged = pd.merge(left=subset_zps, right=subset_ois, on='id_simulation', how='inner')
+
+
+
+# =============================================================================
+# Distribuciones de goyet vs pars
+# =============================================================================
+
+def goyet_vs_pars_plot(dataset, dia='zackay'):
+    mag_range = [16, 20]
+    mag_bins = np.arange(16, 20, 0.5)
+    data = dataset[dataset.sim_mag<=20]
+    data = data[data.sim_mag>=16]
+    data = data[data.VALID_MAG==True]
+    cube = data[['r_scales', 'gx_mag', 'm1_diam',
+    'm2_diam', 'ref_starzp', 'ref_starslope',
+    'ref_fwhm', 'new_fwhm', 'eff_col', 'px_scale', 'ref_back_sbright',
+    'new_back_sbright', 'exp_time', 'mag_offset', 'goyet']]
+
+    cols = ['r_scales', 'gx_mag', 'm1_diam', 'ref_starzp', 'ref_starslope',
+            'ref_fwhm', 'new_fwhm', 'eff_col', 'px_scale', 'ref_back_sbright',
+            'new_back_sbright', 'exp_time', 'mag_offset']
+
+    for a_par in cols:
+        subplot()
 
 # =============================================================================
 # plot de goyet factor

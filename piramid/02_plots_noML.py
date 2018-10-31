@@ -109,13 +109,13 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
 # plot de funcion de luminosidad inyectada
 # =============================================================================
-        plt.figure(figsize=(6,3))
-        plt.hist(simus['app_mag'], cumulative=False, bins=25, log=True)
-        plt.xlabel(r'$mag$', fontsize=16)
-        plt.tick_params(labelsize=15)
-        plt.ylabel(r'$N(m) dm$', fontsize=16)
-        #plt.ylabel(r'$\int_{-\infty}^{mag}\phi(m\prime)dm\prime$', fontsize=16)
-        plt.savefig(os.path.join(plot_dir, 'lum_fun_simulated.svg'), dpi=400)
+    plt.figure(figsize=(6,3))
+    plt.hist(simus['app_mag'], cumulative=False, bins=25, log=True)
+    plt.xlabel(r'$mag$', fontsize=16)
+    plt.tick_params(labelsize=15)
+    plt.ylabel(r'$N(m) dm$', fontsize=16)
+    #plt.ylabel(r'$\int_{-\infty}^{mag}\phi(m\prime)dm\prime$', fontsize=16)
+    plt.savefig(os.path.join(plot_dir, 'lum_fun_simulated.svg'), dpi=400)
 
 # =============================================================================
 # plot de deltas de magnitud
