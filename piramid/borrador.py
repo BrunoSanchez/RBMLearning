@@ -231,11 +231,15 @@ merged = pd.merge(left=subset_zps, right=simulations,
                   how='inner')
 
 merged = pd.merge(left=merged, right=subset_ois,
-                  left_on='id_simulation', right_on='',
+                  left_on='', right_on='id_simulation',
                   how='inner')
 
-merged = pd.merge(left=merged, right=subset_ois,
-                  left_on='id_simulation', right_on='',
+merged = pd.merge(left=merged, right=subset_sps,
+                  left_on='', right_on='id_simulation',
+                  how='inner')
+
+merged = pd.merge(left=merged, right=subset_hot,
+                  left_on='', right_on='id_simulation',
                   how='inner')
 
 # =============================================================================
