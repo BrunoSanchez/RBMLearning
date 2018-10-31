@@ -319,7 +319,7 @@ pd.plotting.scatter_matrix(comb_merge[['ref_starzp_zps', 'ref_starslope_zps',
                          'new_back_sbright_zps', 'exp_time_zps', 'mean_goyet_zps',
                          'mean_goyet_sps', 'mean_goyet_hot', 'mean_goyet_ois']],
                          alpha=0.1, diagonal='hist', figsize=(12, 12))
-plt.savefig(os.path.join(plot_dir, 'merge_goyet_lw_25_scatter_matrix.svg'),
+plt.savefig(os.path.join(plot_dir, 'merge_goyet_lw_25_scatter_matrix.png'),
             dpi=400)
 
 # =============================================================================
