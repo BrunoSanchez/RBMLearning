@@ -263,64 +263,59 @@ subset_hot = subset_hot[subset_hot.mean_goyet<=0.25]
 subset_sps = subset_sps[subset_sps.mean_goyet<=0.25]
 subset_ois = subset_ois[subset_ois.mean_goyet<=0.25]
 
-merged = pd.merge(left=subset_zps, right=simulations,
+merged_zps = pd.merge(left=subset_zps, right=simulations,
                   left_on='id_simulation', right_on='id',
-                  how='inner')
+                  how='inner', suffixes=('_zps', 'simus'))
 
-merged = pd.merge(left=merged, right=subset_ois,
-                  left_on='', right_on='id_simulation',
-                  how='inner')
+merged_sps = pd.merge(left=subset_sps, right=simulations,
+                  left_on='id_simulation', right_on='id',
+                  how='inner', suffixes=('_sps', 'simus'))
 
-merged = pd.merge(left=merged, right=subset_sps,
-                  left_on='', right_on='id_simulation',
-                  how='inner')
+merged_ois = pd.merge(left=subset_ois, right=simulations,
+                  left_on='id_simulation', right_on='id',
+                  how='inner', suffixes=('_ois', 'simus'))
 
-merged = pd.merge(left=merged, right=subset_hot,
-                  left_on='', right_on='id_simulation',
-                  how='inner')
+merged_hot = pd.merge(left=subset_hot, right=simulations,
+                  left_on='id_simulation', right_on='id',
+                  how='inner', suffixes=('_hot', 'simus'))
 
+combined_merge1 = pd.merge(left=merged_zps, right=merged_sps,
+                          left_on='image_id', right_on='image_id',
+                          how='inner', suffixes=('_zps','_sps'))
+
+combined_merge2 = pd.merge(left=merged_hot, right=merged_ois,
+                           left_on='image_id', right_on='image_id',
+                           how='inner', suffixes=('_hot','_ois'))
+
+comb_merge = pd.merge(left=combined_merge1, right=combined_merge2,
+                      left_on='image_id', right_on='image_id',
+                      how='inner', suffixes=('_1','_2'))
+
+# =============================================================================
+# Ahora a ver que muestra quedo
+# =============================================================================
 
 # =============================================================================
 # Distribuciones de goyet vs pars
 # =============================================================================
 
-mag_range = [16, 20]
-mag_bins = np.arange(16, 20, 0.5)
-dataset =
-data = dataset[dataset.sim_mag<=20]
-data = data[data.sim_mag>=16]
-data = data[data.VALID_MAG==True]
-cube = data[['r_scales', 'gx_mag', 'm1_diam',
-'m2_diam', 'ref_starzp', 'ref_starslope',
-'ref_fwhm', 'new_fwhm', 'eff_col', 'px_scale', 'ref_back_sbright',
-'new_back_sbright', 'exp_time', 'mag_offset', 'goyet']]
+#~ def goyet_vs_pars_plot(dataset, dia='zackay'):
+    #~ mag_range = [16, 20]
+    #~ mag_bins = np.arange(16, 20, 0.5)
+    #~ data = dataset[dataset.sim_mag<=20]
+    #~ data = data[data.sim_mag>=16]
+    #~ data = data[data.VALID_MAG==True]
+    #~ cube = data[['r_scales', 'gx_mag', 'm1_diam',
+    #~ 'm2_diam', 'ref_starzp', 'ref_starslope',
+    #~ 'ref_fwhm', 'new_fwhm', 'eff_col', 'px_scale', 'ref_back_sbright',
+    #~ 'new_back_sbright', 'exp_time', 'mag_offset', 'goyet']]
 
-cols = ['r_scales', 'gx_mag', 'm1_diam', 'ref_starzp', 'ref_starslope',
-        'ref_fwhm', 'new_fwhm', 'eff_col', 'px_scale', 'ref_back_sbright',
-        'new_back_sbright', 'exp_time', 'mag_offset']
+    #~ cols = ['r_scales', 'gx_mag', 'm1_diam', 'ref_starzp', 'ref_starslope',
+            #~ 'ref_fwhm', 'new_fwhm', 'eff_col', 'px_scale', 'ref_back_sbright',
+            #~ 'new_back_sbright', 'exp_time', 'mag_offset']
 
-for a_par in cols:
-    subplot()
-
-
-
-def goyet_vs_pars_plot(dataset, dia='zackay'):
-    mag_range = [16, 20]
-    mag_bins = np.arange(16, 20, 0.5)
-    data = dataset[dataset.sim_mag<=20]
-    data = data[data.sim_mag>=16]
-    data = data[data.VALID_MAG==True]
-    cube = data[['r_scales', 'gx_mag', 'm1_diam',
-    'm2_diam', 'ref_starzp', 'ref_starslope',
-    'ref_fwhm', 'new_fwhm', 'eff_col', 'px_scale', 'ref_back_sbright',
-    'new_back_sbright', 'exp_time', 'mag_offset', 'goyet']]
-
-    cols = ['r_scales', 'gx_mag', 'm1_diam', 'ref_starzp', 'ref_starslope',
-            'ref_fwhm', 'new_fwhm', 'eff_col', 'px_scale', 'ref_back_sbright',
-            'new_back_sbright', 'exp_time', 'mag_offset']
-
-    for a_par in cols:
-        subplot()
+    #~ for a_par in cols:
+        #~ subplot()
 
 # =============================================================================
 # plot de goyet factor
