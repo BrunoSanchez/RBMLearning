@@ -228,11 +228,15 @@ subset_hot.drop_duplicates(inplace=True)
 
 merged = pd.merge(left=subset_zps, right=simulations,
                   left_on='id_simulation', right_on='id',
-                  how='left')
+                  how='inner')
 
-merged = pd.merge(left=merged, right=subset_ois, on='id_simulation', how='inner')
-merged = pd.merge(left=subset_zps, right=subset_ois, on='id_simulation', how='inner')
+merged = pd.merge(left=merged, right=subset_ois,
+                  left_on='id_simulation', right_on='',
+                  how='inner')
 
+merged = pd.merge(left=merged, right=subset_ois,
+                  left_on='id_simulation', right_on='',
+                  how='inner')
 
 # =============================================================================
 # Distribuciones de goyet
