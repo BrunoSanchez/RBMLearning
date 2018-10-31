@@ -59,7 +59,7 @@ simulated = store['simulated']
 simulations = store['simulations']
 
 simulations = simulations[simulations.failed_to_subtract==False]
-#simulations = simulations[simulations.m1_diam==m1_diam]
+simulations = simulations[simulations.m1_diam==m1_diam]
 
 simus = pd.merge(left=simulations, right=simulated,
                  right_on='simulation_id', left_on='id', how='outer')
