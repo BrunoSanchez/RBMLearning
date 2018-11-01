@@ -34,7 +34,9 @@ import matplotlib.pyplot as plt
 
 import custom_funs as cf
 
-store = pd.HDFStore('./table_store.h5')
+storefile = '/mnt/clemente/bos0109/table_store.h5'
+
+store = pd.HDFStore(storefile)
 store.open()
 
 plot_dir = os.path.abspath('./plots/.')
@@ -50,90 +52,251 @@ CONNECTION = 'postgresql://jarvis:Bessel0@172.18.122.4:5432/resimulation_docker'
 #CONNECTION = 'postgresql://jarvis:Bessel0@toritos:5432/resimu_docker'
 engine = create_engine(CONNECTION)
 
-#estas son las fuentes simuladas
-try:
-    simulated = store['simulated']
-except:
-    simulated = pd.read_sql_query("""SELECT * FROM "Simulated" """, engine)
-    simulated = cf.optimize_df(simulated)
-    store['simulated'] = simulated
-    store.flush()
+def main(argv):
 
-#estas son las simulaciones programadas
-try:
-    simulations = store['simulations']
-except:
-    simulations = pd.read_sql_query("""SELECT * FROM "Simulation" """, engine)
-    simulations = cf.optimize_df(simulations)
-    store['simulations'] = simulations
-    store.flush()
+    #estas son las fuentes simuladas
+    try:
+        simulated = store['simulated']
+    except:
+        simulated = pd.read_sql_query("""SELECT * FROM "Simulated" """, engine)
+        simulated = cf.optimize_df(simulated)
+        store['simulated'] = simulated
+        store.flush()
 
-try:
-    und_z = store['und_z']
-except:
-    und_z = pd.read_sql_query(""" SELECT S.x, S.y, S.app_mag, S.image_id, U.simulated_id
-                             FROM "Simulated" S INNER JOIN "Undetected" U
-                             ON S.id=U.simulated_id """,
-                          engine)
-    und_z = optimize_df(und_z)
-    und_z.drop_duplicates(inplace=True)
-    store['und_z'] = und_z
-    store.flush()
+    #estas son las simulaciones programadas
+    try:
+        simulations = store['simulations']
+    except:
+        simulations = pd.read_sql_query("""SELECT * FROM "Simulation" """, engine)
+        simulations = cf.optimize_df(simulations)
+        store['simulations'] = simulations
+        store.flush()
 
-try:
-    und_s = store['und_s']
-except:
-    und_s = pd.read_sql_query("""SELECT S.x, S.y, S.app_mag, S.image_id, U.simulated_id
-                             FROM "Simulated" S INNER JOIN "SUndetected" U
-                             ON S.id=U.simulated_id""",
-                          engine)
-    und_s = optimize_df(und_s)
-    und_s.drop_duplicates(inplace=True)
-    store['und_s'] = und_s
-    store.flush()
+    try:
+        und_z = store['und_z']
+    except:
+        und_z = pd.read_sql_query(""" SELECT S.x, S.y, S.app_mag, S.image_id, U.simulated_id
+                                 FROM "Simulated" S INNER JOIN "Undetected" U
+                                 ON S.id=U.simulated_id """,
+                              engine)
+        und_z = cf.optimize_df(und_z)
+        und_z.drop_duplicates(inplace=True)
+        store['und_z'] = und_z
+        store.flush()
 
-try:
-    und_sc = store['und_sc']
-except:
-    und_sc = pd.read_sql_query("""SELECT S.x, S.y, S.app_mag, S.image_id, U.simulated_id
-                             FROM "Simulated" S INNER JOIN "SCorrUndetected" U
-                             ON S.id=U.simulated_id""",
-                          engine)
-    und_sc = optimize_df(und_sc)
-    und_sc.drop_duplicates(inplace=True)
-    store['und_sc'] = und_sc
-    store.flush()
+    try:
+        und_s = store['und_s']
+    except:
+        und_s = pd.read_sql_query("""SELECT S.x, S.y, S.app_mag, S.image_id, U.simulated_id
+                                 FROM "Simulated" S INNER JOIN "SUndetected" U
+                                 ON S.id=U.simulated_id""",
+                              engine)
+        und_s = cf.optimize_df(und_s)
+        und_s.drop_duplicates(inplace=True)
+        store['und_s'] = und_s
+        store.flush()
 
-try:
-    und_b = store['und_b']
-except:
-    und_b = pd.read_sql_query("""SELECT S.x, S.y, S.app_mag, S.image_id, U.simulated_id
-                             FROM "Simulated" S INNER JOIN "UndetectedOIS" U
-                             ON S.id=U.simulated_id""",
-                          engine)
-    und_b = optimize_df(und_b)
-    und_b.drop_duplicates(inplace=True)
-    store['und_b'] = und_b
-    store.flush()
+    try:
+        und_sc = store['und_sc']
+    except:
+        und_sc = pd.read_sql_query("""SELECT S.x, S.y, S.app_mag, S.image_id, U.simulated_id
+                                 FROM "Simulated" S INNER JOIN "SCorrUndetected" U
+                                 ON S.id=U.simulated_id""",
+                              engine)
+        und_sc = cf.optimize_df(und_sc)
+        und_sc.drop_duplicates(inplace=True)
+        store['und_sc'] = und_sc
+        store.flush()
 
-try:
-    und_h = store['und_h']
-except:
-    und_h = pd.read_sql_query("""SELECT S.x, S.y, S.app_mag, S.image_id, U.simulated_id
-                             FROM "Simulated" S INNER JOIN "UndetectedHOT" U
-                             ON S.id=U.simulated_id""",
-                          engine)
-    und_h = optimize_df(und_h)
-    und_h.drop_duplicates(inplace=True)
-    store['und_h'] = und_h
-    store.flush()
+    try:
+        und_b = store['und_b']
+    except:
+        und_b = pd.read_sql_query("""SELECT S.x, S.y, S.app_mag, S.image_id, U.simulated_id
+                                 FROM "Simulated" S INNER JOIN "UndetectedOIS" U
+                                 ON S.id=U.simulated_id""",
+                              engine)
+        und_b = cf.optimize_df(und_b)
+        und_b.drop_duplicates(inplace=True)
+        store['und_b'] = und_b
+        store.flush()
+
+    try:
+        und_h = store['und_h']
+    except:
+        und_h = pd.read_sql_query("""SELECT S.x, S.y, S.app_mag, S.image_id, U.simulated_id
+                                 FROM "Simulated" S INNER JOIN "UndetectedHOT" U
+                                 ON S.id=U.simulated_id""",
+                              engine)
+        und_h = cf.optimize_df(und_h)
+        und_h.drop_duplicates(inplace=True)
+        store['und_h'] = und_h
+        store.flush()
+
+    try:
+        dt_zps = store['dt_zps']
+    except:
+        dt_zps = pd.merge(pd.read_sql_table('Detected', engine),
+                      pd.read_sql_query("""SELECT
+                                            D.id,
+                                            S.app_mag as sim_mag,
+                                            S.r_scales as r_scales,
+                                            S.gx_mag as gx_mag,
+                                            S.id as sim_id,
+                                            SI.m1_diam as m1_diam,
+                                            SI.m2_diam as m2_diam,
+                                            SI.executed as executed,
+                                            SI.id as id_simulation,
+                                            SI.ref_starzp as ref_starzp,
+                                            SI.ref_starslope as ref_starslope,
+                                            SI.ref_fwhm as ref_fwhm,
+                                            SI.new_fwhm as new_fwhm,
+                                            SI.eff_col as eff_col,
+                                            SI.px_scale as px_scale,
+                                            SI.ref_back_sbright as ref_back_sbright,
+                                            SI.new_back_sbright as new_back_sbright,
+                                            SI.exp_time as exp_time
+                                        FROM "Detected" D
+                                            LEFT JOIN "Images" I
+                                                ON D.image_id=I.id
+                                            LEFT JOIN "Reals" R
+                                                ON D.id=R.detected_id
+                                            LEFT JOIN "Simulated" S
+                                                ON S.id=R.simulated_id
+                                            LEFT JOIN "Simulation" SI
+                                                ON SI.id=I.simulation_id
+                                                """, engine),
+                                          on='id', suffixes=('',''))
+        dt_zps.executed = dt_zps.executed.astype('bool').astype(int)
+        dt_zps.IS_REAL = dt_zps.IS_REAL.astype('bool').astype(int)
+        dt_zps.drop_duplicates(inplace=True)
+        dt_zps = cf.optimize_df(dt_zps)
+        store['dt_zps'] = dt_zps
+        store.flush()
+
+    try:
+        dt_sps = store['dt_sps']
+    except:
+        dt_sps = pd.merge(pd.read_sql_table('SDetected', engine),
+                      pd.read_sql_query("""SELECT
+                                            D.id,
+                                            S.app_mag as sim_mag,
+                                            S.r_scales as r_scales,
+                                            S.gx_mag as gx_mag,
+                                            S.id as sim_id,
+                                            SI.m1_diam as m1_diam,
+                                            SI.m2_diam as m2_diam,
+                                            SI.executed as executed,
+                                            SI.id as id_simulation,
+                                            SI.ref_starzp as ref_starzp,
+                                            SI.ref_starslope as ref_starslope,
+                                            SI.ref_fwhm as ref_fwhm,
+                                            SI.new_fwhm as new_fwhm,
+                                            SI.eff_col as eff_col,
+                                            SI.px_scale as px_scale,
+                                            SI.ref_back_sbright as ref_back_sbright,
+                                            SI.new_back_sbright as new_back_sbright,
+                                            SI.exp_time as exp_time
+                                        FROM "SDetected" D
+                                            LEFT JOIN "SImages" I
+                                                ON D.image_id=I.id
+                                            LEFT JOIN "SReals" R
+                                                ON D.id=R.detected_id
+                                            LEFT JOIN "Simulated" S
+                                                ON S.id=R.simulated_id
+                                            LEFT JOIN "Simulation" SI
+                                                ON SI.id=I.simulation_id""", engine),
+                                          on='id', suffixes=('',''))
+        dt_sps.executed = dt_sps.executed.astype('bool').astype(int)
+        dt_sps.IS_REAL = dt_sps.IS_REAL.astype('bool').astype(int)
+        dt_sps.drop_duplicates(inplace=True)
+        dt_sps = cf.optimize_df(dt_sps)
+        store['dt_sps'] = dt_sps
+        store.flush()
+
+    try:
+        dt_ois = store['dt_ois']
+    except:
+        dt_ois = pd.merge(pd.read_sql_table('DetectedOIS', engine),
+                      pd.read_sql_query("""SELECT
+                                            D.id,
+                                            S.app_mag as sim_mag,
+                                            S.r_scales as r_scales,
+                                            S.gx_mag as gx_mag,
+                                            S.id as sim_id,
+                                            SI.m1_diam as m1_diam,
+                                            SI.m2_diam as m2_diam,
+                                            SI.executed as executed,
+                                            SI.id as id_simulation,
+                                            SI.ref_starzp as ref_starzp,
+                                            SI.ref_starslope as ref_starslope,
+                                            SI.ref_fwhm as ref_fwhm,
+                                            SI.new_fwhm as new_fwhm,
+                                            SI.eff_col as eff_col,
+                                            SI.px_scale as px_scale,
+                                            SI.ref_back_sbright as ref_back_sbright,
+                                            SI.new_back_sbright as new_back_sbright,
+                                            SI.exp_time as exp_time
+                                        FROM "DetectedOIS" D
+                                            LEFT JOIN "ImagesOIS" I
+                                                ON D.image_id=I.id
+                                            LEFT JOIN "RealsOIS" R
+                                                ON D.id=R.detected_id
+                                            LEFT JOIN "Simulated" S
+                                                ON S.id=R.simulated_id
+                                            LEFT JOIN "Simulation" SI
+                                                ON SI.id=I.simulation_id""", engine),
+                                          on='id', suffixes=('',''))
+        dt_ois.executed = dt_ois.executed.astype('bool').astype(int)
+        dt_ois.IS_REAL = dt_ois.IS_REAL.astype('bool').astype(int)
+        dt_ois.drop_duplicates(inplace=True)
+        dt_ois = cf.optimize_df(dt_ois)
+        store['dt_ois'] = dt_ois
+        store.flush()
+
+    try:
+        dt_hot = store['dt_hot']
+    except:
+        dt_hot = pd.merge(pd.read_sql_table('DetectedHOT', engine),
+                      pd.read_sql_query("""SELECT
+                                            D.id,
+                                            S.app_mag as sim_mag,
+                                            S.r_scales as r_scales,
+                                            S.gx_mag as gx_mag,
+                                            S.id as sim_id,
+                                            SI.m1_diam as m1_diam,
+                                            SI.m2_diam as m2_diam,
+                                            SI.executed as executed,
+                                            SI.id as id_simulation,
+                                            SI.ref_starzp as ref_starzp,
+                                            SI.ref_starslope as ref_starslope,
+                                            SI.ref_fwhm as ref_fwhm,
+                                            SI.new_fwhm as new_fwhm,
+                                            SI.eff_col as eff_col,
+                                            SI.px_scale as px_scale,
+                                            SI.ref_back_sbright as ref_back_sbright,
+                                            SI.new_back_sbright as new_back_sbright,
+                                            SI.exp_time as exp_time
+                                        FROM "DetectedHOT" D
+                                            LEFT JOIN "ImagesHOT" I
+                                                ON D.image_id=I.id
+                                            LEFT JOIN "RealsHOT" R
+                                                ON D.id=R.detected_id
+                                            LEFT JOIN "Simulated" S
+                                                ON S.id=R.simulated_id
+                                            LEFT JOIN "Simulation" SI
+                                                ON SI.id=I.simulation_id""", engine),
+                                          on='id', suffixes=('',''))
+        dt_hot.executed = dt_hot.executed.astype('bool').astype(int)
+        dt_hot.IS_REAL = dt_hot.IS_REAL.astype('bool').astype(int)
+        dt_hot.drop_duplicates(inplace=True)
+        dt_hot = cf.optimize_df(dt_hot)
+        store['dt_hot'] = dt_hot
+        store.flush()
 
 
-store.close()
+    store.close()
 
-def main(args):
 
-    return 0
 
 if __name__ == '__main__':
     import sys

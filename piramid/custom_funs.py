@@ -2,6 +2,12 @@
 import numpy as np
 import pandas as pd
 
+from sklearn import metrics
+from sklearn.model_selection import KFold
+from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import train_test_split
+
+
 # We're going to be calculating memory usage a lot,
 # so we'll create a function to save us some time!
 def mem_usage(pandas_obj):
@@ -48,6 +54,30 @@ def optimize_df(df):
 
     return optimized_df
 
+def binning_res(data, bins, return_center_bins=False):
+    mean = np.zeros_like(bins[:-1])
+    stdv = np.zeros_like(bins[:-1])
+    sqrtn= np.zeros_like(mean)
+    mean_sim_mag = np.zeros_like(mean)
+    for i_bin, low in enumerate(bins[:-1]):
+        high = bins[i_bin+1]
+        f1data = data[data['mag']<90]
+        fdata = f1data[(f1data['sim_mag'] < high) * (f1data['sim_mag'] >= low)]
+        fdata_mag = fdata['mag'] - fdata['sim_mag']
+        if len(fdata) is 0:
+            sqrtn[i_bin] = 0
+            mean[i_bin] = np.mean(fdata_mag)
+            stdv[i_bin] = np.std(fdata_mag)
+            continue
+        mean_sim_mag[i_bin] = (high+low)/2.
+        sqrtn[i_bin] = np.sqrt(len(fdata_mag))
+        mean[i_bin] = np.mean(fdata_mag)
+        stdv[i_bin] = np.std(fdata_mag)
+    if return_center_bins:
+        return bins[:-1]+(high-low)*0.5, mean, stdv, sqrtn
+    else:
+        return mean, stdv, sqrtn, mean_sim_mag
+
 
 def custom_histogram(vector, bins=None, cumulative=False, errors=False):
     if bins is None:
@@ -77,3 +107,46 @@ def custom_histogram(vector, bins=None, cumulative=False, errors=False):
             return x_bins, hh[0], err
 
         return x_bins, hh[0]
+
+
+def experiment(clf, x, y, nfolds=10, printing=False, probs=True):
+    skf = StratifiedKFold(n_splits=nfolds)
+    probabilities = None # np.array([])
+    predictions = np.array([])
+    y_testing = np.array([])
+
+    for train, test in skf.split(x, y):
+
+        x_train = x[train]
+        y_train = y[train]
+        clf.fit(x_train, y_train)
+
+        x_test = x[test]
+        y_test = y[test]
+        pr = clf.predict(x_test)
+
+        probs = clf.predict_proba(x_test)  #[:, 0]
+
+        probabilities = (
+            probs if probabilities is None else
+            np.vstack([probabilities, probs]))
+        predictions = np.hstack([predictions, pr])
+        y_testing = np.hstack([y_testing, y_test])
+
+    if printing:
+        print(metrics.classification_report(y_testing, predictions))
+    fpr, tpr, thresholds = metrics.roc_curve(y_testing, 1.-probabilities[:, 0])
+    prec_rec_curve = metrics.precision_recall_curve(y_testing, 1.- probabilities[:, 0])
+    roc_auc = metrics.auc(fpr, tpr)
+    clf.fit(x, y)
+    return {'fpr': fpr,
+            'tpr': tpr,
+            'thresh': thresholds,
+            'roc_auc': roc_auc,
+            'prec_rec_curve': prec_rec_curve,
+            'y_test': y_testing,
+            'predictions': predictions,
+            'probabilities': probabilities,
+            'confusion_matrix': metrics.confusion_matrix(y_testing, predictions),
+            'model' : clf
+            }
