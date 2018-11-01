@@ -72,8 +72,12 @@ dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
 dt_zps = cf.optimize_df(dt_zps)
 dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
 dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
-dt_zps['mag'] = dt_zps['MAG_APER'] + mean_offset
+grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+dd = grouped.apply(lambda df: sigma_clipped_stats(df['mag_offset'])[0])
+dd.name = 'mean_offset'
+dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
+#mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
+dt_zps['mag'] = dt_zps['MAG_APER'] + dt_zps['mean_offset']
 dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
 grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
 dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
@@ -87,8 +91,12 @@ dt_zps = cf.optimize_df(dt_zps)
 dt_zps['MAG_APER'] = -2.5*np.log10(dt_zps.cflux)
 dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
 dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
-dt_zps['mag'] = dt_zps['MAG_APER'] + mean_offset
+grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+dd = grouped.apply(lambda df: sigma_clipped_stats(df['mag_offset'])[0])
+dd.name = 'mean_offset'
+dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
+#mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
+dt_zps['mag'] = dt_zps['MAG_APER'] + dt_zps['mean_offset']
 dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
 grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
 dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
@@ -101,8 +109,12 @@ dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
 dt_zps = cf.optimize_df(dt_zps)
 dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
 dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
-dt_zps['mag'] = dt_zps['MAG_APER'] + mean_offset
+grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+dd = grouped.apply(lambda df: sigma_clipped_stats(df['mag_offset'])[0])
+dd.name = 'mean_offset'
+dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
+#mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
+dt_zps['mag'] = dt_zps['MAG_APER'] + dt_zps['mean_offset']
 dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
 grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
 dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
@@ -115,8 +127,12 @@ dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
 dt_zps = cf.optimize_df(dt_zps)
 dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
 dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
-dt_zps['mag'] = dt_zps['MAG_APER'] + mean_offset
+grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+dd = grouped.apply(lambda df: sigma_clipped_stats(df['mag_offset'])[0])
+dd.name = 'mean_offset'
+dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
+#mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
+dt_zps['mag'] = dt_zps['MAG_APER'] + dt_zps['mean_offset']
 dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
 grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
 dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
@@ -294,6 +310,7 @@ comb_merge = pd.merge(left=combined_merge1, right=combined_merge2,
 # =============================================================================
 # Ahora a ver que muestra quedo
 # =============================================================================
+plt.rcParams['text.usetex'] = False
 
 #  checkings
 print(np.any(comb_merge['id_simulation_zps']!=comb_merge['id_simulation_sps']))
@@ -321,6 +338,34 @@ pd.plotting.scatter_matrix(comb_merge[['ref_starzp_zps', 'ref_starslope_zps',
                          alpha=0.1, diagonal='hist', figsize=(12, 12))
 plt.savefig(os.path.join(plot_dir, 'merge_goyet_lw_25_scatter_matrix.png'),
             dpi=400)
+# =============================================================================
+#  Ellegimos una imagen con goyet bsjo y graficamos dm vs m
+# =============================================================================
+
+images = comb_merge[comb_merge.mean_goyet_zps<0.05]
+id_selected_image = images.iloc[np.random.randint(len(images))]
+
+plt.figure(figsize=(6, 3))
+
+data_zps = dt_zps[dt_zps.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_zps.sim_mag, data_zps.mag, '.', label='zackay')
+
+data_sps = dt_sps[dt_sps.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_sps.sim_mag, data_sps.mag, '.', label='scorr')
+
+data_ois = dt_ois[dt_ois.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_ois.sim_mag, data_ois.mag, '.', label='bramich')
+
+data_hot = dt_hot[dt_hot.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_hot.sim_mag, data_hot.mag, '.', label='alard')
+
+plt.xlim(14, 22)
+plt.ylim(14, 22)
+plt.xlabel('sim mag')
+plt.ylabel('recovered mag')
+plt.legend(loc='best')
+
+plt.savefig(os.path.join(plot_dir, 'low_goyet_sim_mag_vs_mag.png'), dpi=400)
 
 # =============================================================================
 # Distribuciones de goyet vs pars
