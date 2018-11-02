@@ -136,28 +136,24 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.subplot(141)
     dmag = dt_zps.goyet
     dmag = dmag.dropna()
-    #dmag = dmag.mag_offset/dmag.sim_mag
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag zps')
 
     plt.subplot(142)
     dmag = dt_ois.goyet
     dmag = dmag.dropna()
-    #dmag = dmag.mag_offset/dmag.sim_mag
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag ois')
 
     plt.subplot(143)
     dmag = dt_hot.goyet
     dmag = dmag.dropna()
-    #dmag = dmag.mag_offset/dmag.sim_mag
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag hot')
 
     plt.subplot(144)
     dmag = dt_sps.goyet
     dmag = dmag.dropna()
-    #dmag = dmag.mag_offset/dmag.sim_mag
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag sps')
 
@@ -173,28 +169,24 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.subplot(141)
     dmag = dt_zps.goyet_iso
     dmag = dmag.dropna()
-    #dmag = dmag.mag_offset/dmag.sim_mag
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag zps')
 
     plt.subplot(142)
     dmag = dt_ois.goyet_iso
     dmag = dmag.dropna()
-    #dmag = dmag.mag_offset/dmag.sim_mag
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag ois')
 
     plt.subplot(143)
     dmag = dt_hot.goyet_iso
     dmag = dmag.dropna()
-    #dmag = dmag.mag_offset/dmag.sim_mag
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag hot')
 
     plt.subplot(144)
     dmag = dt_sps.goyet_iso
     dmag = dmag.dropna()
-    #dmag = dmag.mag_offset/dmag.sim_mag
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag sps')
 
