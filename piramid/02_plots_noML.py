@@ -705,6 +705,58 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     goyet_vs_pars_plot(dt_hot, dia='alard')
 
 
+# =============================================================================
+# Seleccionamos los mean_goyet
+# =============================================================================
+pars = ['mean_goyet', 'image_id', 'id_simulation',
+        'goyet', 'goyet_iso', 'mean_goyet_iso']
+subset_zps = dt_zps[pars]
+subset_ois = dt_ois[pars]
+subset_sps = dt_sps[pars]
+subset_hot = dt_hot[pars]
+
+# =============================================================================
+# vetamos por mean goyet
+# =============================================================================
+subset_zps_hi = subset_zps[subset_zps.mean_goyet>=0.01]
+subset_hot_hi = subset_hot[subset_hot.mean_goyet>=0.01]
+subset_sps_hi = subset_sps[subset_sps.mean_goyet>=0.01]
+subset_ois_hi = subset_ois[subset_ois.mean_goyet>=0.01]
+
+# =============================================================================
+# Como quedan las distros de goyet individuales
+# =============================================================================
+plt.figure(figsize=(9,3))
+plt.title('mag offsets over mag simulated')
+plt.subplot(141)
+dmag = subset_zps_hi.goyet
+dmag = dmag.dropna()
+plt.hist(dmag, log=True)
+plt.xlabel('delta mag zps')
+
+plt.subplot(142)
+dmag = subset_ois_hi.goyet
+dmag = dmag.dropna()
+plt.hist(dmag, log=True)
+plt.xlabel('delta mag ois')
+
+plt.subplot(143)
+dmag = subset_hot_hi.goyet
+dmag = dmag.dropna()
+plt.hist(dmag, log=True)
+plt.xlabel('delta mag hot')
+
+plt.subplot(144)
+dmag = subset_sps_hi.goyet
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('delta mag sps')
+
+plt.tight_layout()
+plt.savefig(os.path.join(plot_dir, 'delta_over_mags_hi_goyet.svg'), dpi=400)
+plt.clf()
+
 
     return
 
