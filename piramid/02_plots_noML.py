@@ -68,43 +68,21 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dt_zps = store['dt_ois']
     dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
     dt_zps = cf.optimize_df(dt_zps)
-    dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
-    dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-    mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
-    dt_zps['mag'] = dt_zps['MAG_APER'] + mean_offset
-    dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
     dt_ois = dt_zps
 
     dt_zps = store['dt_sps']
     dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
     dt_zps = cf.optimize_df(dt_zps)
-    dt_zps['MAG_APER'] = -2.5*np.log10(dt_zps.cflux)
-    dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
-    dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-    mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
-    dt_zps['mag'] = dt_zps['MAG_APER'] + mean_offset
-    dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
     dt_sps = dt_zps
 
     dt_zps = store['dt_hot']
     dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
     dt_zps = cf.optimize_df(dt_zps)
-    dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
-    dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-    mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
-    dt_zps['mag'] = dt_zps['MAG_APER'] + mean_offset
-    dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
     dt_hot = dt_zps
 
     dt_zps = store['dt_zps']
     dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
     dt_zps = cf.optimize_df(dt_zps)
-    dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
-    dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-    mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
-    dt_zps['mag'] = dt_zps['MAG_APER'] + mean_offset
-    dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
-
 
 # =============================================================================
 # plot de funcion de luminosidad inyectada
@@ -123,25 +101,25 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.figure(figsize=(9,3))
     plt.title('mag offsets over mag simulated')
     plt.subplot(141)
-    dmag = dt_zps[dt_zps.VALID_MAG==True].mag_offset
+    dmag = dt_zps.sim_mag - dt_zps.mag
     dmag = dmag.dropna()
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag zps')
 
     plt.subplot(142)
-    dmag = dt_ois[dt_ois.VALID_MAG==True].mag_offset
+    dmag = dt_ois.sim_mag - dt_ois.mag
     dmag = dmag.dropna()
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag ois')
 
     plt.subplot(143)
-    dmag = dt_hot[dt_hot.VALID_MAG==True].mag_offset
+    dmag = dt_hot.sim_mag - dt_hot.mag
     dmag = dmag.dropna()
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag hot')
 
     plt.subplot(144)
-    dmag = dt_sps[dt_sps.VALID_MAG==True].mag_offset
+    dmag = dt_sps.sim_mag - dt_sps.mag
     dmag = dmag.dropna()
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag sps')
@@ -156,35 +134,72 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.figure(figsize=(9,3))
     plt.title('mag offsets over mag simulated')
     plt.subplot(141)
-    dmag = dt_zps[(dt_zps.VALID_MAG==True)].goyet
+    dmag = dt_zps.goyet
     dmag = dmag.dropna()
     #dmag = dmag.mag_offset/dmag.sim_mag
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag zps')
 
     plt.subplot(142)
-    dmag = dt_ois[(dt_ois.VALID_MAG==True)].goyet
+    dmag = dt_ois.goyet
     dmag = dmag.dropna()
     #dmag = dmag.mag_offset/dmag.sim_mag
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag ois')
 
     plt.subplot(143)
-    dmag = dt_hot[(dt_hot.VALID_MAG==True)].goyet
+    dmag = dt_hot.goyet
     dmag = dmag.dropna()
     #dmag = dmag.mag_offset/dmag.sim_mag
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag hot')
 
     plt.subplot(144)
-    dmag = dt_sps[(dt_sps.VALID_MAG==True)].goyet
+    dmag = dt_sps.goyet
     dmag = dmag.dropna()
     #dmag = dmag.mag_offset/dmag.sim_mag
     plt.hist(dmag, log=True)
     plt.xlabel('delta mag sps')
 
     plt.tight_layout()
-    plt.savefig(os.path.join(plot_dir, 'delta_over_mags.svg'), dpi=400)
+    plt.savefig(os.path.join(plot_dir, 'goyet_full.svg'), dpi=400)
+    plt.clf()
+
+# =============================================================================
+# plot de deltas de magnitud sobre magnitud (goyet)
+# =============================================================================
+    plt.figure(figsize=(9,3))
+    plt.title('mag offsets over mag simulated')
+    plt.subplot(141)
+    dmag = dt_zps.goyet_iso
+    dmag = dmag.dropna()
+    #dmag = dmag.mag_offset/dmag.sim_mag
+    plt.hist(dmag, log=True)
+    plt.xlabel('delta mag zps')
+
+    plt.subplot(142)
+    dmag = dt_ois.goyet_iso
+    dmag = dmag.dropna()
+    #dmag = dmag.mag_offset/dmag.sim_mag
+    plt.hist(dmag, log=True)
+    plt.xlabel('delta mag ois')
+
+    plt.subplot(143)
+    dmag = dt_hot.goyet_iso
+    dmag = dmag.dropna()
+    #dmag = dmag.mag_offset/dmag.sim_mag
+    plt.hist(dmag, log=True)
+    plt.xlabel('delta mag hot')
+
+    plt.subplot(144)
+    dmag = dt_sps.goyet_iso
+    dmag = dmag.dropna()
+    #dmag = dmag.mag_offset/dmag.sim_mag
+    plt.hist(dmag, log=True)
+    plt.xlabel('delta mag sps')
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(plot_dir, 'goyet_iso_full.svg'), dpi=400)
     plt.clf()
 
 
