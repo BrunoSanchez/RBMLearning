@@ -247,6 +247,15 @@ def main(argv):
         dt_sps['mag_offset_iso'] = dt_sps['sim_mag'] - dt_sps['MAG_ISO']
         dt_sps['mag_iso'] = dt_sps['mag']
 
+        dt_sps['goyet'] = np.abs(dt_sps['sim_mag'] - dt_sps['mag'])/dt_sps['sim_mag']
+        dt_sps['goyet_iso'] = dt_sps['goyet']
+
+        grouped = dt_sps.dropna().groupby(['image_id'], sort=False)
+        dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
+        dd.name = 'mean_goyet'
+        dt_sps = pd.merge(dt_sps, dd.to_frame(), on='image_id', how='left')
+        dt_sps['mean_goyet'] = dt_sps['mean_goyet_iso']
+
         dt_sps = cf.optimize_df(dt_sps)
         store['dt_sps'] = dt_sps
         store.flush()
