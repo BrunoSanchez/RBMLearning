@@ -169,6 +169,31 @@ def main(argv):
         dt_zps.executed = dt_zps.executed.astype('bool').astype(int)
         dt_zps.IS_REAL = dt_zps.IS_REAL.astype('bool').astype(int)
         dt_zps.drop_duplicates(inplace=True)
+
+        dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
+        dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+        dt_zps = pd.merge(dt_zps, dd, on='image_id', how='left')
+        dt_zps['mag'] = dt_zps['MAG_APER'] * dt_zps['slope'] + dt_zps['mean_offset']
+
+        dt_zps['VALID_MAG_iso'] = dt_zps['MAG_ISO']<30
+        dt_zps['mag_offset_iso'] = dt_zps['sim_mag'] - dt_zps['MAG_ISO']
+        cals = cf.cal_mags_iso(dt_zps)
+        dt_zps = pd.merge(dt_zps, cals, on='image_id', how='left')
+        dt_zps['mag_iso'] = dt_zps['MAG_ISO'] * dt_zps['slope_iso'] + \
+                            dt_zps['mean_offset_iso']
+
+        dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
+        grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+        dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
+        dd.name = 'mean_goyet'
+        dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
+
+        dt_zps['goyet_iso'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag_iso'])/dt_zps['sim_mag']
+        grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+        dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet_iso'])[0])
+        dd.name = 'mean_goyet_iso'
+        dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
+
         dt_zps = cf.optimize_df(dt_zps)
         store['dt_zps'] = dt_zps
         store.flush()
@@ -209,6 +234,19 @@ def main(argv):
         dt_sps.executed = dt_sps.executed.astype('bool').astype(int)
         dt_sps.IS_REAL = dt_sps.IS_REAL.astype('bool').astype(int)
         dt_sps.drop_duplicates(inplace=True)
+
+        dt_sps['MAG_APER'] = -2.5*np.log10(dt_sps['cflux'])
+        dt_sps['MAG_ISO'] = -2.5*np.log10(dt_sps['cflux'])
+
+        dt_sps['VALID_MAG'] = dt_sps['MAG_APER']<30
+        dt_sps['mag_offset'] = dt_sps['sim_mag'] - dt_sps['MAG_APER']
+        dt_sps = pd.merge(dt_sps, dd, on='image_id', how='left')
+        dt_sps['mag'] = dt_sps['MAG_APER'] * dt_sps['slope'] + dt_sps['mean_offset']
+
+        dt_sps['VALID_MAG_iso'] = dt_sps['MAG_ISO']<30
+        dt_sps['mag_offset_iso'] = dt_sps['sim_mag'] - dt_sps['MAG_ISO']
+        dt_sps['mag_iso'] = dt_sps['mag']
+
         dt_sps = cf.optimize_df(dt_sps)
         store['dt_sps'] = dt_sps
         store.flush()
@@ -249,6 +287,31 @@ def main(argv):
         dt_ois.executed = dt_ois.executed.astype('bool').astype(int)
         dt_ois.IS_REAL = dt_ois.IS_REAL.astype('bool').astype(int)
         dt_ois.drop_duplicates(inplace=True)
+
+        dt_ois['VALID_MAG'] = dt_ois['MAG_APER']<30
+        dt_ois['mag_offset'] = dt_ois['sim_mag'] - dt_ois['MAG_APER']
+        dt_ois = pd.merge(dt_ois, dd, on='image_id', how='left')
+        dt_ois['mag'] = dt_ois['MAG_APER'] * dt_ois['slope'] + dt_ois['mean_offset']
+
+        dt_ois['VALID_MAG_iso'] = dt_ois['MAG_ISO']<30
+        dt_ois['mag_offset_iso'] = dt_ois['sim_mag'] - dt_ois['MAG_ISO']
+        cals = cf.cal_mags_iso(dt_ois)
+        dt_ois = pd.merge(dt_ois, cals, on='image_id', how='left')
+        dt_ois['mag_iso'] = dt_ois['MAG_ISO'] * dt_ois['slope_iso'] + \
+                            dt_ois['mean_offset_iso']
+
+        dt_ois['goyet'] = np.abs(dt_ois['sim_mag'] - dt_ois['mag'])/dt_ois['sim_mag']
+        grouped = dt_ois.dropna().groupby(['image_id'], sort=False)
+        dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
+        dd.name = 'mean_goyet'
+        dt_ois = pd.merge(dt_ois, dd.to_frame(), on='image_id', how='left')
+
+        dt_ois['goyet_iso'] = np.abs(dt_ois['sim_mag'] - dt_ois['mag_iso'])/dt_ois['sim_mag']
+        grouped = dt_ois.dropna().groupby(['image_id'], sort=False)
+        dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet_iso'])[0])
+        dd.name = 'mean_goyet_iso'
+        dt_ois = pd.merge(dt_ois, dd.to_frame(), on='image_id', how='left')
+
         dt_ois = cf.optimize_df(dt_ois)
         store['dt_ois'] = dt_ois
         store.flush()
@@ -289,10 +352,34 @@ def main(argv):
         dt_hot.executed = dt_hot.executed.astype('bool').astype(int)
         dt_hot.IS_REAL = dt_hot.IS_REAL.astype('bool').astype(int)
         dt_hot.drop_duplicates(inplace=True)
+
+        dt_hot['VALID_MAG'] = dt_hot['MAG_APER']<30
+        dt_hot['mag_offset'] = dt_hot['sim_mag'] - dt_hot['MAG_APER']
+        dt_hot = pd.merge(dt_hot, dd, on='image_id', how='left')
+        dt_hot['mag'] = dt_hot['MAG_APER'] * dt_hot['slope'] + dt_hot['mean_offset']
+
+        dt_hot['VALID_MAG_iso'] = dt_hot['MAG_ISO']<30
+        dt_hot['mag_offset_iso'] = dt_hot['sim_mag'] - dt_hot['MAG_ISO']
+        cals = cf.cal_mags_iso(dt_hot)
+        dt_hot = pd.merge(dt_hot, cals, on='image_id', how='left')
+        dt_hot['mag_iso'] = dt_hot['MAG_ISO'] * dt_hot['slope_iso'] + \
+                            dt_hot['mean_offset_iso']
+
+        dt_hot['goyet'] = np.abs(dt_hot['sim_mag'] - dt_hot['mag'])/dt_hot['sim_mag']
+        grouped = dt_hot.dropna().groupby(['image_id'], sort=False)
+        dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
+        dd.name = 'mean_goyet'
+        dt_hot = pd.merge(dt_hot, dd.to_frame(), on='image_id', how='left')
+
+        dt_hot['goyet_iso'] = np.abs(dt_hot['sim_mag'] - dt_hot['mag_iso'])/dt_hot['sim_mag']
+        grouped = dt_hot.dropna().groupby(['image_id'], sort=False)
+        dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet_iso'])[0])
+        dd.name = 'mean_goyet_iso'
+        dt_hot = pd.merge(dt_hot, dd.to_frame(), on='image_id', how='left')
+
         dt_hot = cf.optimize_df(dt_hot)
         store['dt_hot'] = dt_hot
         store.flush()
-
 
     store.close()
 

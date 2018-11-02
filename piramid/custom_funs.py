@@ -2,6 +2,8 @@
 import numpy as np
 import pandas as pd
 
+from astropy.stats import sigma_clipped_stats
+
 from sklearn import metrics
 from sklearn.model_selection import KFold
 from sklearn.model_selection import StratifiedKFold
@@ -17,6 +19,7 @@ def mem_usage(pandas_obj):
         usage_b = pandas_obj.memory_usage(deep=True)
     usage_mb = usage_b / 1024 ** 2 # convert bytes to megabytes
     return "{:03.2f} MB".format(usage_mb)
+
 
 def optimize_df(df):
     df_int = df.select_dtypes(include=['int'])
@@ -54,6 +57,7 @@ def optimize_df(df):
 
     return optimized_df
 
+
 def binning_res(data, bins, return_center_bins=False):
     mean = np.zeros_like(bins[:-1])
     stdv = np.zeros_like(bins[:-1])
@@ -73,6 +77,84 @@ def binning_res(data, bins, return_center_bins=False):
         sqrtn[i_bin] = np.sqrt(len(fdata_mag))
         mean[i_bin] = np.mean(fdata_mag)
         stdv[i_bin] = np.std(fdata_mag)
+    if return_center_bins:
+        return bins[:-1]+(high-low)*0.5, mean, stdv, sqrtn
+    else:
+        return mean, stdv, sqrtn, mean_sim_mag
+
+
+def binning_robust(data, bins, return_center_bins=False):
+    mean = np.zeros_like(bins[:-1])
+    stdv = np.zeros_like(mean)
+    sqrtn= np.zeros_like(mean)
+    mean_sim_mag = np.zeros_like(mean)
+
+    for i_bin, low in enumerate(bins[:-1]):
+        high = bins[i_bin+1]
+        mean_sim_mag[i_bin] = (high+low)/2.
+        f1data = data[data['mag']<90]
+        fdata = f1data[(f1data['sim_mag'] < high) * (f1data['sim_mag'] >= low)]
+        #print len(fdata)
+        if len(fdata) is 0:
+            sqrtn[i_bin] = 0
+            mean[i_bin] = 0  # np.median(fdata['mag'])
+            stdv[i_bin] = 0  # np.std(fdata['mag'])
+            continue
+        sqrtn[i_bin] = np.sqrt(len(fdata['mag']))
+        m, med, st = sigma_clipped_stats(fdata['mag'])
+        mean[i_bin] = m  # np.mean(fdata['mag'])
+        stdv[i_bin] = st  # np.std(fdata['mag'])
+    if return_center_bins:
+        return bins[:-1]+(high-low)*0.5, mean, stdv, sqrtn
+    else:
+        return mean, stdv, sqrtn, mean_sim_mag
+
+
+def binning_res(data, bins, return_center_bins=False):
+    mean = np.zeros_like(bins[:-1])
+    stdv = np.zeros_like(bins[:-1])
+    sqrtn= np.zeros_like(mean)
+    mean_sim_mag = np.zeros_like(mean)
+    for i_bin, low in enumerate(bins[:-1]):
+        high = bins[i_bin+1]
+        f1data = data[data['mag']<90]
+        fdata = f1data[(f1data['sim_mag'] < high) * (f1data['sim_mag'] >= low)]
+        fdata_mag = fdata['mag'] - fdata['sim_mag']
+        if len(fdata) is 0:
+            sqrtn[i_bin] = 0
+            mean[i_bin] = np.mean(fdata_mag)
+            stdv[i_bin] = np.std(fdata_mag)
+            continue
+        mean_sim_mag[i_bin] = (high+low)/2.
+        sqrtn[i_bin] = np.sqrt(len(fdata_mag))
+        mean[i_bin] = np.mean(fdata_mag)
+        stdv[i_bin] = np.std(fdata_mag)
+    if return_center_bins:
+        return bins[:-1]+(high-low)*0.5, mean, stdv, sqrtn
+    else:
+        return mean, stdv, sqrtn, mean_sim_mag
+
+
+def binning_res_robust(data, bins, return_center_bins=False):
+    mean = np.zeros_like(bins[:-1])
+    stdv = np.zeros_like(bins[:-1])
+    sqrtn= np.zeros_like(mean)
+    mean_sim_mag = np.zeros_like(mean)
+    for i_bin, low in enumerate(bins[:-1]):
+        high = bins[i_bin+1]
+        f1data = data[data['mag']<90]
+        fdata = f1data[(f1data['sim_mag'] < high) * (f1data['sim_mag'] >= low)]
+        fdata_mag = fdata['mag'] - fdata['sim_mag']
+        if len(fdata) is 0:
+            sqrtn[i_bin] = 0
+            mean[i_bin] = np.mean(fdata_mag)
+            stdv[i_bin] = np.std(fdata_mag)
+            continue
+        mean_sim_mag[i_bin] = (high+low)/2.
+        sqrtn[i_bin] = np.sqrt(len(fdata_mag))
+        m, med, st = sigma_clipped_stats(fdata_mag)
+        mean[i_bin] = m  # np.mean(fdata_mag)
+        stdv[i_bin] = st  # np.std(fdata_mag)
     if return_center_bins:
         return bins[:-1]+(high-low)*0.5, mean, stdv, sqrtn
     else:
@@ -150,3 +232,65 @@ def experiment(clf, x, y, nfolds=10, printing=False, probs=True):
             'confusion_matrix': metrics.confusion_matrix(y_testing, predictions),
             'model' : clf
             }
+
+
+from sklearn.linear_model import RANSACRegressor
+
+def get_mags(df):
+    model = RANSACRegressor()
+    try:
+        model.fit(df['MAG_APER'].values.reshape(-1, 1),
+                  df['sim_mag'].values.reshape(-1, 1))
+    except:
+        mean_offset = sigma_clipped_stats(df['mag_offset'])[0]
+        slope = 1.0
+        return [mean_offset, slope]
+    mean_offset = model.estimator_.intercept_[0]
+    slope = model.estimator_.coef_[0][0]
+
+    res = [mean_offset, slope]
+    return res
+
+
+def get_mags_iso(df):
+    model = RANSACRegressor()
+    try:
+        model.fit(df['MAG_ISO'].values.reshape(-1, 1),
+                  df['sim_mag'].values.reshape(-1, 1))
+    except:
+        mean_offset = sigma_clipped_stats(df['mag_offset_iso'])[0]
+        slope = 1.0
+        return [mean_offset, slope]
+    mean_offset = model.estimator_.intercept_[0]
+    slope = model.estimator_.coef_[0][0]
+
+    res = [mean_offset, slope]
+    return res
+
+
+def cal_mags_iso(df):
+    ids = []
+    offsets = []
+    slopes  = []
+    for name, group in df.dropna().groupby(['image_id'], sort=False):
+        b, a = get_mags_iso(group)
+        ids.append(name)
+        offsets.append(b)
+        slopes.append(a)
+    dd = pd.DataFrame(np.array([ids, offsets, slopes]).T,
+                      columns=['image_id', 'mean_offset_iso', 'slope_iso'])
+    return dd
+
+
+def cal_mags(df):
+    ids = []
+    offsets = []
+    slopes  = []
+    for name, group in df.dropna().groupby(['image_id'], sort=False):
+        b, a = get_mags(group)
+        ids.append(name)
+        offsets.append(b)
+        slopes.append(a)
+    dd = pd.DataFrame(np.array([ids, offsets, slopes]).T,
+                      columns=['image_id', 'mean_offset', 'slope'])
+    return dd

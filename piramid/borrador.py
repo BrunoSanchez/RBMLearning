@@ -717,28 +717,32 @@ goyet_vs_pars_plot(dt_hot, dia='alard')
 plt.figure(figsize=(9,3))
 plt.title('mag offsets over mag simulated')
 plt.subplot(141)
-dmag = dt_zps[(dt_zps.VALID_MAG==True)].goyet
+#~ dmag = dt_zps[(dt_zps.VALID_MAG==True)].goyet
+dmag = dt_zps.goyet
 dmag = dmag.dropna()
 #dmag = dmag.mag_offset/dmag.sim_mag
 plt.hist(dmag, log=True)
 plt.xlabel('delta mag zps')
 
 plt.subplot(142)
-dmag = dt_ois[(dt_ois.VALID_MAG==True)].goyet
+#~ dmag = dt_ois[(dt_ois.VALID_MAG==True)].goyet
+dmag = dt_ois.goyet
 dmag = dmag.dropna()
 #dmag = dmag.mag_offset/dmag.sim_mag
 plt.hist(dmag, log=True)
 plt.xlabel('delta mag ois')
 
 plt.subplot(143)
-dmag = dt_hot[(dt_hot.VALID_MAG==True)].goyet
+#~ dmag = dt_hot[(dt_hot.VALID_MAG==True)].goyet
+dmag = dt_hot.goyet
 dmag = dmag.dropna()
 #dmag = dmag.mag_offset/dmag.sim_mag
 plt.hist(dmag, log=True)
 plt.xlabel('delta mag hot')
 
 plt.subplot(144)
-dmag = dt_sps[(dt_sps.VALID_MAG==True)].goyet
+#~ dmag = dt_sps[(dt_sps.VALID_MAG==True)].goyet
+dmag = dt_sps.goyet
 dmag = dmag.dropna()
 #dmag = dmag.mag_offset/dmag.sim_mag
 plt.hist(dmag, log=True)
@@ -793,18 +797,11 @@ plt.clf()
 # =============================================================================
 # Seleccionamos los mean_goyet
 # =============================================================================
-
-subset_zps = dt_zps[['mean_goyet', 'image_id', 'id_simulation']]
-subset_zps.drop_duplicates(inplace=True)
-
-subset_ois = dt_ois[['mean_goyet', 'image_id', 'id_simulation']]
-subset_ois.drop_duplicates(inplace=True)
-
-subset_sps = dt_sps[['mean_goyet', 'image_id', 'id_simulation']]
-subset_sps.drop_duplicates(inplace=True)
-
-subset_hot = dt_hot[['mean_goyet', 'image_id', 'id_simulation']]
-subset_hot.drop_duplicates(inplace=True)
+pars = ['mean_goyet', 'image_id', 'id_simulation', 'goyet', 'goyet_iso']
+subset_zps = dt_zps[pars]
+subset_ois = dt_ois[pars]
+subset_sps = dt_sps[pars]
+subset_hot = dt_hot[pars]
 
 # =============================================================================
 # vetamos por mean goyet
@@ -813,6 +810,59 @@ subset_zps_hi = subset_zps[subset_zps.mean_goyet>=0.01]
 subset_hot_hi = subset_hot[subset_hot.mean_goyet>=0.01]
 subset_sps_hi = subset_sps[subset_sps.mean_goyet>=0.01]
 subset_ois_hi = subset_ois[subset_ois.mean_goyet>=0.01]
+
+# =============================================================================
+# Como quedan las distros de goyet individuales
+# =============================================================================
+plt.figure(figsize=(9,3))
+plt.title('mag offsets over mag simulated')
+plt.subplot(141)
+dmag = subset_zps_hi.goyet
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('delta mag zps')
+
+plt.subplot(142)
+dmag = subset_ois_hi.goyet
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('delta mag ois')
+
+plt.subplot(143)
+dmag = subset_hot_hi.goyet
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('delta mag hot')
+
+plt.subplot(144)
+dmag = subset_sps_hi.goyet
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('delta mag sps')
+
+plt.tight_layout()
+plt.savefig(os.path.join(plot_dir, 'delta_over_mags_hi_goyet.svg'), dpi=400)
+plt.clf()
+
+
+
+# =============================================================================
+# Drop duplicates
+# =============================================================================
+
+subset_zps.drop_duplicates(inplace=True)
+subset_ois.drop_duplicates(inplace=True)
+subset_sps.drop_duplicates(inplace=True)
+subset_hot.drop_duplicates(inplace=True)
+
+
+# =============================================================================
+# merge the tables
+# =============================================================================
 
 merged_zps = pd.merge(left=subset_zps_hi, right=simulations,
                   left_on='id_simulation', right_on='id',
