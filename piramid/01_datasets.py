@@ -23,6 +23,7 @@
 #
 
 import os
+import gc
 from sqlalchemy import create_engine
 
 import numpy as np
@@ -62,7 +63,7 @@ def main(argv):
         simulated = cf.optimize_df(simulated)
         store['simulated'] = simulated
         store.flush()
-
+    del(simulated)
     #estas son las simulaciones programadas
     try:
         simulations = store['simulations']
@@ -71,7 +72,8 @@ def main(argv):
         simulations = cf.optimize_df(simulations)
         store['simulations'] = simulations
         store.flush()
-
+    del(simulations)
+    gc.collect()
     try:
         und_z = store['und_z']
     except:
@@ -83,7 +85,7 @@ def main(argv):
         und_z.drop_duplicates(inplace=True)
         store['und_z'] = und_z
         store.flush()
-
+    del(und_z)
     try:
         und_s = store['und_s']
     except:
@@ -95,7 +97,7 @@ def main(argv):
         und_s.drop_duplicates(inplace=True)
         store['und_s'] = und_s
         store.flush()
-
+    del(und_s)
     try:
         und_sc = store['und_sc']
     except:
@@ -107,7 +109,7 @@ def main(argv):
         und_sc.drop_duplicates(inplace=True)
         store['und_sc'] = und_sc
         store.flush()
-
+    del(und_sc)
     try:
         und_b = store['und_b']
     except:
@@ -119,7 +121,7 @@ def main(argv):
         und_b.drop_duplicates(inplace=True)
         store['und_b'] = und_b
         store.flush()
-
+    del(und_b)
     try:
         und_h = store['und_h']
     except:
@@ -131,7 +133,8 @@ def main(argv):
         und_h.drop_duplicates(inplace=True)
         store['und_h'] = und_h
         store.flush()
-
+    del(und_h)
+    gc.collect()
     try:
         dt_zps = store['dt_zps']
     except:
@@ -197,7 +200,8 @@ def main(argv):
         dt_zps = cf.optimize_df(dt_zps)
         store['dt_zps'] = dt_zps
         store.flush()
-
+    del(dt_zps)
+    gc.collect()
     try:
         dt_sps = store['dt_sps']
     except:
@@ -259,7 +263,8 @@ def main(argv):
         dt_sps = cf.optimize_df(dt_sps)
         store['dt_sps'] = dt_sps
         store.flush()
-
+    del(dt_sps)
+    gc.collect()
     try:
         dt_ois = store['dt_ois']
     except:
@@ -324,7 +329,8 @@ def main(argv):
         dt_ois = cf.optimize_df(dt_ois)
         store['dt_ois'] = dt_ois
         store.flush()
-
+    del(dt_ois)
+    gc.collect()
     try:
         dt_hot = store['dt_hot']
     except:
@@ -389,7 +395,8 @@ def main(argv):
         dt_hot = cf.optimize_df(dt_hot)
         store['dt_hot'] = dt_hot
         store.flush()
-
+    del(dt_hot)
+    gc.collect()
     store.close()
 
 
