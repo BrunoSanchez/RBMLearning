@@ -67,36 +67,41 @@ simus = pd.merge(left=simulations, right=simulated,
 # =============================================================================
 # tables
 # =============================================================================
-dt_zps = store['dt_ois']
+dt_zps = store['dt_ois_iso']
 dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
 dt_zps = cf.optimize_df(dt_zps)
 dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
-dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
-dd = grouped.apply(lambda df: sigma_clipped_stats(df['mag_offset'])[0])
-dd.name = 'mean_offset'
-dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
-#mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
-dt_zps['mag'] = dt_zps['MAG_APER'] + dt_zps['mean_offset']
+#~ dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+#~ grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+#~ dd = grouped.apply(lambda df: sigma_clipped_stats(df['mag_offset'])[0])
+#~ dd.name = 'mean_offset'
+#~ dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
+#~ #mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
+#~ dt_zps['mag'] = dt_zps['MAG_APER'] + dt_zps['mean_offset']
 dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
 grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
 dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
 dd.name = 'mean_goyet'
 dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
+dt_zps['goyet_iso'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag_iso'])/dt_zps['sim_mag']
+grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet_iso'])[0])
+dd.name = 'mean_goyet_iso'
+dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
 dt_ois = dt_zps
 
-dt_zps = store['dt_sps']
+dt_zps = store['dt_sps_iso']
 dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
 dt_zps = cf.optimize_df(dt_zps)
 dt_zps['MAG_APER'] = -2.5*np.log10(dt_zps.cflux)
 dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
-dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
-dd = grouped.apply(lambda df: sigma_clipped_stats(df['mag_offset'])[0])
-dd.name = 'mean_offset'
-dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
-#mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
-dt_zps['mag'] = dt_zps['MAG_APER'] + dt_zps['mean_offset']
+#~ dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+#~ grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+#~ dd = grouped.apply(lambda df: sigma_clipped_stats(df['mag_offset'])[0])
+#~ dd.name = 'mean_offset'
+#~ dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
+#~ #mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
+#~ dt_zps['mag'] = dt_zps['MAG_APER'] + dt_zps['mean_offset']
 dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
 grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
 dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
@@ -104,39 +109,49 @@ dd.name = 'mean_goyet'
 dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
 dt_sps = dt_zps
 
-dt_zps = store['dt_hot']
+dt_zps = store['dt_hot_iso']
 dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
 dt_zps = cf.optimize_df(dt_zps)
 dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
-dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
-dd = grouped.apply(lambda df: sigma_clipped_stats(df['mag_offset'])[0])
-dd.name = 'mean_offset'
-dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
-#mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
-dt_zps['mag'] = dt_zps['MAG_APER'] + dt_zps['mean_offset']
+#~ dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+#~ grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+#~ dd = grouped.apply(lambda df: sigma_clipped_stats(df['mag_offset'])[0])
+#~ dd.name = 'mean_offset'
+#~ dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
+#~ #mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
+#~ dt_zps['mag'] = dt_zps['MAG_APER'] + dt_zps['mean_offset']
 dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
 grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
 dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
 dd.name = 'mean_goyet'
+dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
+dt_zps['goyet_iso'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag_iso'])/dt_zps['sim_mag']
+grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet_iso'])[0])
+dd.name = 'mean_goyet_iso'
 dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
 dt_hot = dt_zps
 
-dt_zps = store['dt_zps']
+dt_zps = store['dt_zps_iso']
 dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
 dt_zps = cf.optimize_df(dt_zps)
 dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
-dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
-dd = grouped.apply(lambda df: sigma_clipped_stats(df['mag_offset'])[0])
-dd.name = 'mean_offset'
-dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
-#mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
-dt_zps['mag'] = dt_zps['MAG_APER'] + dt_zps['mean_offset']
+#~ dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
+#~ grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+#~ dd = grouped.apply(lambda df: sigma_clipped_stats(df['mag_offset'])[0])
+#~ dd.name = 'mean_offset'
+#~ dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
+#~ #mean_offset, median_offset, std_offset = sigma_clipped_stats(dt_zps.mag_offset)
+#~ dt_zps['mag'] = dt_zps['MAG_APER'] + dt_zps['mean_offset']
 dt_zps['goyet'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag'])/dt_zps['sim_mag']
 grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
 dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
 dd.name = 'mean_goyet'
+dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
+dt_zps['goyet_iso'] = np.abs(dt_zps['sim_mag'] - dt_zps['mag_iso'])/dt_zps['sim_mag']
+grouped = dt_zps.dropna().groupby(['image_id'], sort=False)
+dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet_iso'])[0])
+dd.name = 'mean_goyet_iso'
 dt_zps = pd.merge(dt_zps, dd.to_frame(), on='image_id', how='left')
 
 
@@ -184,210 +199,6 @@ plt.xlabel('delta mag sps')
 plt.tight_layout()
 plt.savefig(os.path.join(plot_dir, 'delta_mags.svg'), dpi=400)
 plt.clf()
-
-# =============================================================================
-# plot de deltas de magnitud sobre magnitud (goyet)
-# =============================================================================
-plt.figure(figsize=(9,3))
-plt.title('mag offsets over mag simulated')
-plt.subplot(141)
-dmag = dt_zps[(dt_zps.VALID_MAG==True)].goyet
-dmag = dmag.dropna()
-#dmag = dmag.mag_offset/dmag.sim_mag
-plt.hist(dmag, log=True)
-plt.xlabel('delta mag zps')
-
-plt.subplot(142)
-dmag = dt_ois[(dt_ois.VALID_MAG==True)].goyet
-dmag = dmag.dropna()
-#dmag = dmag.mag_offset/dmag.sim_mag
-plt.hist(dmag, log=True)
-plt.xlabel('delta mag ois')
-
-plt.subplot(143)
-dmag = dt_hot[(dt_hot.VALID_MAG==True)].goyet
-dmag = dmag.dropna()
-#dmag = dmag.mag_offset/dmag.sim_mag
-plt.hist(dmag, log=True)
-plt.xlabel('delta mag hot')
-
-plt.subplot(144)
-dmag = dt_sps[(dt_sps.VALID_MAG==True)].goyet
-dmag = dmag.dropna()
-#dmag = dmag.mag_offset/dmag.sim_mag
-plt.hist(dmag, log=True)
-plt.xlabel('delta mag sps')
-
-plt.tight_layout()
-plt.savefig(os.path.join(plot_dir, 'delta_over_mags.svg'), dpi=400)
-plt.clf()
-
-# =============================================================================
-# Seleccionamos los mean_goyet
-# =============================================================================
-
-subset_zps = dt_zps[['mean_goyet', 'image_id', 'id_simulation']]
-subset_zps.drop_duplicates(inplace=True)
-
-subset_ois = dt_ois[['mean_goyet', 'image_id', 'id_simulation']]
-subset_ois.drop_duplicates(inplace=True)
-
-subset_sps = dt_sps[['mean_goyet', 'image_id', 'id_simulation']]
-subset_sps.drop_duplicates(inplace=True)
-
-subset_hot = dt_hot[['mean_goyet', 'image_id', 'id_simulation']]
-subset_hot.drop_duplicates(inplace=True)
-
-# =============================================================================
-# Distribuciones de goyet
-# =============================================================================
-plt.figure(figsize=(9,3))
-plt.title('mean goyet')
-plt.subplot(141)
-dmag = subset_zps.mean_goyet
-dmag = dmag.dropna()
-plt.hist(dmag, log=True)
-plt.xlabel('mean goyet zps')
-
-plt.subplot(142)
-dmag = subset_ois.mean_goyet
-dmag = dmag.dropna()
-plt.hist(dmag, log=True)
-plt.xlabel('mean goyet ois')
-
-plt.subplot(143)
-dmag = subset_hot.mean_goyet
-dmag = dmag.dropna()
-plt.hist(dmag, log=True)
-plt.xlabel('mean goyet hot')
-
-plt.subplot(144)
-dmag = subset_sps.mean_goyet
-dmag = dmag.dropna()
-plt.hist(dmag, log=True)
-plt.xlabel('mean goyet sps')
-
-plt.tight_layout()
-plt.savefig(os.path.join(plot_dir, 'mean_goyet.svg'), dpi=400)
-plt.clf()
-
-# =============================================================================
-# vetamos por mean goyet
-# =============================================================================
-subset_zps = subset_zps[subset_zps.mean_goyet<=0.25]
-subset_hot = subset_hot[subset_hot.mean_goyet<=0.25]
-subset_sps = subset_sps[subset_sps.mean_goyet<=0.25]
-subset_ois = subset_ois[subset_ois.mean_goyet<=0.25]
-
-merged_zps = pd.merge(left=subset_zps, right=simulations,
-                  left_on='id_simulation', right_on='id',
-                  how='inner', suffixes=('_zps', 'simus'))
-
-merged_sps = pd.merge(left=subset_sps, right=simulations,
-                  left_on='id_simulation', right_on='id',
-                  how='inner', suffixes=('_sps', 'simus'))
-
-merged_ois = pd.merge(left=subset_ois, right=simulations,
-                  left_on='id_simulation', right_on='id',
-                  how='inner', suffixes=('_ois', 'simus'))
-
-merged_hot = pd.merge(left=subset_hot, right=simulations,
-                  left_on='id_simulation', right_on='id',
-                  how='inner', suffixes=('_hot', 'simus'))
-
-combined_merge1 = pd.merge(left=merged_zps, right=merged_sps,
-                          left_on='image_id', right_on='image_id',
-                          how='inner', suffixes=('_zps','_sps'))
-
-combined_merge2 = pd.merge(left=merged_hot, right=merged_ois,
-                           left_on='image_id', right_on='image_id',
-                           how='inner', suffixes=('_hot','_ois'))
-
-comb_merge = pd.merge(left=combined_merge1, right=combined_merge2,
-                      left_on='image_id', right_on='image_id',
-                      how='inner', suffixes=('_1','_2'))
-
-# =============================================================================
-# Ahora a ver que muestra quedo
-# =============================================================================
-plt.rcParams['text.usetex'] = False
-
-#  checkings
-print(np.any(comb_merge['id_simulation_zps']!=comb_merge['id_simulation_sps']))
-print(np.any(comb_merge['id_simulation_zps']!=comb_merge['id_simulation_ois']))
-print(np.any(comb_merge['id_simulation_zps']!=comb_merge['id_simulation_hot']))
-print(np.any(comb_merge['ref_starslope_zps']!=comb_merge['ref_starslope_sps']))
-print(np.any(comb_merge['ref_starslope_zps']!=comb_merge['ref_starslope_ois']))
-print(np.any(comb_merge['ref_starslope_zps']!=comb_merge['ref_starslope_hot']))
-print(np.any(comb_merge['px_scale_zps']!=comb_merge['px_scale_ois']))
-print(np.any(comb_merge['px_scale_zps']!=comb_merge['px_scale_hot']))
-print(np.any(comb_merge['px_scale_zps']!=comb_merge['px_scale_sps']))
-
-comb_merge = comb_merge[['image_id', 'id_simulation_zps',
-                         'ref_starzp_zps', 'ref_starslope_zps',
-                         'ref_fwhm_zps', 'new_fwhm_zps',
-                         'm1_diam_zps', 'm2_diam_zps', 'eff_col_zps',
-                         'px_scale_zps', 'ref_back_sbright_zps',
-                         'new_back_sbright_zps', 'exp_time_zps', 'mean_goyet_zps',
-                         'mean_goyet_sps', 'mean_goyet_hot', 'mean_goyet_ois']]
-
-pd.plotting.scatter_matrix(comb_merge[['ref_starzp_zps', 'ref_starslope_zps',
-                         'ref_fwhm_zps', 'new_fwhm_zps','px_scale_zps', 'ref_back_sbright_zps',
-                         'new_back_sbright_zps', 'exp_time_zps', 'mean_goyet_zps',
-                         'mean_goyet_sps', 'mean_goyet_hot', 'mean_goyet_ois']],
-                         alpha=0.1, diagonal='hist', figsize=(12, 12))
-plt.savefig(os.path.join(plot_dir, 'merge_goyet_lw_25_scatter_matrix.png'),
-            dpi=400)
-# =============================================================================
-#  Ellegimos una imagen con goyet bsjo y graficamos dm vs m
-# =============================================================================
-
-images = comb_merge[comb_merge.mean_goyet_zps<0.05]
-id_selected_image = images.iloc[np.random.randint(len(images))]
-
-plt.figure(figsize=(6, 3))
-
-data_zps = dt_zps[dt_zps.image_id==id_selected_image.image_id].dropna()
-plt.plot(data_zps.sim_mag, data_zps.mag, '.', label='zackay')
-
-data_sps = dt_sps[dt_sps.image_id==id_selected_image.image_id].dropna()
-plt.plot(data_sps.sim_mag, data_sps.mag, '.', label='scorr')
-
-data_ois = dt_ois[dt_ois.image_id==id_selected_image.image_id].dropna()
-plt.plot(data_ois.sim_mag, data_ois.mag, '.', label='bramich')
-
-data_hot = dt_hot[dt_hot.image_id==id_selected_image.image_id].dropna()
-plt.plot(data_hot.sim_mag, data_hot.mag, '.', label='alard')
-
-plt.xlim(14, 22)
-plt.ylim(14, 22)
-plt.xlabel('sim mag')
-plt.ylabel('recovered mag')
-plt.legend(loc='best')
-
-plt.savefig(os.path.join(plot_dir, 'low_goyet_sim_mag_vs_mag.png'), dpi=400)
-
-# =============================================================================
-# Distribuciones de goyet vs pars
-# =============================================================================
-
-#~ def goyet_vs_pars_plot(dataset, dia='zackay'):
-    #~ mag_range = [16, 20]
-    #~ mag_bins = np.arange(16, 20, 0.5)
-    #~ data = dataset[dataset.sim_mag<=20]
-    #~ data = data[data.sim_mag>=16]
-    #~ data = data[data.VALID_MAG==True]
-    #~ cube = data[['r_scales', 'gx_mag', 'm1_diam',
-    #~ 'm2_diam', 'ref_starzp', 'ref_starslope',
-    #~ 'ref_fwhm', 'new_fwhm', 'eff_col', 'px_scale', 'ref_back_sbright',
-    #~ 'new_back_sbright', 'exp_time', 'mag_offset', 'goyet']]
-
-    #~ cols = ['r_scales', 'gx_mag', 'm1_diam', 'ref_starzp', 'ref_starslope',
-            #~ 'ref_fwhm', 'new_fwhm', 'eff_col', 'px_scale', 'ref_back_sbright',
-            #~ 'new_back_sbright', 'exp_time', 'mag_offset']
-
-    #~ for a_par in cols:
-        #~ subplot()
 
 # =============================================================================
 # plot de goyet factor
@@ -898,6 +709,430 @@ goyet_vs_pars_plot(dt_sps, dia='scorr')
 goyet_vs_pars_plot(dt_zps, dia='zackay')
 goyet_vs_pars_plot(dt_ois, dia='bramich')
 goyet_vs_pars_plot(dt_hot, dia='alard')
+
+
+# =============================================================================
+# plot de deltas de magnitud sobre magnitud (goyet)
+# =============================================================================
+plt.figure(figsize=(9,3))
+plt.title('mag offsets over mag simulated')
+plt.subplot(141)
+dmag = dt_zps[(dt_zps.VALID_MAG==True)].goyet
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('delta mag zps')
+
+plt.subplot(142)
+dmag = dt_ois[(dt_ois.VALID_MAG==True)].goyet
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('delta mag ois')
+
+plt.subplot(143)
+dmag = dt_hot[(dt_hot.VALID_MAG==True)].goyet
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('delta mag hot')
+
+plt.subplot(144)
+dmag = dt_sps[(dt_sps.VALID_MAG==True)].goyet
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('delta mag sps')
+
+plt.tight_layout()
+plt.savefig(os.path.join(plot_dir, 'delta_over_mags.svg'), dpi=400)
+plt.clf()
+
+# =============================================================================
+# plot de deltas de magnitud sobre magnitud (goyet)
+# =============================================================================
+plt.figure(figsize=(9,3))
+plt.title('mag_iso offsets over mag simulated')
+plt.subplot(141)
+dmag = dt_zps[(dt_zps.VALID_MAG==True)].goyet_iso
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('delta mag zps')
+
+plt.subplot(142)
+dmag = dt_ois[(dt_ois.VALID_MAG==True)].goyet_iso
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('delta mag ois')
+
+plt.subplot(143)
+dmag = dt_hot[(dt_hot.VALID_MAG==True)].goyet_iso
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('delta mag hot')
+
+plt.subplot(144)
+dmag = dt_sps[(dt_sps.VALID_MAG==True)].goyet
+dmag = dmag.dropna()
+#dmag = dmag.mag_offset/dmag.sim_mag
+plt.hist(dmag, log=True)
+plt.xlabel('delta mag sps')
+
+plt.tight_layout()
+plt.savefig(os.path.join(plot_dir, 'delta_over_mags_iso.svg'), dpi=400)
+plt.clf()
+
+
+# =============================================================================
+# GOYET ALTO
+# =============================================================================
+
+# =============================================================================
+# Seleccionamos los mean_goyet
+# =============================================================================
+
+subset_zps = dt_zps[['mean_goyet', 'image_id', 'id_simulation']]
+subset_zps.drop_duplicates(inplace=True)
+
+subset_ois = dt_ois[['mean_goyet', 'image_id', 'id_simulation']]
+subset_ois.drop_duplicates(inplace=True)
+
+subset_sps = dt_sps[['mean_goyet', 'image_id', 'id_simulation']]
+subset_sps.drop_duplicates(inplace=True)
+
+subset_hot = dt_hot[['mean_goyet', 'image_id', 'id_simulation']]
+subset_hot.drop_duplicates(inplace=True)
+
+# =============================================================================
+# vetamos por mean goyet
+# =============================================================================
+subset_zps_hi = subset_zps[subset_zps.mean_goyet>=0.01]
+subset_hot_hi = subset_hot[subset_hot.mean_goyet>=0.01]
+subset_sps_hi = subset_sps[subset_sps.mean_goyet>=0.01]
+subset_ois_hi = subset_ois[subset_ois.mean_goyet>=0.01]
+
+merged_zps = pd.merge(left=subset_zps_hi, right=simulations,
+                  left_on='id_simulation', right_on='id',
+                  how='inner', suffixes=('_zps', 'simus'))
+
+merged_sps = pd.merge(left=subset_sps_hi, right=simulations,
+                  left_on='id_simulation', right_on='id',
+                  how='inner', suffixes=('_sps', 'simus'))
+
+merged_ois = pd.merge(left=subset_ois_hi, right=simulations,
+                  left_on='id_simulation', right_on='id',
+                  how='inner', suffixes=('_ois', 'simus'))
+
+merged_hot = pd.merge(left=subset_hot_hi, right=simulations,
+                  left_on='id_simulation', right_on='id',
+                  how='inner', suffixes=('_hot', 'simus'))
+
+combined_merge1 = pd.merge(left=merged_zps, right=merged_sps,
+                          left_on='image_id', right_on='image_id',
+                          how='inner', suffixes=('_zps','_sps'))
+
+combined_merge2 = pd.merge(left=merged_hot, right=merged_ois,
+                           left_on='image_id', right_on='image_id',
+                           how='inner', suffixes=('_hot','_ois'))
+
+comb_merge = pd.merge(left=combined_merge1, right=combined_merge2,
+                      left_on='image_id', right_on='image_id',
+                      how='inner', suffixes=('_1','_2'))
+
+# =============================================================================
+# Ahora a ver que muestra quedo
+# =============================================================================
+plt.rcParams['text.usetex'] = False
+
+#  checkings
+print(np.any(comb_merge['id_simulation_zps']!=comb_merge['id_simulation_sps']))
+print(np.any(comb_merge['id_simulation_zps']!=comb_merge['id_simulation_ois']))
+print(np.any(comb_merge['id_simulation_zps']!=comb_merge['id_simulation_hot']))
+print(np.any(comb_merge['ref_starslope_zps']!=comb_merge['ref_starslope_sps']))
+print(np.any(comb_merge['ref_starslope_zps']!=comb_merge['ref_starslope_ois']))
+print(np.any(comb_merge['ref_starslope_zps']!=comb_merge['ref_starslope_hot']))
+print(np.any(comb_merge['px_scale_zps']!=comb_merge['px_scale_ois']))
+print(np.any(comb_merge['px_scale_zps']!=comb_merge['px_scale_hot']))
+print(np.any(comb_merge['px_scale_zps']!=comb_merge['px_scale_sps']))
+
+comb_merge = comb_merge[['image_id', 'id_simulation_zps',
+                         'ref_starzp_zps', 'ref_starslope_zps',
+                         'ref_fwhm_zps', 'new_fwhm_zps',
+                         'm1_diam_zps', 'm2_diam_zps', 'eff_col_zps',
+                         'px_scale_zps', 'ref_back_sbright_zps',
+                         'new_back_sbright_zps', 'exp_time_zps', 'mean_goyet_zps',
+                         'mean_goyet_sps', 'mean_goyet_hot', 'mean_goyet_ois']]
+
+pd.plotting.scatter_matrix(comb_merge[['ref_starzp_zps', 'ref_starslope_zps',
+                         'ref_fwhm_zps', 'new_fwhm_zps','px_scale_zps', 'ref_back_sbright_zps',
+                         'new_back_sbright_zps', 'exp_time_zps', 'mean_goyet_zps',
+                         'mean_goyet_sps', 'mean_goyet_hot', 'mean_goyet_ois']],
+                         alpha=0.1, diagonal='hist', figsize=(12, 12))
+plt.savefig(os.path.join(plot_dir, 'merge_goyet_hi_25_scatter_matrix.png'),
+            dpi=400)
+
+# =============================================================================
+#  Ellegimos una imagen con goyet ALTO y graficamos dm vs m
+# =============================================================================
+
+images = comb_merge[comb_merge.mean_goyet_zps==np.max(comb_merge.mean_goyet_zps)]
+id_selected_image = images.iloc[np.random.randint(len(images))]
+
+plt.figure(figsize=(6, 3))
+
+data_zps = dt_zps[dt_zps.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_zps.sim_mag, data_zps.mag, '.', label='zackay')
+
+data_sps = dt_sps[dt_sps.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_sps.sim_mag, data_sps.mag, '.', label='scorr')
+
+data_ois = dt_ois[dt_ois.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_ois.sim_mag, data_ois.mag, '.', label='bramich')
+
+data_hot = dt_hot[dt_hot.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_hot.sim_mag, data_hot.mag, '.', label='alard')
+
+plt.xlim(14, 22)
+plt.ylim(14, 22)
+plt.xlabel('sim mag')
+plt.ylabel('recovered mag')
+plt.legend(loc='best')
+
+plt.savefig(os.path.join(plot_dir, 'high_goyet_sim_mag_vs_mag.png'), dpi=400)
+
+# =============================================================================
+#  Ellegimos una imagen con goyet bsjo y graficamos dm vs m
+# =============================================================================
+
+images = comb_merge[comb_merge.mean_goyet_zps==np.max(comb_merge.mean_goyet_zps)]
+id_selected_image = images.iloc[np.random.randint(len(images))]
+
+plt.figure(figsize=(6, 3))
+
+data_zps = dt_zps[dt_zps.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_zps.sim_mag, data_zps.mag_iso, '.', label='zackay')
+
+data_sps = dt_sps[dt_sps.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_sps.sim_mag, data_sps.mag, '.', label='scorr')
+
+data_ois = dt_ois[dt_ois.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_ois.sim_mag, data_ois.mag_iso, '.', label='bramich')
+
+data_hot = dt_hot[dt_hot.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_hot.sim_mag, data_hot.mag_iso, '.', label='alard')
+
+plt.xlim(14, 22)
+plt.ylim(14, 22)
+plt.xlabel('sim mag')
+plt.ylabel('recovered mag_iso')
+plt.legend(loc='best')
+
+plt.savefig(os.path.join(plot_dir, 'high_goyet_sim_mag_vs_mag_iso.png'), dpi=400)
+
+# =============================================================================
+# GOYET BAJO
+# =============================================================================
+
+# =============================================================================
+# Seleccionamos los mean_goyet
+# =============================================================================
+
+subset_zps = dt_zps[['mean_goyet', 'image_id', 'id_simulation']]
+subset_zps.drop_duplicates(inplace=True)
+
+subset_ois = dt_ois[['mean_goyet', 'image_id', 'id_simulation']]
+subset_ois.drop_duplicates(inplace=True)
+
+subset_sps = dt_sps[['mean_goyet', 'image_id', 'id_simulation']]
+subset_sps.drop_duplicates(inplace=True)
+
+subset_hot = dt_hot[['mean_goyet', 'image_id', 'id_simulation']]
+subset_hot.drop_duplicates(inplace=True)
+
+# =============================================================================
+# Distribuciones de goyet
+# =============================================================================
+plt.figure(figsize=(9,3))
+plt.title('mean goyet')
+plt.subplot(141)
+dmag = subset_zps.mean_goyet
+dmag = dmag.dropna()
+plt.hist(dmag, log=True)
+plt.xlabel('mean goyet zps')
+
+plt.subplot(142)
+dmag = subset_ois.mean_goyet
+dmag = dmag.dropna()
+plt.hist(dmag, log=True)
+plt.xlabel('mean goyet ois')
+
+plt.subplot(143)
+dmag = subset_hot.mean_goyet
+dmag = dmag.dropna()
+plt.hist(dmag, log=True)
+plt.xlabel('mean goyet hot')
+
+plt.subplot(144)
+dmag = subset_sps.mean_goyet
+dmag = dmag.dropna()
+plt.hist(dmag, log=True)
+plt.xlabel('mean goyet sps')
+
+plt.tight_layout()
+plt.savefig(os.path.join(plot_dir, 'mean_goyet.svg'), dpi=400)
+plt.clf()
+
+# =============================================================================
+# vetamos por mean goyet
+# =============================================================================
+subset_zps = subset_zps[subset_zps.mean_goyet<=0.01]
+subset_hot = subset_hot[subset_hot.mean_goyet<=0.01]
+subset_sps = subset_sps[subset_sps.mean_goyet<=0.01]
+subset_ois = subset_ois[subset_ois.mean_goyet<=0.01]
+
+merged_zps = pd.merge(left=subset_zps, right=simulations,
+                  left_on='id_simulation', right_on='id',
+                  how='inner', suffixes=('_zps', 'simus'))
+
+merged_sps = pd.merge(left=subset_sps, right=simulations,
+                  left_on='id_simulation', right_on='id',
+                  how='inner', suffixes=('_sps', 'simus'))
+
+merged_ois = pd.merge(left=subset_ois, right=simulations,
+                  left_on='id_simulation', right_on='id',
+                  how='inner', suffixes=('_ois', 'simus'))
+
+merged_hot = pd.merge(left=subset_hot, right=simulations,
+                  left_on='id_simulation', right_on='id',
+                  how='inner', suffixes=('_hot', 'simus'))
+
+combined_merge1 = pd.merge(left=merged_zps, right=merged_sps,
+                          left_on='image_id', right_on='image_id',
+                          how='inner', suffixes=('_zps','_sps'))
+
+combined_merge2 = pd.merge(left=merged_hot, right=merged_ois,
+                           left_on='image_id', right_on='image_id',
+                           how='inner', suffixes=('_hot','_ois'))
+
+comb_merge = pd.merge(left=combined_merge1, right=combined_merge2,
+                      left_on='image_id', right_on='image_id',
+                      how='inner', suffixes=('_1','_2'))
+
+# =============================================================================
+# Ahora a ver que muestra quedo
+# =============================================================================
+plt.rcParams['text.usetex'] = False
+
+#  checkings
+print(np.any(comb_merge['id_simulation_zps']!=comb_merge['id_simulation_sps']))
+print(np.any(comb_merge['id_simulation_zps']!=comb_merge['id_simulation_ois']))
+print(np.any(comb_merge['id_simulation_zps']!=comb_merge['id_simulation_hot']))
+print(np.any(comb_merge['ref_starslope_zps']!=comb_merge['ref_starslope_sps']))
+print(np.any(comb_merge['ref_starslope_zps']!=comb_merge['ref_starslope_ois']))
+print(np.any(comb_merge['ref_starslope_zps']!=comb_merge['ref_starslope_hot']))
+print(np.any(comb_merge['px_scale_zps']!=comb_merge['px_scale_ois']))
+print(np.any(comb_merge['px_scale_zps']!=comb_merge['px_scale_hot']))
+print(np.any(comb_merge['px_scale_zps']!=comb_merge['px_scale_sps']))
+
+comb_merge = comb_merge[['image_id', 'id_simulation_zps',
+                         'ref_starzp_zps', 'ref_starslope_zps',
+                         'ref_fwhm_zps', 'new_fwhm_zps',
+                         'm1_diam_zps', 'm2_diam_zps', 'eff_col_zps',
+                         'px_scale_zps', 'ref_back_sbright_zps',
+                         'new_back_sbright_zps', 'exp_time_zps', 'mean_goyet_zps',
+                         'mean_goyet_sps', 'mean_goyet_hot', 'mean_goyet_ois']]
+
+pd.plotting.scatter_matrix(comb_merge[['ref_starzp_zps', 'ref_starslope_zps',
+                         'ref_fwhm_zps', 'new_fwhm_zps','px_scale_zps', 'ref_back_sbright_zps',
+                         'new_back_sbright_zps', 'exp_time_zps', 'mean_goyet_zps',
+                         'mean_goyet_sps', 'mean_goyet_hot', 'mean_goyet_ois']],
+                         alpha=0.1, diagonal='hist', figsize=(12, 12))
+plt.savefig(os.path.join(plot_dir, 'merge_goyet_lw_25_scatter_matrix.png'),
+            dpi=400)
+# =============================================================================
+#  Ellegimos una imagen con goyet bsjo y graficamos dm vs m
+# =============================================================================
+
+images = comb_merge[comb_merge.mean_goyet_zps<0.005]
+id_selected_image = images.iloc[np.random.randint(len(images))]
+
+plt.figure(figsize=(6, 3))
+
+data_zps = dt_zps[dt_zps.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_zps.sim_mag, data_zps.mag, '.', label='zackay')
+
+data_sps = dt_sps[dt_sps.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_sps.sim_mag, data_sps.mag, '.', label='scorr')
+
+data_ois = dt_ois[dt_ois.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_ois.sim_mag, data_ois.mag, '.', label='bramich')
+
+data_hot = dt_hot[dt_hot.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_hot.sim_mag, data_hot.mag, '.', label='alard')
+
+plt.xlim(14, 22)
+plt.ylim(14, 22)
+plt.xlabel('sim mag')
+plt.ylabel('recovered mag')
+plt.legend(loc='best')
+
+plt.savefig(os.path.join(plot_dir, 'low_goyet_sim_mag_vs_mag.png'), dpi=400)
+
+# =============================================================================
+#  Ellegimos una imagen con goyet bsjo y graficamos dm vs m
+# =============================================================================
+
+images = comb_merge[comb_merge.mean_goyet_zps<0.005]
+id_selected_image = images.iloc[np.random.randint(len(images))]
+
+plt.figure(figsize=(6, 3))
+
+data_zps = dt_zps[dt_zps.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_zps.sim_mag, data_zps.mag_iso, '.', label='zackay')
+
+data_sps = dt_sps[dt_sps.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_sps.sim_mag, data_sps.mag, '.', label='scorr')
+
+data_ois = dt_ois[dt_ois.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_ois.sim_mag, data_ois.mag_iso, '.', label='bramich')
+
+data_hot = dt_hot[dt_hot.image_id==id_selected_image.image_id].dropna()
+plt.plot(data_hot.sim_mag, data_hot.mag_iso, '.', label='alard')
+
+plt.xlim(14, 22)
+plt.ylim(14, 22)
+plt.xlabel('sim mag')
+plt.ylabel('recovered mag_iso')
+plt.legend(loc='best')
+
+plt.savefig(os.path.join(plot_dir, 'low_goyet_sim_mag_vs_mag_iso.png'), dpi=400)
+
+
+# =============================================================================
+# Distribuciones de goyet vs pars
+# =============================================================================
+
+#~ def goyet_vs_pars_plot(dataset, dia='zackay'):
+    #~ mag_range = [16, 20]
+    #~ mag_bins = np.arange(16, 20, 0.5)
+    #~ data = dataset[dataset.sim_mag<=20]
+    #~ data = data[data.sim_mag>=16]
+    #~ data = data[data.VALID_MAG==True]
+    #~ cube = data[['r_scales', 'gx_mag', 'm1_diam',
+    #~ 'm2_diam', 'ref_starzp', 'ref_starslope',
+    #~ 'ref_fwhm', 'new_fwhm', 'eff_col', 'px_scale', 'ref_back_sbright',
+    #~ 'new_back_sbright', 'exp_time', 'mag_offset', 'goyet']]
+
+    #~ cols = ['r_scales', 'gx_mag', 'm1_diam', 'ref_starzp', 'ref_starslope',
+            #~ 'ref_fwhm', 'new_fwhm', 'eff_col', 'px_scale', 'ref_back_sbright',
+            #~ 'new_back_sbright', 'exp_time', 'mag_offset']
+
+    #~ for a_par in cols:
+        #~ subplot()
+
 
 
 
