@@ -839,10 +839,13 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     bins = np.arange(6.5, 26.5, .5)
     mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_hot_hi, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
+
     mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_sps_hi, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
+
     mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset__hi, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
+
     mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_hot_hi, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
 
