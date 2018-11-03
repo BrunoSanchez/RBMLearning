@@ -937,8 +937,8 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
 
     merged_zps = pd.merge(left=subset_zps, right=simulations,
-                      left_on='id_simulation', right_on='id',
-                      how='inner', suffixes=('_zps', 'simus'))
+                          left_on='id_simulation', right_on='id',
+                          how='inner', suffixes=('_zps', 'simus'))
 
     merged_sps = pd.merge(left=subset_sps, right=simulations,
                       left_on='id_simulation', right_on='id',
