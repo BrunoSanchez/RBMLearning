@@ -175,7 +175,8 @@ def main(argv):
 
         dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
         dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-        dt_zps = pd.merge(dt_zps, dd, on='image_id', how='left')
+        cals = cf.cal_mags(dt_zps)
+        dt_zps = pd.merge(dt_zps, cals, on='image_id', how='left')
         dt_zps['mag'] = dt_zps['MAG_APER'] * dt_zps['slope'] + dt_zps['mean_offset']
 
         dt_zps['VALID_MAG_iso'] = dt_zps['MAG_ISO']<30
@@ -244,7 +245,8 @@ def main(argv):
 
         dt_sps['VALID_MAG'] = dt_sps['MAG_APER']<30
         dt_sps['mag_offset'] = dt_sps['sim_mag'] - dt_sps['MAG_APER']
-        dt_sps = pd.merge(dt_sps, dd, on='image_id', how='left')
+        cals = cf.cal_mags(dt_sps)
+        dt_sps = pd.merge(dt_sps, cals, on='image_id', how='left')
         dt_sps['mag'] = dt_sps['MAG_APER'] * dt_sps['slope'] + dt_sps['mean_offset']
 
         dt_sps['VALID_MAG_iso'] = dt_sps['MAG_ISO']<30
@@ -304,7 +306,8 @@ def main(argv):
 
         dt_ois['VALID_MAG'] = dt_ois['MAG_APER']<30
         dt_ois['mag_offset'] = dt_ois['sim_mag'] - dt_ois['MAG_APER']
-        dt_ois = pd.merge(dt_ois, dd, on='image_id', how='left')
+        cals = cf.cal_mags(dt_ois)
+        dt_ois = pd.merge(dt_ois, cals, on='image_id', how='left')
         dt_ois['mag'] = dt_ois['MAG_APER'] * dt_ois['slope'] + dt_ois['mean_offset']
 
         dt_ois['VALID_MAG_iso'] = dt_ois['MAG_ISO']<30
@@ -370,7 +373,8 @@ def main(argv):
 
         dt_hot['VALID_MAG'] = dt_hot['MAG_APER']<30
         dt_hot['mag_offset'] = dt_hot['sim_mag'] - dt_hot['MAG_APER']
-        dt_hot = pd.merge(dt_hot, dd, on='image_id', how='left')
+        cals = cf.cal_mags(dt_hot)
+        dt_hot = pd.merge(dt_hot, cals, on='image_id', how='left')
         dt_hot['mag'] = dt_hot['MAG_APER'] * dt_hot['slope'] + dt_hot['mean_offset']
 
         dt_hot['VALID_MAG_iso'] = dt_hot['MAG_ISO']<30
