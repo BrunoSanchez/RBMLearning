@@ -843,7 +843,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_sps_hi, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
 
-    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset__hi, bins=bins)
+    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_zps_hi, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
 
     mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_hot_hi, bins=bins)
@@ -857,10 +857,81 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     plt.xlim(12, 22.5)
     plt.ylim(-3, 3)
-    plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_higoyet.svg'),
+    plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_hi_goyet.svg'),
                 format='svg', dpi=480)
 
+# =============================================================================
+# Mean goyet bajo
+# =============================================================================
+# =============================================================================
+# vetamos por mean goyet
+# =============================================================================
+    subset_zps_lo = subset_zps[subset_zps.mean_goyet<0.01]
+    subset_hot_lo = subset_hot[subset_hot.mean_goyet<0.01]
+    subset_sps_lo = subset_sps[subset_sps.mean_goyet<0.01]
+    subset_ois_lo = subset_ois[subset_ois.mean_goyet<0.01]
 
+# =============================================================================
+# Como quedan las distros de goyet individuales
+# =============================================================================
+    plt.figure(figsize=(9,3))
+    plt.title('mag offsets over mag simulated')
+    plt.subplot(141)
+    dmag = subset_zps_lo.goyet
+    dmag = dmag.dropna()
+    plt.hist(dmag, log=True)
+    plt.xlabel('delta mag zps')
+
+    plt.subplot(142)
+    dmag = subset_ois_lo.goyet
+    dmag = dmag.dropna()
+    plt.hist(dmag, log=True)
+    plt.xlabel('delta mag ois')
+
+    plt.subplot(143)
+    dmag = subset_hot_lo.goyet
+    dmag = dmag.dropna()
+    plt.hist(dmag, log=True)
+    plt.xlabel('delta mag hot')
+
+    plt.subplot(144)
+    dmag = subset_sps_lo.goyet
+    dmag = dmag.dropna()
+    plt.hist(dmag, log=True)
+    plt.xlabel('delta mag sps')
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(plot_dir, 'delta_over_mags_lo_goyet.svg'), dpi=400)
+    plt.clf()
+
+# =============================================================================
+# Como quedan los diagramas de error de magnitud vs magnitud simulada
+# =============================================================================
+
+    plt.figure(figsize=(8,4))
+    bins = np.arange(6.5, 26.5, .5)
+    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_hot_lo, bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
+
+    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_sps_lo, bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
+
+    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_zps_lo, bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
+
+    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_hot_lo, bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
+
+    plt.tick_params(labelsize=16)
+    plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
+    plt.xlabel('Sim Mag', fontsize=16)
+    plt.title('Simulated Data', fontsize=14)
+    plt.legend(loc='best', fontsize=14)
+
+    plt.xlim(12, 22.5)
+    plt.ylim(-3, 3)
+    plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_lo_goyet.svg'),
+                format='svg', dpi=480)
     return
 
 
