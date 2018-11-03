@@ -932,6 +932,13 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.ylim(-3, 3)
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_lo_goyet.svg'),
                 format='svg', dpi=480)
+
+# =============================================================================
+#  Queremos los image id con buen goyet y ver quienes son
+# =============================================================================
+
+
+
     return
 
 
