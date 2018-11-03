@@ -936,6 +936,33 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 #  Queremos los image id con buen goyet y ver quienes son
 # =============================================================================
 
+    merged_zps = pd.merge(left=subset_zps, right=simulations,
+                      left_on='id_simulation', right_on='id',
+                      how='inner', suffixes=('_zps', 'simus'))
+
+    merged_sps = pd.merge(left=subset_sps, right=simulations,
+                      left_on='id_simulation', right_on='id',
+                      how='inner', suffixes=('_sps', 'simus'))
+
+    merged_ois = pd.merge(left=subset_ois, right=simulations,
+                      left_on='id_simulation', right_on='id',
+                      how='inner', suffixes=('_ois', 'simus'))
+
+    merged_hot = pd.merge(left=subset_hot, right=simulations,
+                      left_on='id_simulation', right_on='id',
+                      how='inner', suffixes=('_hot', 'simus'))
+
+    combined_merge1 = pd.merge(left=merged_zps, right=merged_sps,
+                              left_on='image_id', right_on='image_id',
+                              how='inner', suffixes=('_zps','_sps'))
+
+    combined_merge2 = pd.merge(left=merged_hot, right=merged_ois,
+                               left_on='image_id', right_on='image_id',
+                               how='inner', suffixes=('_hot','_ois'))
+
+    comb_merge = pd.merge(left=combined_merge1, right=combined_merge2,
+                          left_on='image_id', right_on='image_id',
+                          how='inner', suffixes=('_1','_2'))
 
 
     return
