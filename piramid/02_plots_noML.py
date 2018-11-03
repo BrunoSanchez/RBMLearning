@@ -52,7 +52,6 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     if not os.path.isdir(plot_dir):
         os.makedirs(plot_dir)
 
-
     simulated = store['simulated']
     simulations = store['simulations']
 
