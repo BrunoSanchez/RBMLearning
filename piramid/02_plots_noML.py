@@ -727,7 +727,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # Veamos la distrubicion general de las medias de los goyet
 # =============================================================================
     plt.figure(figsize=(9,3))
-    plt.title('mag offsets over mag simulated')
+    plt.title('mean goyets for each technique')
     plt.subplot(141)
     dmag = subset_zps[['mean_goyet', 'image_id']].drop_duplicates().mean_goyet
     dmag = dmag.dropna()
@@ -755,7 +755,6 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mean_goyets.svg'), dpi=400)
     plt.clf()
-
 
 
 # =============================================================================
