@@ -738,7 +738,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dmag = subset_zps[['mean_goyet', 'image_id']].drop_duplicates().mean_goyet
     dmag = dmag.dropna()
     plt.hist(dmag, log=True)
-    plt.xlabel('delta mag ois')
+    plt.xlabel('mean goyet ois')
 
     plt.subplot(143)
     dmag = subset_zps[['mean_goyet', 'image_id']].drop_duplicates().mean_goyet
@@ -754,6 +754,39 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mean_goyets.svg'), dpi=400)
+    plt.clf()
+
+# =============================================================================
+# Veamos la distrubicion general de las medias de los goyet ISO
+# =============================================================================
+    plt.figure(figsize=(9,3))
+    plt.title('mean goyets_iso for each technique')
+    plt.subplot(141)
+    dmag = subset_zps[['mean_goyet_iso', 'image_id']].drop_duplicates().mean_goyet_iso
+    dmag = dmag.dropna()
+    plt.hist(dmag, log=True)
+    plt.xlabel('mean goyet_iso zps')
+
+    plt.subplot(142)
+    dmag = subset_zps[['mean_goyet_iso', 'image_id']].drop_duplicates().mean_goyet_iso
+    dmag = dmag.dropna()
+    plt.hist(dmag, log=True)
+    plt.xlabel('mean goyet_iso ois')
+
+    plt.subplot(143)
+    dmag = subset_zps[['mean_goyet_iso', 'image_id']].drop_duplicates().mean_goyet_iso
+    dmag = dmag.dropna()
+    plt.hist(dmag, log=True)
+    plt.xlabel('mean goyet_iso hot')
+
+    plt.subplot(144)
+    dmag = subset_zps[['mean_goyet_iso', 'image_id']].drop_duplicates().mean_goyet_iso
+    dmag = dmag.dropna()
+    plt.hist(dmag, log=True)
+    plt.xlabel('mean goyet_iso sps')
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(plot_dir, 'mean_goyets_iso.svg'), dpi=400)
     plt.clf()
 
 
