@@ -724,6 +724,41 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     subset_hot = dt_hot[pars]
 
 # =============================================================================
+# Veamos la distrubicion general de las medias de los goyet
+# =============================================================================
+    plt.figure(figsize=(9,3))
+    plt.title('mag offsets over mag simulated')
+    plt.subplot(141)
+    dmag = subset_zps[['mean_goyet', 'image_id']].drop_duplicates().mean_goyet
+    dmag = dmag.dropna()
+    plt.hist(dmag, log=True)
+    plt.xlabel('mean goyet zps')
+
+    plt.subplot(142)
+    dmag = subset_zps[['mean_goyet', 'image_id']].drop_duplicates().mean_goyet
+    dmag = dmag.dropna()
+    plt.hist(dmag, log=True)
+    plt.xlabel('delta mag ois')
+
+    plt.subplot(143)
+    dmag = subset_zps[['mean_goyet', 'image_id']].drop_duplicates().mean_goyet
+    dmag = dmag.dropna()
+    plt.hist(dmag, log=True)
+    plt.xlabel('mean goyet hot')
+
+    plt.subplot(144)
+    dmag = subset_zps[['mean_goyet', 'image_id']].drop_duplicates().mean_goyet
+    dmag = dmag.dropna()
+    plt.hist(dmag, log=True)
+    plt.xlabel('mean goyet sps')
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(plot_dir, 'mean_goyets.svg'), dpi=400)
+    plt.clf()
+
+
+
+# =============================================================================
 # vetamos por mean goyet
 # =============================================================================
     subset_zps_hi = subset_zps[subset_zps.mean_goyet>=0.01]
