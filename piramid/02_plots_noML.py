@@ -936,6 +936,18 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 #  Queremos los image id con buen goyet y ver quienes son
 # =============================================================================
 
+    merged = pd.merge(left=subset_zps.drop_duplicates(),
+                      right=subset_sps.drop_duplicates(),
+                      on='image_id', how='inner', suffixes=('_zps', '_sps'))
+
+    merged = pd.merge(left=merged, right=subset_ois.drop_duplicates(),
+                      on='image_id', how='inner', suffixes=('', '_ois'))
+
+    merged = pd.merge(left=merged, right=subset_hot.drop_duplicates(),
+                      on='image_id', how='inner', suffixes=('', '_hot'))
+
+
+
     merged_zps = pd.merge(left=subset_zps, right=simulations,
                           left_on='id_simulation', right_on='id',
                           how='inner', suffixes=('_zps', 'simus'))
