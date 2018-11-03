@@ -960,7 +960,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     import sys
-    #print(sys.argv)
-    #m1 = sys.argv[1]
-    #path = sys.argv[2]
     sys.exit(main(args.m1_diam, args.path))
