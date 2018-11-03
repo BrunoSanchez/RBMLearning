@@ -57,7 +57,8 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     simulations = store['simulations']
 
     simulations = simulations[simulations.failed_to_subtract==False]
-    simulations = simulations[simulations.m1_diam==m1_diam]
+    if m1_diam is not None:
+        simulations = simulations[simulations.m1_diam==m1_diam]
 
     simus = pd.merge(left=simulations, right=simulated,
                      right_on='simulation_id', left_on='id', how='outer')
@@ -66,22 +67,26 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     # tables
     # =============================================================================
     dt_zps = store['dt_ois']
-    dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
+    if m1_diam is not None:
+        dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
     dt_zps = cf.optimize_df(dt_zps)
     dt_ois = dt_zps
 
     dt_zps = store['dt_sps']
-    dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
+    if m1_diam is not None:
+        dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
     dt_zps = cf.optimize_df(dt_zps)
     dt_sps = dt_zps
 
     dt_zps = store['dt_hot']
-    dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
+    if m1_diam is not None:
+        dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
     dt_zps = cf.optimize_df(dt_zps)
     dt_hot = dt_zps
 
     dt_zps = store['dt_zps']
-    dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
+    if m1_diam is not None:
+        dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
     dt_zps = cf.optimize_df(dt_zps)
 
 # =============================================================================
@@ -759,13 +764,46 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.savefig(os.path.join(plot_dir, 'delta_over_mags_hi_goyet.svg'), dpi=400)
     plt.clf()
 
+# =============================================================================
+# Como quedan los diagramas de error de magnitud vs magnitud simulada
+# =============================================================================
+
+    plt.figure(figsize=(8,4))
+    bins = np.arange(6.5, 26.5, .5)
+    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_hot_hi, bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
+    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_sps_hi, bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
+    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset__hi, bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
+    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_hot_hi, bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
+
+    plt.tick_params(labelsize=16)
+    plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
+    plt.xlabel('Sim Mag', fontsize=16)
+    plt.title('Simulated Data', fontsize=14)
+    plt.legend(loc='best', fontsize=14)
+
+    plt.xlim(12, 22.5)
+    plt.ylim(-3, 3)
+    plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_higoyet.svg'),
+                format='svg', dpi=480)
+
 
     return
 
 
 if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--m1_diam", help="diameter to filter",
+                        default=None)
+    parser.add_argument("path", help="path to plot files")
+    args = parser.parse_args()
+
     import sys
-    print(sys.argv)
-    m1 = sys.argv[1]
-    path = sys.argv[2]
-    sys.exit(main(float(m1), path))
+    #print(sys.argv)
+    #m1 = sys.argv[1]
+    #path = sys.argv[2]
+    sys.exit(main(args.m1_diam, args.path))
