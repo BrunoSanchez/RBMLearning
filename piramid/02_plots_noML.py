@@ -23,6 +23,7 @@
 #
 
 import os
+import gc
 import matplotlib
 matplotlib.use('Agg')
 from sqlalchemy import create_engine
@@ -708,7 +709,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     goyet_vs_pars_plot(dt_ois, dia='bramich')
     goyet_vs_pars_plot(dt_hot, dia='alard')
 
-
+    gc.collect()
 # =============================================================================
 # Mean goyet alto
 # =============================================================================
@@ -858,6 +859,17 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.ylim(-3, 3)
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_hi_goyet.svg'),
                 format='svg', dpi=480)
+
+# =============================================================================
+# Liberamos algo de memoria
+# =============================================================================
+
+    del(subset_hot_hi)
+    del(subset_sps_hi)
+    del(subset_zps_hi)
+    del(subset_ois_hi)
+
+    gc.collect()
 
 # =============================================================================
 # Mean goyet bajo
