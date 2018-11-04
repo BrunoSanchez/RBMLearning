@@ -114,6 +114,15 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dt_hot['SN'] = dt_hot.FLUX_APER/dt_hot.FLUXERR_APER
     dt_sps['SN'] = dt_sps.cflux/np.sqrt(dt_sps.cflux)
 
+    merged = store['merged']
+
+# =============================================================================
+# Usar los seleccionados desde la tabla merged
+# =============================================================================
+
+    pars = ['image_id', 'selected', 'mean_goyet_zps', 'mean_goyet_iso_zps',
+            'has_goyet_zps', 'mixed_goyet']
+    pd.merge(left=merged[pars], right=dt_zps, on='image_id', how='right')
 
 
 if __name__ == '__main__':
