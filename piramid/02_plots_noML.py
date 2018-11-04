@@ -40,7 +40,7 @@ import custom_funs as cf
 
 storefile = '/mnt/clemente/bos0109/table_store.h5'
 
-store = pd.HDFStore(storefile)
+store = pd.HDFStore(storefile, mode='r+', complevel=5)
 store.open()
 
 #sns.set_context(font_scale=16)
@@ -988,7 +988,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
     merged['selected'] = merged.mix_goyet>=3
     if store_flush:
         store['merged'] = merged
-        store.flush()
+        store.flush(fsync=True)
 
     store.close()
     return
@@ -1009,6 +1009,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     print([args.m1_diam, args.path, args.store_flush])
-    import ipdb; ipdb.set_trace()
+
     import sys
     sys.exit(main(args.m1_diam, args.path, store_flush=args.store_flush))
