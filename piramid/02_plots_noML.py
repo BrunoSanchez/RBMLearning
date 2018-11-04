@@ -1008,5 +1008,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    print([args.m1_diam, args.path, args.store_flush])
+    import ipdb; ipdb.set_trace()
     import sys
     sys.exit(main(args.m1_diam, args.path, store_flush=args.store_flush))
