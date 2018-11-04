@@ -43,10 +43,6 @@ plot_dir = os.path.abspath('./plots/.')
 if not os.path.isdir(plot_dir):
     os.makedirs(plot_dir)
 
-#sns.set_context(font_scale=16)
-plt.rcParams["patch.force_edgecolor"] = True
-plt.rcParams['text.usetex'] = True
-
 #engine = create_engine('sqlite:///../RBpipeline/newrbogus22-dev.db')
 CONNECTION = 'postgresql://jarvis:Bessel0@172.18.122.4:5432/resimulation_docker'
 #CONNECTION = 'postgresql://jarvis:Bessel0@toritos:5432/resimu_docker'
