@@ -122,7 +122,10 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     pars = ['image_id', 'selected', 'mean_goyet_zps', 'mean_goyet_iso_zps',
             'has_goyet_zps', 'mixed_goyet']
-    pd.merge(left=merged[pars], right=dt_zps, on='image_id', how='right')
+    dt_zps = pd.merge(left=merged[pars], right=dt_zps, on='image_id', how='right')
+    dt_ois = pd.merge(left=merged[pars], right=dt_ois, on='image_id', how='right')
+    dt_sps = pd.merge(left=merged[pars], right=dt_sps, on='image_id', how='right')
+    dt_hot = pd.merge(left=merged[pars], right=dt_hot, on='image_id', how='right')
 
 
 if __name__ == '__main__':

@@ -986,6 +986,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
 # =============================================================================
 
     merged['selected'] = merged.mix_goyet>=3
+    import ipdb; ipdb.set_trace()
     if store_flush:
         store['merged'] = merged
         store.flush(fsync=True)
