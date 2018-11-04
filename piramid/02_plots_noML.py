@@ -993,7 +993,7 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--m1_diam", help="diameter to filter",
-                        default=None)
+                        default=None, type=float)
     parser.add_argument("path", help="path to plot files")
     args = parser.parse_args()
 
