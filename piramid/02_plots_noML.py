@@ -48,7 +48,7 @@ plt.rcParams["patch.force_edgecolor"] = True
 plt.rcParams['text.usetex'] = True
 
 
-def main(m1_diam=1.54, plots_path='./plots/.'):
+def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
     plot_dir = os.path.abspath(plots_path)
     if not os.path.isdir(plot_dir):
         os.makedirs(plot_dir)
@@ -982,9 +982,12 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.savefig(os.path.join(plot_dir, 'mix_goyets.svg'), dpi=400)
 
 # =============================================================================
-#
+#  Cortamos por la suma... tiene que valer 3 o mas
 # =============================================================================
 
+    merged['selected'] = merged.mix_goyet>=3
+    if store_flush:
+        store['merged'] = merged
 
     return
 
@@ -994,8 +997,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--m1_diam", help="diameter to filter",
                         default=None, type=float)
+
     parser.add_argument("path", help="path to plot files")
+
+    parser.add_argument("-s", "--store_flush",
+                        help="flush the merged to the store h5",
+                        type=bool, default=False)
+
     args = parser.parse_args()
 
     import sys
-    sys.exit(main(args.m1_diam, args.path))
+    sys.exit(main(args.m1_diam, args.path, store_flush=args.store_flush))
