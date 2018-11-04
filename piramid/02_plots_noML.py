@@ -946,6 +946,17 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     merged = pd.merge(left=merged, right=subset_hot.drop_duplicates(),
                       on='image_id', how='inner', suffixes=('', '_hot'))
 
+# =============================================================================
+# Simplemente usamos los thresholds definidos antes
+# =============================================================================
+
+    merged['has_goyet_zps'] = merged['mean_goyet_zps'] < 0.01
+    merged['has_goyet_sps'] = merged['mean_goyet_sps'] < 0.01
+    merged['has_goyet_ois'] = merged['mean_goyet_ois'] < 0.01
+    merged['has_goyet_hot'] = merged['mean_goyet_hot'] < 0.01
+
+    merged['mix_goyet'] = merged['has_goyet_zps'] + merged['has_goyet_sps'] + \
+                          merged['has_goyet_ois'] + merged['has_goyet_hot']
 
 
     return
