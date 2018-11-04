@@ -958,6 +958,17 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     merged['mix_goyet'] = merged['has_goyet_zps'] + merged['has_goyet_sps'] + \
                           merged['has_goyet_ois'] + merged['has_goyet_hot']
 
+# =============================================================================
+# Distribucion de esta sumatoria
+# =============================================================================
+    plt.figure(figsize=(4,3))
+    plt.title('images passing goyet threshold')
+
+    plt.hist(merged.mix_goyet)
+    plt.xlabel('combined goyet')
+    plt.tight_layout()
+    plt.savefig(os.path.join(plot_dir, 'mix_goyets.svg'), dpi=400)
+
 
     return
 
