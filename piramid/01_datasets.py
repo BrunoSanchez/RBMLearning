@@ -31,7 +31,6 @@ import seaborn as sns
 import pandas as pd
 
 from astropy.stats import sigma_clipped_stats
-import matplotlib.pyplot as plt
 
 import custom_funs as cf
 
