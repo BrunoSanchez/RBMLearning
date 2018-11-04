@@ -259,7 +259,7 @@ def main(argv):
         dd = grouped.apply(lambda df: sigma_clipped_stats(df['goyet'])[0])
         dd.name = 'mean_goyet'
         dt_sps = pd.merge(dt_sps, dd.to_frame(), on='image_id', how='left')
-        dt_sps['mean_goyet'] = dt_sps['mean_goyet_iso']
+        dt_sps['mean_goyet_iso'] = dt_sps['mean_goyet']
 
         dt_sps = cf.optimize_df(dt_sps)
         store['dt_sps'] = dt_sps
