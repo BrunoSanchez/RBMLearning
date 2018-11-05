@@ -100,8 +100,6 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
     #plt.ylabel(r'$\int_{-\infty}^{mag}\phi(m\prime)dm\prime$', fontsize=16)
     plt.savefig(os.path.join(plot_dir, 'lum_fun_simulated.svg'), dpi=400)
 
-    del(simus)
-    gc.collect()
 # =============================================================================
 # plot de deltas de magnitud
 # =============================================================================
@@ -922,9 +920,6 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
 
     plt.figure(figsize=(8,4))
     bins = np.arange(6.5, 26.5, .5)
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo.dropna(), bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
-
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_lo.dropna(), bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
 
@@ -933,6 +928,9 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
 
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo.dropna(), bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
+
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo.dropna(), bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
 
     plt.tick_params(labelsize=16)
     plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
@@ -946,15 +944,6 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
                 format='svg', dpi=480)
 
 # =============================================================================
-# Borrando para gaurdar memoria
-# =============================================================================
-    del(subset_zps_lo)
-    del(subset_sps_lo)
-    del(subset_hot_lo)
-    del(subset_ois_lo)
-    gc.collect()
-
-# =============================================================================
 #  Queremos los image id con buen goyet y ver quienes son
 # =============================================================================
 
@@ -963,7 +952,6 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
     merged = pd.merge(left=subset_zps[pars].drop_duplicates(),
                       right=subset_sps[pars].drop_duplicates(),
                       on='image_id', how='inner', suffixes=('_zps', '_sps'))
-
     merged = pd.merge(left=merged, right=subset_ois[pars].drop_duplicates(),
                       on='image_id', how='inner', suffixes=('', '_ois'))
 
@@ -1004,6 +992,144 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
     if store_flush:
         store['merged'] = merged
         store.flush(fsync=True)
+
+
+# =============================================================================
+# Ahora vamos a usar los seleccionados para las funciones de luminosidad
+# =============================================================================
+
+    ## Primero necesitamos las inyecciones y los perdidos, seleccionados por
+    ## mean_goyet
+
+    und_z = pd.merge(left=merged, right=store['und_z'], on='image_id',
+                     how='inner')
+    und_z = und_z[und_z.selected==True]
+
+    und_s = pd.merge(left=merged, right=store['und_s'], on='image_id',
+                     how='inner')
+    und_s = und_z[und_s.selected==True]
+
+    und_h = pd.merge(left=merged, right=store['und_h'], on='image_id',
+                     how='inner')
+    und_h = und_z[und_h.selected==True]
+
+    und_o = pd.merge(left=merged, right=store['und_o'], on='image_id',
+                     how='inner')
+    und_o = und_z[und_o.selected==True]
+
+    simus = pd.merge(left=merged, right=simus, on='image_id', how='inner')
+    simus.drop_duplicates(inplace=True)
+
+    dt_zps = pd.merge(left=merged[['image_id', 'selected']],
+                      right=dt_zps, on='image_id', how='right')
+    dt_zps = dt_zps[dt_zps.selected==True]
+
+    dt_sps = pd.merge(left=merged[['image_id', 'selected']],
+                      right=dt_sps, on='image_id', how='right')
+    dt_sps = dt_sps[dt_sps.selected==True]
+
+    dt_hot = pd.merge(left=merged[['image_id', 'selected']],
+                      right=dt_hot, on='image_id', how='right')
+    dt_hot = dt_hot[dt_hot.selected==True]
+
+    dt_ois = pd.merge(left=merged[['image_id', 'selected']],
+                      right=dt_ois, on='image_id', how='right')
+    dt_ois = dt_ois[dt_ois.selected==True]
+
+    plt.figure(figsize=(12,4))
+    plt.title('Luminosity function', fontsize=14)
+    cumulative=True
+    #magnitude bins
+    bins = np.arange(7, 26.5, 0.5)
+    plt.rcParams['text.usetex'] = True
+
+    plt.subplot(131)
+    x_bins, vals = custom_histogram(simus.app_mag.values, bins=bins,
+                                    cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'black', label='Injected')
+
+    x_bins, vals = custom_histogram(dt_ois[dt_ois.IS_REAL==True].mag.values,
+                                    bins=bins, cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'ro-', label='Bramich')
+
+    x_bins, vals = custom_histogram(dt_zps[dt_zps.IS_REAL==True].mag.values,
+                                    bins=bins, cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'b.-', label='Zackay')
+
+    x_bins, vals = custom_histogram(dt_sps[dt_sps.IS_REAL==True].mag.values,
+                                    bins=bins, cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'm:', label='$S_{corr}$')
+
+    x_bins, vals = custom_histogram(dt_hot[dt_hot.IS_REAL==True].mag.values,
+                                    bins=bins, cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'g--', label='A-Lupton')
+
+    if cumulative:
+        plt.ylabel(r'$N(>r)$', fontsize=16)
+    else:
+        plt.ylabel(r'$N(m)dm$', fontsize=16)
+    plt.ylim(1, 1e8)
+    plt.xlim(7., 23.5)
+    plt.title('Real', fontsize=16)
+    #plt.ylabel(r'$N(m)dm$', fontsize=16)
+    plt.legend(loc='best', fontsize=16)
+    plt.xlabel(r'$r \ [mag]$', fontsize=16)
+    #plt.ylim(50, 280000)
+    plt.tick_params(labelsize=16)
+
+    plt.subplot(132)
+    x_bins, vals = custom_histogram(simus.app_mag.values, bins=bins,
+                                    cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'black', label='Injected')
+    x_bins, vals = custom_histogram(dt_ois[dt_ois.IS_REAL==False].mag.values,
+                                    bins=bins, cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'ro-', label='Bramich')
+    x_bins, vals = custom_histogram(dt_zps[dt_zps.IS_REAL==False].mag.values,
+                                    bins=bins, cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'b.-', label='Zackay')
+    x_bins, vals = custom_histogram(dt_sps[dt_sps.IS_REAL==False].mag.values,
+                                    bins=bins, cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'm:', label='$S_{corr}$')
+    x_bins, vals = custom_histogram(dt_hot[dt_hot.IS_REAL==False].mag.values,
+                                    bins=bins, cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'g--', label='A-Lupton')
+    plt.xlim(7., 25.5)
+    plt.ylim(1, 1e8)
+    #plt.ylabel(r'$N(m)dm$', fontsize=16)
+    #plt.legend(loc='best', fontsize=16)
+    plt.xlabel(r'$r \ [mag]$', fontsize=16)
+    plt.title('Bogus', fontsize=16)
+    #plt.ylim(50, 280000)
+    plt.tick_params(labelsize=16)
+
+    plt.subplot(133)
+    plt.title('False Negatives', fontsize=16)
+    x_bins, vals = custom_histogram(simus.app_mag.values, bins=bins,
+                                    cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'black', label='Injected')
+    x_bins, vals = custom_histogram(und_b.app_mag.values, bins=bins,
+                                    cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'ro-', label='Bramich')
+    x_bins, vals = custom_histogram(und_z.app_mag.values, bins=bins,
+                                    cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'b.-', label='Zackay')
+    x_bins, vals = custom_histogram(und_s.app_mag.values, bins=bins,
+                                    cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'm:', label='$S_{corr}$')
+    x_bins, vals = custom_histogram(und_h.app_mag.values, bins=bins,
+                                    cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'g--', label='A-Lupton')
+    #plt.legend(loc='lower right', fontsize=16)
+    plt.xlabel(r'$r \ [mag]$', fontsize=16)
+    #plt.title('Cummulative Luminosity Function of False Negatives', fontsize=14)
+    plt.tick_params(labelsize=16)
+    plt.xlim(7., 25.5)
+    #plt.show()
+    plt.ylim(1, 1e8)
+    plt.tight_layout()
+
+    plt.savefig(os.path.join(plot_dir, 'combined_luminosities_functions.svg'), format='svg', dpi=720)
+
 
     store.close()
     return
