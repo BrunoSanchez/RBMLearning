@@ -1212,6 +1212,7 @@ s = dt_sps[['image_id', 'id_simulation']].drop_duplicates()
 h = dt_hot[['image_id', 'id_simulation']].drop_duplicates()
 z = dt_zps[['image_id', 'id_simulation']].drop_duplicates()
 
+merge = pd.merge(z, o, on='id_simulation', how='outer')
 
 
 #~ if __name__ == '__main__':
