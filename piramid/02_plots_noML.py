@@ -45,7 +45,7 @@ store.open()
 
 #sns.set_context(font_scale=16)
 plt.rcParams["patch.force_edgecolor"] = True
-plt.rcParams['text.usetex'] = True
+plt.rcParams['text.usetex'] = False
 
 
 def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):

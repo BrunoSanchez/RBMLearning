@@ -128,6 +128,9 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dt_hot = pd.merge(left=merged[pars], right=dt_hot, on='image_id', how='right')
 
 
+    dt_zps = dt_zps[dt_zps.selected=True]
+
+
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
