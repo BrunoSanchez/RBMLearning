@@ -836,7 +836,6 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
 # =============================================================================
 # Como quedan los diagramas de error de magnitud vs magnitud simulada
 # =============================================================================
-    import ipdb; ipdb.set_trace()
     plt.figure(figsize=(8,4))
     bins = np.arange(6.5, 26.5, .5)
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_hi, bins=bins)
@@ -1001,7 +1000,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
 # =============================================================================
 
     merged['selected'] = merged.mix_goyet>=3
-    import ipdb; ipdb.set_trace()
+
     if store_flush:
         store['merged'] = merged
         store.flush(fsync=True)
