@@ -100,6 +100,8 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
     #plt.ylabel(r'$\int_{-\infty}^{mag}\phi(m\prime)dm\prime$', fontsize=16)
     plt.savefig(os.path.join(plot_dir, 'lum_fun_simulated.svg'), dpi=400)
 
+    del(simus)
+    gc.collect()
 # =============================================================================
 # plot de deltas de magnitud
 # =============================================================================
@@ -945,30 +947,43 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
                 format='svg', dpi=480)
 
 # =============================================================================
+# Borrando para gaurdar memoria
+# =============================================================================
+    del(subset_zps_lo)
+    del(subset_sps_lo)
+    del(subset_hot_lo)
+    del(subset_ois_lo)
+    gc.collect()
+
+# =============================================================================
 #  Queremos los image id con buen goyet y ver quienes son
 # =============================================================================
 
-    merged = pd.merge(left=subset_zps.drop_duplicates(),
-                      right=subset_sps.drop_duplicates(),
+    pars = ['image_id', 'mean_goyet', 'mean_goyet_iso', 'id_simulation']
+
+    merged = pd.merge(left=subset_zps[pars].drop_duplicates(),
+                      right=subset_sps[pars].drop_duplicates(),
                       on='image_id', how='inner', suffixes=('_zps', '_sps'))
 
-    merged = pd.merge(left=merged, right=subset_ois.drop_duplicates(),
+    merged = pd.merge(left=merged, right=subset_ois[pars].drop_duplicates(),
                       on='image_id', how='inner', suffixes=('', '_ois'))
 
-    merged = pd.merge(left=merged, right=subset_hot.drop_duplicates(),
+    merged = pd.merge(left=merged, right=subset_hot[pars].drop_duplicates(),
                       on='image_id', how='inner', suffixes=('', '_hot'))
-
+    gc.collect()
 # =============================================================================
 # Simplemente usamos los thresholds definidos antes
 # =============================================================================
 
     merged['has_goyet_zps'] = merged['mean_goyet_zps'] < 0.01
     merged['has_goyet_sps'] = merged['mean_goyet_sps'] < 0.01
-    merged['has_goyet_ois'] = merged['mean_goyet_ois'] < 0.01
+    merged['has_goyet_ois'] = merged['mean_goyet'] < 0.01
     merged['has_goyet_hot'] = merged['mean_goyet_hot'] < 0.01
 
-    merged['mix_goyet'] = merged['has_goyet_zps'] + merged['has_goyet_sps'] + \
-                          merged['has_goyet_ois'] + merged['has_goyet_hot']
+    merged['mix_goyet'] = merged.has_goyet_zps.astype(int) + \
+                          merged.has_goyet_sps.astype(int) + \
+                          merged.has_goyet_ois.astype(int) + \
+                          merged.has_goyet_hot.astype(int)
 
 # =============================================================================
 # Distribucion de esta sumatoria
