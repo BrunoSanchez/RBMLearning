@@ -106,7 +106,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
 # plot de deltas de magnitud
 # =============================================================================
     plt.figure(figsize=(9,3))
-    plt.title('mag offsets over mag simulated')
+    plt.title('mag offsets from mag simulated')
     plt.subplot(141)
     dmag = dt_zps.sim_mag - dt_zps.mag
     dmag = dmag.dropna()
@@ -718,7 +718,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
 # =============================================================================
 # Seleccionamos los mean_goyet
 # =============================================================================
-    pars = ['mean_goyet', 'image_id', 'id_simulation',
+    pars = ['mean_goyet', 'image_id', 'id_simulation', 'mag', 'sim_mag',
             'goyet', 'goyet_iso', 'mean_goyet_iso']
     subset_zps = dt_zps[pars]
     subset_ois = dt_ois[pars]
@@ -836,7 +836,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
 # =============================================================================
 # Como quedan los diagramas de error de magnitud vs magnitud simulada
 # =============================================================================
-
+    import ipdb; ipdb.set_trace()
     plt.figure(figsize=(8,4))
     bins = np.arange(6.5, 26.5, .5)
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_hi, bins=bins)
