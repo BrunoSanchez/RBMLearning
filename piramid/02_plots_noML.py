@@ -839,16 +839,16 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
 
     plt.figure(figsize=(8,4))
     bins = np.arange(6.5, 26.5, .5)
-    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_hot_hi, bins=bins)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_hi, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
 
-    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_sps_hi, bins=bins)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_hi, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
 
-    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_zps_hi, bins=bins)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_hi, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
 
-    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_hot_hi, bins=bins)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_hi, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
 
     plt.tick_params(labelsize=16)
@@ -923,16 +923,16 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
 
     plt.figure(figsize=(8,4))
     bins = np.arange(6.5, 26.5, .5)
-    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_hot_lo, bins=bins)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
 
-    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_sps_lo, bins=bins)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_lo, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
 
-    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_zps_lo, bins=bins)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_lo, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
 
-    mean_det, stdv_det, sqrtn, mean_sim = binning_res(subset_hot_lo, bins=bins)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
 
     plt.tick_params(labelsize=16)
