@@ -1184,6 +1184,34 @@ plt.savefig(os.path.join(plot_dir, 'low_goyet_sim_mag_vs_mag_iso.png'), dpi=400)
         #~ subplot()
 
 
+dt_zps = store['dt_ois']
+if m1_diam is not None:
+    dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
+dt_zps = cf.optimize_df(dt_zps)
+dt_ois = dt_zps
+
+dt_zps = store['dt_sps']
+if m1_diam is not None:
+    dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
+dt_zps = cf.optimize_df(dt_zps)
+dt_sps = dt_zps
+
+dt_zps = store['dt_hot']
+if m1_diam is not None:
+    dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
+dt_zps = cf.optimize_df(dt_zps)
+dt_hot = dt_zps
+
+dt_zps = store['dt_zps']
+if m1_diam is not None:
+    dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
+dt_zps = cf.optimize_df(dt_zps)
+
+o = dt_ois[['image_id', 'id_simulation']].drop_duplicates()
+s = dt_sps[['image_id', 'id_simulation']].drop_duplicates()
+h = dt_hot[['image_id', 'id_simulation']].drop_duplicates()
+z = dt_zps[['image_id', 'id_simulation']].drop_duplicates()
+
 
 
 #~ if __name__ == '__main__':

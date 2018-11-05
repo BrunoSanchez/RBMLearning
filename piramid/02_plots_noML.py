@@ -738,19 +738,19 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.xlabel('mean goyet zps')
 
     plt.subplot(142)
-    dmag = subset_zps[['mean_goyet', 'image_id']].drop_duplicates().mean_goyet
+    dmag = subset_ois[['mean_goyet', 'image_id']].drop_duplicates().mean_goyet
     dmag = dmag.dropna()
     plt.hist(dmag, log=True)
     plt.xlabel('mean goyet ois')
 
     plt.subplot(143)
-    dmag = subset_zps[['mean_goyet', 'image_id']].drop_duplicates().mean_goyet
+    dmag = subset_hot[['mean_goyet', 'image_id']].drop_duplicates().mean_goyet
     dmag = dmag.dropna()
     plt.hist(dmag, log=True)
     plt.xlabel('mean goyet hot')
 
     plt.subplot(144)
-    dmag = subset_zps[['mean_goyet', 'image_id']].drop_duplicates().mean_goyet
+    dmag = subset_sps[['mean_goyet', 'image_id']].drop_duplicates().mean_goyet
     dmag = dmag.dropna()
     plt.hist(dmag, log=True)
     plt.xlabel('mean goyet sps')
@@ -771,19 +771,19 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.xlabel('mean goyet_iso zps')
 
     plt.subplot(142)
-    dmag = subset_zps[['mean_goyet_iso', 'image_id']].drop_duplicates().mean_goyet_iso
+    dmag = subset_ois[['mean_goyet_iso', 'image_id']].drop_duplicates().mean_goyet_iso
     dmag = dmag.dropna()
     plt.hist(dmag, log=True)
     plt.xlabel('mean goyet_iso ois')
 
     plt.subplot(143)
-    dmag = subset_zps[['mean_goyet_iso', 'image_id']].drop_duplicates().mean_goyet_iso
+    dmag = subset_hot[['mean_goyet_iso', 'image_id']].drop_duplicates().mean_goyet_iso
     dmag = dmag.dropna()
     plt.hist(dmag, log=True)
     plt.xlabel('mean goyet_iso hot')
 
     plt.subplot(144)
-    dmag = subset_zps[['mean_goyet_iso', 'image_id']].drop_duplicates().mean_goyet_iso
+    dmag = subset_sps[['mean_goyet_iso', 'image_id']].drop_duplicates().mean_goyet_iso
     dmag = dmag.dropna()
     plt.hist(dmag, log=True)
     plt.xlabel('mean goyet_iso sps')

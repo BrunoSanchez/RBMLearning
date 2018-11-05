@@ -44,6 +44,20 @@ store.open()
 
 simus = store['simulations']
 
+simus['new_fwhm_px'] = simus['new_fwhm'] / simus['px_scale']
+simus['ref_fwhm_px'] = simus['ref_fwhm'] / simus['px_scale']
+simus['new_back_px'] = simus['new_back_sbright'] / simus['px_scale']
+simus['ref_back_px'] = simus['ref_back_sbright'] / simus['px_scale']
+
+simus['m1_exp'] = simus['m1_diam'] * simus['exp_time']
+simus['m2_exp'] = simus['m2_diam'] * simus['exp_time']
+simus['eff_col_exp'] = simus['eff_col'] * simus['exp_time']
+
+simus['new_back_px_exp'] = simus['exp_time'] / simus['new_back_px']
+simus['ref_back_px_exp'] = simus['exp_time'] / simus['ref_back_px']
+
+
+
 cols = ['id', 'code', 'executed', 'loaded', 'crossmatched',
         'failed_to_subtract', 'possible_saturation', 'ref_starzp',
         'ref_starslope', 'ref_fwhm', 'new_fwhm', 'm1_diam', 'm2_diam',
@@ -53,15 +67,18 @@ cols = ['id', 'code', 'executed', 'loaded', 'crossmatched',
 y = simus['failed_to_subtract'].values.astype(int)
 
 x = ['ref_fwhm', 'new_fwhm', 'm1_diam', 'ref_starslope', 'm2_diam',
-     'eff_col', 'px_scale', 'ref_back_sbright', 'new_back_sbright', 'exp_time']
+     'eff_col', 'px_scale', 'ref_back_sbright', 'new_back_sbright', 'exp_time',
+     'new_fwhm_px', 'ref_fwhm_px', 'new_back_px', 'ref_back_px',
+     'm1_exp', 'm2_exp', 'eff_col_exp', 'new_back_px_exp', 'ref_back_px_exp']
 X = simus[x].values
 
 
 clf = tree.DecisionTreeClassifier(criterion='entropy',
-                                  min_impurity_decrease=0.005,
+                                  min_impurity_decrease=0.000001,
                                   class_weight=None,
+                                  max_depth=6,
                                   presort=True)
-rslts_c45 = cf.experiment(clf, X, y, printing=True)
+rslts_c45 = cf.experiment(clf, X, y, printing=True, nfolds=20)
 
 clf = rslts_c45['model']
 
@@ -73,7 +90,14 @@ dot_data = tree.export_graphviz(clf, out_file=None,
                          filled=True, rounded=True,
                          special_characters=True)
 graph = graphviz.Source(dot_data)
-graph.render('simluations.pdf')
+graph.render('simulations')
+
+
+merged = store['merged']
+
+
+pd.merge(lef=merged, right=simus, right_on=
+
 
 
 #from sklearn import ensemble
