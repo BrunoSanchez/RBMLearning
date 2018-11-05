@@ -48,7 +48,8 @@ plt.rcParams["patch.force_edgecolor"] = True
 plt.rcParams['text.usetex'] = False
 
 
-def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
+def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
+         goyet_vs_pars=False):
     plot_dir = os.path.abspath(plots_path)
     if not os.path.isdir(plot_dir):
         os.makedirs(plot_dir)
@@ -98,6 +99,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
     plt.tick_params(labelsize=15)
     plt.ylabel(r'$N(m) dm$', fontsize=16)
     #plt.ylabel(r'$\int_{-\infty}^{mag}\phi(m\prime)dm\prime$', fontsize=16)
+    plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'lum_fun_simulated.svg'), dpi=400)
 
 # =============================================================================
@@ -704,10 +706,11 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
         plt.savefig(os.path.join(plot_dir, 'goyet_vs_pars_{}.svg'.format(dia)), dpi=400)
         plt.clf()
 
-    goyet_vs_pars_plot(dt_sps, dia='scorr')
-    goyet_vs_pars_plot(dt_zps, dia='zackay')
-    goyet_vs_pars_plot(dt_ois, dia='bramich')
-    goyet_vs_pars_plot(dt_hot, dia='alard')
+    if goyet_vs_pars:
+        goyet_vs_pars_plot(dt_sps, dia='scorr')
+        goyet_vs_pars_plot(dt_zps, dia='zackay')
+        goyet_vs_pars_plot(dt_ois, dia='bramich')
+        goyet_vs_pars_plot(dt_hot, dia='alard')
 
     gc.collect()
 # =============================================================================
@@ -845,7 +848,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_hi, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
 
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_hi, bins=bins)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_hi, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
 
     plt.tick_params(labelsize=16)
@@ -856,6 +859,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
 
     plt.xlim(12, 22.5)
     plt.ylim(-3, 3)
+    plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_hi_goyet.svg'),
                 format='svg', dpi=480)
 
@@ -926,7 +930,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_lo.dropna(), bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
 
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo.dropna(), bins=bins)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_lo.dropna(), bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
 
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo.dropna(), bins=bins)
@@ -940,6 +944,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
 
     plt.xlim(12, 22.5)
     plt.ylim(-3, 3)
+    plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_lo_goyet.svg'),
                 format='svg', dpi=480)
 
@@ -1128,7 +1133,8 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False):
     plt.ylim(1, 1e8)
     plt.tight_layout()
 
-    plt.savefig(os.path.join(plot_dir, 'combined_luminosities_functions.svg'), format='svg', dpi=720)
+    plt.savefig(os.path.join(plot_dir, 'combined_luminosities_functions.svg'),
+                format='svg', dpi=720)
 
 
     store.close()
