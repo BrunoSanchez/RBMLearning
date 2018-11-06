@@ -1212,8 +1212,92 @@ s = dt_sps[['image_id', 'id_simulation']].drop_duplicates()
 h = dt_hot[['image_id', 'id_simulation']].drop_duplicates()
 z = dt_zps[['image_id', 'id_simulation']].drop_duplicates()
 
-merge = pd.merge(z, o, on='id_simulation', how='outer')
+images_hot = pd.read_sql_query("""SELECT * FROM "ImagesHOT" """, engine)
+images_zps = pd.read_sql_query("""SELECT * FROM "Images" """, engine)
+images_ois = pd.read_sql_query("""SELECT * FROM "ImagesOIS" """, engine)
+images_sps = pd.read_sql_query("""SELECT * FROM "SImages" """, engine)
+simulations = pd.read_sql_query(""" SELECT * FROM "Simulation" """, engine)
+simulated = pd.read_sql_query(""" SELECT * FROM "Simulated" """, engine)
+simulated = simulated[['simulation_id', 'image_id', 'simage_id', 'scorrimage_id',
+       'image_id_ois', 'image_id_hot']].drop_duplicates()
 
+## la tabla posta es la simulated
+
+o = images_ois[['id', 'simulation_id']].drop_duplicates()
+s = images_sps[['id', 'simulation_id']].drop_duplicates()
+h = images_hot[['id', 'simulation_id']].drop_duplicates()
+z = images_zps[['id', 'simulation_id']].drop_duplicates()
+
+print(len(o), len(s), len(h), len(z))
+print(np.max(o.id), np.max(s.id), np.max(h.id), np.max(z.id))
+print(np.max(o.simulation_id), np.max(s.simulation_id),
+      np.max(h.simulation_id), np.max(z.simulation_id))
+
+
+merge = pd.merge(z, o, on='simulation_id', how='inner',
+                 suffixes=('_z','_o'))
+print(np.sum(merge.id_z!=merge.id_o))
+
+merge = pd.merge(z, s, on='simulation_id', how='inner',
+                 suffixes=('_z','_s'))
+print(np.sum(merge.id_z!=merge.id_s))
+
+merge = pd.merge(z, h, on='simulation_id', how='inner',
+                 suffixes=('_z','_h'))
+print(np.sum(merge.id_z!=merge.id_h))
+
+merge = pd.merge(o, s, on='simulation_id', how='inner',
+                 suffixes=('_o','_s'))
+print(np.sum(merge.id_s!=merge.id_o))
+
+merge = pd.merge(o, h, on='simulation_id', how='inner',
+                 suffixes=('_o','_h'))
+print(np.sum(merge.id_o!=merge.id_h))
+
+merge = pd.merge(h, s, on='simulation_id', how='inner',
+                 suffixes=('_h','_s'))
+print(np.sum(merge.id_h!=merge.id_s))
+
+
+merge = pd.merge(z, o, on='id', how='inner',
+                 suffixes=('_z','_o'))
+print(np.sum(merge.simulation_id_z!=merge.simulation_id_o))
+
+merge = pd.merge(z, s, on='id', how='inner',
+                 suffixes=('_z','_s'))
+print(np.sum(merge.simulation_id_z!=merge.simulation_id_s))
+
+merge = pd.merge(z, h, on='id', how='inner',
+                 suffixes=('_z','_h'))
+print(np.sum(merge.simulation_id_z!=merge.simulation_id_h))
+
+merge = pd.merge(o, s, on='id', how='inner',
+                 suffixes=('_o','_s'))
+print(np.sum(merge.simulation_id_s!=merge.simulation_id_o))
+
+merge = pd.merge(o, h, on='id', how='inner',
+                 suffixes=('_o','_h'))
+print(np.sum(merge.simulation_id_o!=merge.simulation_id_h))
+
+merge = pd.merge(h, s, on='id', how='inner',
+                 suffixes=('_h','_s'))
+print(np.sum(merge.simulation_id_h!=merge.simulation_id_s))
+
+
+
+
+merge = pd.merge(left=simulated, right=s, left_on='simage_id', right_on='id',
+                 how='left', suffixes=('','_s'))
+merge = pd.merge(left=merge, right=o, left_on='image_id_ois', right_on='id',
+                 how='left', suffixes=('','_o'))
+merge = pd.merge(left=merge, right=h, left_on='image_id_hot', right_on='id',
+                 how='left', suffixes=('','_h'))
+merge = pd.merge(left=merge, right=z, left_on='image_id', right_on='id',
+                 how='left', suffixes=('','_z'))
+
+print(np.sum(merge.simulation_id_h!=merge.simulation_id_s))
+print(np.sum(merge.simulation_id!=merge.simulation_id_h))
+print(merge[merge.simulation_id!=merge.simulation_id_h]['simulation_id_h'])
 
 #~ if __name__ == '__main__':
     #~ import sys
