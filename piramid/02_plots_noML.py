@@ -1029,8 +1029,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                      'mean_goyet_sps', 'mean_goyet', 'mean_goyet_hot2']]
     merged['mean_goyet_hot'] = merged['mean_goyet_hot2']
     merged['mean_goyet_ois'] = merged['mean_goyet']
-    merged.drop('mean_goyet_hot2', inplace=True)
-    merged.drop('mean_goyet', inplace=True)
+    merged.drop(columns=['mean_goyet_hot2', 'mean_goyet'],inplace=True)
 
     if store_flush:
         try:
