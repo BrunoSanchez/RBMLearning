@@ -1026,9 +1026,11 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                      'image_id_ois', 'image_id_hot', 'has_goyet_sps',
                      'has_goyet_zps', 'has_goyet_ois', 'has_goyet_hot',
                      'mix_goyet', 'selected', 'mean_goyet_zps',
-                     'mean_goyet_sps', 'mean_goyet_ois', 'mean_goyet_hot2']]
+                     'mean_goyet_sps', 'mean_goyet', 'mean_goyet_hot2']]
     merged['mean_goyet_hot'] = merged['mean_goyet_hot2']
+    merged['mean_goyet_ois'] = merged['mean_goyet']
     merged.drop('mean_goyet_hot2', inplace=True)
+    merged.drop('mean_goyet', inplace=True)
 
     if store_flush:
         try:
@@ -1045,7 +1047,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     ## Primero necesitamos las inyecciones y los perdidos, seleccionados por
     ## mean_goyet
     #selection = merged[merged.selected==True]
-    import ipdb; ipdb.set_trace()
+
     und_z = pd.merge(left=merged[['image_id_zps', 'selected']],
                      right=store['und_z'],
                      left_on='image_id_zps', right_on='image_id',
@@ -1069,7 +1071,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                      left_on='image_id_ois', right_on='image_id',
                      how='right')[['selected', 'app_mag', 'simulated_id']]
     und_o = und_o[und_o.selected==True].drop_duplicates()
-
+    import ipdb; ipdb.set_trace()
     simus = pd.merge(left=merged[['simulation_id', 'selected']],
                       right=simus[['simulation_id','app_mag']],
                       on='simulation_id', how='right')
