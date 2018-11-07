@@ -995,7 +995,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     merged['has_goyet_zps'] = merged['mean_goyet_zps'] < 0.01
     merged['has_goyet_sps'] = merged['mean_goyet_sps'] < 0.01
     merged['has_goyet_ois'] = merged['mean_goyet'] < 0.01
-    merged['has_goyet_hot'] = merged['mean_goyet_hot'] < 0.01
+    merged['has_goyet_hot'] = merged['mean_goyet_hot2'] < 0.01
 
     merged['mix_goyet'] = merged.has_goyet_zps.astype(int) + \
                           merged.has_goyet_sps.astype(int) + \
