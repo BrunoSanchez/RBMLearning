@@ -1011,6 +1011,14 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 
     merged['selected'] = merged.mix_goyet>=3
 
+    merged = merged[['simulation_id', 'image_id_zps', 'image_id_sps',
+                     'image_id_ois', 'image_id_hot', 'has_goyet_sps',
+                     'has_goyet_zps', 'has_goyet_ois', 'has_goyet_hot',
+                     'mix_goyet', 'selected', 'mean_goyet_zps',
+                     'mean_goyet_sps', 'mean_goyet_ois', 'mean_goyet_hot2']]
+    merged['mean_goyet_hot'] = merged['mean_goyet_hot2']
+    merged.drop('mean_goyet_hot2', inplace=True)
+
     if store_flush:
         try:
             store.remove('merged')
@@ -1030,25 +1038,25 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     und_z = pd.merge(left=merged[['image_id_zps', 'selected']],
                      right=store['und_z'],
                      left_on='image_id_zps', right_on='image_id',
-                     how='right')
+                     how='right')[['selected', 'app_mag', 'simulated_id']]
     und_z = und_z[und_z.selected==True].drop_duplicates()
 
     und_s = pd.merge(left=merged[['image_id_sps', 'selected']],
                      right=store['und_s'],
                      left_on='image_id_sps', right_on='image_id',
-                     how='right')
+                     how='right')[['selected', 'app_mag', 'simulated_id']]
     und_s = und_s[und_s.selected==True].drop_duplicates()
 
     und_h = pd.merge(left=merged[['image_id_hot', 'selected']],
                      right=store['und_h'],
                      left_on='image_id_hot', right_on='image_id',
-                     how='right')
+                     how='right')[['selected', 'app_mag', 'simulated_id']]
     und_h = und_h[und_h.selected==True].drop_duplicates()
 
     und_o = pd.merge(left=merged[['image_id_ois', 'selected']],
                      right=store['und_b'],
                      left_on='image_id_ois', right_on='image_id',
-                     how='right')
+                     how='right')[['selected', 'app_mag', 'simulated_id']]
     und_o = und_o[und_o.selected==True].drop_duplicates()
 
     simus2 = pd.merge(left=merged[['simulation_id', 'selected']],
