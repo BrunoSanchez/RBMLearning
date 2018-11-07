@@ -986,7 +986,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 
     merged = pd.merge(left=merged, right=sel_hot,
                       left_on='simulation_id', right_on='simulation_id',
-                      how='inner', suffixes=('', '_hot'))
+                      how='inner', suffixes=('', '_hot2'))
     gc.collect()
 # =============================================================================
 # Simplemente usamos los thresholds definidos antes
@@ -1035,25 +1035,31 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     ## Primero necesitamos las inyecciones y los perdidos, seleccionados por
     ## mean_goyet
 
-    und_z = pd.merge(left=merged, right=store['und_z'],
+    und_z = pd.merge(left=merged[['image_id_zps', 'selected']],
+                     right=store['und_z'],
                      left_on='image_id_zps', right_on='image_id',
-                     how='inner')
-    und_z = und_z[und_z.selected==True]
+                     how='right')
+    und_z = und_z[und_z.selected==True].drop_duplicates()
 
-    und_s = pd.merge(left=merged, right=store['und_s'],
+    und_s = pd.merge(left=merged[['image_id_sps', 'selected']],
+                     right=store['und_s'],
                      left_on='image_id_sps', right_on='image_id',
-                     how='inner')
-    und_s = und_z[und_s.selected==True]
+                     how='right')
+    und_s = und_s[und_s.selected==True].drop_duplicates()
 
-    und_h = pd.merge(left=merged, right=store['und_h'], on='image_id',
-                     how='inner')
-    und_h = und_z[und_h.selected==True]
+    und_h = pd.merge(left=merged[['image_id_hot', 'selected']],
+                     right=store['und_h'],
+                     left_on='image_id_hot', right_on='image_id',
+                     how='right')
+    und_h = und_h[und_h.selected==True].drop_duplicates()
 
-    und_o = pd.merge(left=merged, right=store['und_o'], on='image_id',
-                     how='inner')
-    und_o = und_z[und_o.selected==True]
+    und_o = pd.merge(left=merged[['image_id_ois', 'selected']],
+                     right=store['und_o'],
+                     left_on='image_id_ois', right_on='image_id'
+                     how='right')
+    und_o = und_o[und_o.selected==True].drop_duplicates()
 
-    simus = pd.merge(left=merged, right=simus, on='image_id', how='inner')
+    simus = pd.merge(left=merged, right=simus, on='simulation_id', how='right')
     simus.drop_duplicates(inplace=True)
 
     dt_zps = pd.merge(left=merged[['image_id', 'selected']],
@@ -1062,15 +1068,15 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 
     dt_sps = pd.merge(left=merged[['image_id', 'selected']],
                       right=dt_sps, on='image_id', how='right')
-    dt_sps = dt_sps[dt_sps.selected==True]
+    dt_sps = dt_sps[dt_sps.selected==True].drop_duplicates()
 
     dt_hot = pd.merge(left=merged[['image_id', 'selected']],
                       right=dt_hot, on='image_id', how='right')
-    dt_hot = dt_hot[dt_hot.selected==True]
+    dt_hot = dt_hot[dt_hot.selected==True].drop_duplicates()
 
     dt_ois = pd.merge(left=merged[['image_id', 'selected']],
                       right=dt_ois, on='image_id', how='right')
-    dt_ois = dt_ois[dt_ois.selected==True]
+    dt_ois = dt_ois[dt_ois.selected==True].drop_duplicates()
 
     plt.figure(figsize=(12,4))
     plt.title('Luminosity function', fontsize=14)
