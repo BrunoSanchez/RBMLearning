@@ -1026,7 +1026,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     ## Primero necesitamos las inyecciones y los perdidos, seleccionados por
     ## mean_goyet
     #selection = merged[merged.selected==True]
-
+    import ipdb; ipdb.set_trace()
     und_z = pd.merge(left=merged[['image_id_zps', 'selected']],
                      right=store['und_z'],
                      left_on='image_id_zps', right_on='image_id',
