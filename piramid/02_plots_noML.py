@@ -1071,6 +1071,10 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                      how='right')[['selected', 'app_mag', 'simulated_id']]
     und_o = und_o[und_o.selected==True].drop_duplicates()
     import ipdb; ipdb.set_trace()
+    chunks = cf.chunksplit(simus, n_chunks=20)
+    for a_chunk in chunks:
+
+
     simus = pd.merge(left=merged[['simulation_id', 'selected']],
                       right=simus[['simulation_id','app_mag']],
                       on='simulation_id', how='right')
