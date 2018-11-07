@@ -1060,14 +1060,16 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                      how='right')
     und_o = und_o[und_o.selected==True].drop_duplicates()
 
-    simus = pd.merge(left=merged[['simulation_id', 'selected']],
+    simus = pd.merge(left=selection[['simulation_id', 'selected']],
                      right=simus.drop_duplicates(),
                      on='simulation_id', how='right')
     simus.drop_duplicates(inplace=True)
 
-    dt_zps = pd.merge(left=merged[['image_id', 'selected']],
-                      right=dt_zps, on='image_id', how='right')
-    dt_zps = dt_zps[dt_zps.selected==True]
+    dt_zps = pd.merge(left=merged[['image_id_zps', 'selected']],
+                      right=dt_zps,
+                      left_on='image_id_zps', right_on='image_id',
+                      how='right')
+    dt_zps = dt_zps[dt_zps.selected==True].drop_duplicates()
 
     dt_sps = pd.merge(left=merged[['image_id', 'selected']],
                       right=dt_sps, on='image_id', how='right')
