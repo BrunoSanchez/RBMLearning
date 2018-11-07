@@ -68,6 +68,9 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     simus.drop('scorrimage_id', axis=1, inplace=True)
     simus.drop('loaded', axis=1, inplace=True)
     simus.drop('crossmatched', axis=1, inplace=True)
+    simus.drop('possible_saturation', axis=1, inplace=True)
+    simus.drop('', axis=1, inplace=True)
+    simus.drop('', axis=1, inplace=True)
     # =============================================================================
     # tables
     # =============================================================================
@@ -1063,10 +1066,10 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                      how='right')
     und_o = und_o[und_o.selected==True].drop_duplicates()
     import ipdb; ipdb.set_trace()
-    simus = pd.merge(left=selection[['simulation_id', 'selected']],
-                     right=simus.drop_duplicates(),
+    simus2 = pd.merge(left=selection[['simulation_id', 'selected']],
+                     right=simus[['simulation_id','app_mag']],
                      on='simulation_id', how='right')
-    simus.drop_duplicates(inplace=True)
+    #simus.drop_duplicates(inplace=True)
 
     dt_zps = pd.merge(left=merged[['image_id_zps', 'selected']],
                       right=dt_zps,
