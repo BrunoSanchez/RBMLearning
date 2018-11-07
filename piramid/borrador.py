@@ -1285,7 +1285,6 @@ print(np.sum(merge.simulation_id_h!=merge.simulation_id_s))
 
 
 
-
 merge = pd.merge(left=simulated, right=s, left_on='simage_id', right_on='id',
                  how='left', suffixes=('','_s'))
 merge = pd.merge(left=merge, right=o, left_on='image_id_ois', right_on='id',
@@ -1298,6 +1297,13 @@ merge = pd.merge(left=merge, right=z, left_on='image_id', right_on='id',
 print(np.sum(merge.simulation_id_h!=merge.simulation_id_s))
 print(np.sum(merge.simulation_id!=merge.simulation_id_h))
 print(merge[merge.simulation_id!=merge.simulation_id_h]['simulation_id_h'])
+
+merge.simulation_id_h = merge.simulation_id
+
+#ahora merge tiene la tabla de ids correctamente alineadas!!
+
+
+
 
 #~ if __name__ == '__main__':
     #~ import sys

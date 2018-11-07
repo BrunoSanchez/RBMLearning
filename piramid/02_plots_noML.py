@@ -951,17 +951,42 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
 #  Queremos los image id con buen goyet y ver quienes son
 # =============================================================================
+    import ipdb; ipdb.set_trace()
+    ids_mix = store['ids_mix']
 
     pars = ['image_id', 'mean_goyet', 'mean_goyet_iso', 'id_simulation']
 
-    merged = pd.merge(left=subset_zps[pars].drop_duplicates(),
-                      right=subset_sps[pars].drop_duplicates(),
-                      on='image_id', how='inner', suffixes=('_zps', '_sps'))
-    merged = pd.merge(left=merged, right=subset_ois[pars].drop_duplicates(),
-                      on='image_id', how='inner', suffixes=('', '_ois'))
+    sel_zps = pd.merge(left=subset_zps[pars].drop_duplicates(),
+                       right=ids_mix['simulation_id', 'image_id'],
+                       left_on='image_id', right_on='image_id',
+                       suffixes=('_id_mix', '_zps'))
 
-    merged = pd.merge(left=merged, right=subset_hot[pars].drop_duplicates(),
-                      on='image_id', how='inner', suffixes=('', '_hot'))
+    sel_ois = pd.merge(left=subset_ois[pars].drop_duplicates(),
+                       right=ids_mix['simulation_id', 'image_id_ois'],
+                       left_on='image_id', right_on='image_id_ois',
+                       suffixes=('_id_mix', '_ois'))
+
+    sel_sps = pd.merge(left=subset_sps[pars].drop_duplicates(),
+                       right=ids_mix['simulation_id', 'simage_id'],
+                       left_on='image_id', right_on='simage_id',
+                       suffixes=('_id_mix', '_sps'))
+
+    sel_hot = pd.merge(left=subset_hot[pars].drop_duplicates(),
+                       right=ids_mix['simulation_id', 'image_id_hot'],
+                       left_on='image_id', right_on='image_id_hot',
+                       suffixes=('_id_mix', '_hot'))
+
+    merged = pd.merge(left=sel_zps, right=sel_sps,
+                      left_on='simulation_id', right_on='simulation_id',
+                      how='inner', suffixes=('_zps', '_sps'))
+
+    merged = pd.merge(left=merged, right=sel_ois,
+                      left_on='simulation_id_zps', right_on='simulation_id',
+                      how='inner', suffixes=('', '_ois'))
+
+    merged = pd.merge(left=merged, right=sel_hot,
+                      left_on='simulation_id_zps', right_on='simulation_id',
+                      how='inner', suffixes=('', '_hot'))
     gc.collect()
 # =============================================================================
 # Simplemente usamos los thresholds definidos antes
