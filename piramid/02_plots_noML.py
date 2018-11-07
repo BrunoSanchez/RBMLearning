@@ -1020,6 +1020,10 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     merged['selected'] = merged.mix_goyet>=3
 
     if store_flush:
+        try:
+            store.remove('merged')
+        except:
+            pass
         store['merged'] = merged
         store.flush(fsync=True)
 
@@ -1031,11 +1035,13 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     ## Primero necesitamos las inyecciones y los perdidos, seleccionados por
     ## mean_goyet
 
-    und_z = pd.merge(left=merged, right=store['und_z'], on='image_id',
+    und_z = pd.merge(left=merged, right=store['und_z'],
+                     left_on='image_id_zps', right_on='image_id',
                      how='inner')
     und_z = und_z[und_z.selected==True]
 
-    und_s = pd.merge(left=merged, right=store['und_s'], on='image_id',
+    und_s = pd.merge(left=merged, right=store['und_s'],
+                     left_on='image_id_sps', right_on='image_id',
                      how='inner')
     und_s = und_z[und_s.selected==True]
 
