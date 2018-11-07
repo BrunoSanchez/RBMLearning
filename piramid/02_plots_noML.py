@@ -955,7 +955,6 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
 #  Queremos los image id con buen goyet y ver quienes son
 # =============================================================================
-    import ipdb; ipdb.set_trace()
     ids_mix = store['ids_mix']
 
     pars = ['image_id', 'mean_goyet', 'mean_goyet_iso', 'id_simulation']
@@ -1063,7 +1062,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                      left_on='image_id_ois', right_on='image_id',
                      how='right')
     und_o = und_o[und_o.selected==True].drop_duplicates()
-
+    import ipdb; ipdb.set_trace()
     simus = pd.merge(left=selection[['simulation_id', 'selected']],
                      right=simus.drop_duplicates(),
                      on='simulation_id', how='right')
