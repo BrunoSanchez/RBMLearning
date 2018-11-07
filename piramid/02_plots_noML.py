@@ -69,8 +69,6 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     simus.drop('loaded', axis=1, inplace=True)
     simus.drop('crossmatched', axis=1, inplace=True)
     simus.drop('possible_saturation', axis=1, inplace=True)
-    simus.drop('', axis=1, inplace=True)
-    simus.drop('', axis=1, inplace=True)
     # =============================================================================
     # tables
     # =============================================================================
