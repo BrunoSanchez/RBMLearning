@@ -1065,30 +1065,30 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     und_o = und_o[und_o.selected==True].drop_duplicates()
     import ipdb; ipdb.set_trace()
     simus2 = pd.merge(left=selection[['simulation_id', 'selected']],
-                     right=simus[['simulation_id','app_mag']],
-                     on='simulation_id', how='right')
+                      right=simus[['simulation_id','app_mag']],
+                      on='simulation_id', how='right')
     #simus.drop_duplicates(inplace=True)
 
     d_zps = pd.merge(left=merged[['image_id_zps', 'selected']],
-                     right=dt_zps[['image_id', 'mag']],
+                     right=dt_zps[['image_id', 'mag', 'IS_REAL']],
                      left_on='image_id_zps', right_on='image_id',
                      how='right')
     d_zps = d_zps[d_zps.selected==True]
 
     d_sps = pd.merge(left=merged[['image_id_sps', 'selected']],
-                     right=dt_sps[['image_id', 'mag']],
+                     right=dt_sps[['image_id', 'mag', 'IS_REAL']],
                      left_on='image_id_sps', right_on='image_id',
                      how='right')
     d_sps = dt_sps[d_sps.selected==True]
 
     d_hot = pd.merge(left=merged[['image_id_hot', 'selected']],
-                     right=dt_hot[['image_id', 'mag']],
+                     right=dt_hot[['image_id', 'mag', 'IS_REAL']],
                      left_on='image_id_hot', right_on='image_id',
                      how='right')
     d_hot = d_hot[d_hot.selected==True]
 
     d_ois = pd.merge(left=merged[['image_id_ois', 'selected']],
-                     right=dt_ois[['image_id', 'mag']],
+                     right=dt_ois[['image_id', 'mag', 'IS_REAL']],
                      left_on='image_id_ois', right_on='image_id',
                      how='right')
     dt_ois = dt_ois[d_ois.selected==True]
@@ -1105,7 +1105,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                                     cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'black', label='Injected')
 
-    x_bins, vals = custom_histogram(dt_ois[dt_ois.IS_REAL==True].mag.values,
+    x_bins, vals = custom_histogram(d_ois[d_ois.IS_REAL==True].mag.values,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'ro-', label='Bramich')
 
