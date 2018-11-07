@@ -1054,8 +1054,8 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     und_h = und_h[und_h.selected==True].drop_duplicates()
 
     und_o = pd.merge(left=merged[['image_id_ois', 'selected']],
-                     right=store['und_o'],
-                     left_on='image_id_ois', right_on='image_id'
+                     right=store['und_b'],
+                     left_on='image_id_ois', right_on='image_id',
                      how='right')
     und_o = und_o[und_o.selected==True].drop_duplicates()
 
