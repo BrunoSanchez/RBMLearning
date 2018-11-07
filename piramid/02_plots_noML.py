@@ -62,8 +62,12 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
         simulations = simulations[simulations.m1_diam==m1_diam]
 
     simus = pd.merge(left=simulations, right=simulated,
-                     right_on='simulation_id', left_on='id', how='outer')
-
+                     right_on='simulation_id', left_on='id', how='inner')
+    simus.drop_duplicates(inplace=True)
+    simus.drop('executed', axis=1, inplace=True)
+    simus.drop('scorrimage_id', axis=1, inplace=True)
+    simus.drop('loaded', axis=1, inplace=True)
+    simus.drop('crossmatched', axis=1, inplace=True)
     # =============================================================================
     # tables
     # =============================================================================
