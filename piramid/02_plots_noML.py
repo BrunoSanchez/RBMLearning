@@ -1069,23 +1069,29 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                      on='simulation_id', how='right')
     #simus.drop_duplicates(inplace=True)
 
-    dt_zps = pd.merge(left=merged[['image_id_zps', 'selected']],
-                      right=dt_zps,
-                      left_on='image_id_zps', right_on='image_id',
-                      how='right')
-    dt_zps = dt_zps[dt_zps.selected==True].drop_duplicates()
+    d_zps = pd.merge(left=merged[['image_id_zps', 'selected']],
+                     right=dt_zps[['image_id', 'mag']],
+                     left_on='image_id_zps', right_on='image_id',
+                     how='right')
+    d_zps = d_zps[d_zps.selected==True]
 
-    dt_sps = pd.merge(left=merged[['image_id', 'selected']],
-                      right=dt_sps, on='image_id', how='right')
-    dt_sps = dt_sps[dt_sps.selected==True].drop_duplicates()
+    d_sps = pd.merge(left=merged[['image_id_sps', 'selected']],
+                     right=dt_sps[['image_id', 'mag']],
+                     left_on='image_id_sps', right_on='image_id',
+                     how='right')
+    d_sps = dt_sps[d_sps.selected==True]
 
-    dt_hot = pd.merge(left=merged[['image_id', 'selected']],
-                      right=dt_hot, on='image_id', how='right')
-    dt_hot = dt_hot[dt_hot.selected==True].drop_duplicates()
+    d_hot = pd.merge(left=merged[['image_id_hot', 'selected']],
+                     right=dt_hot[['image_id', 'mag']],
+                     left_on='image_id_hot', right_on='image_id',
+                     how='right')
+    d_hot = d_hot[d_hot.selected==True]
 
-    dt_ois = pd.merge(left=merged[['image_id', 'selected']],
-                      right=dt_ois, on='image_id', how='right')
-    dt_ois = dt_ois[dt_ois.selected==True].drop_duplicates()
+    d_ois = pd.merge(left=merged[['image_id_ois', 'selected']],
+                     right=dt_ois[['image_id', 'mag']],
+                     left_on='image_id_ois', right_on='image_id',
+                     how='right')
+    dt_ois = dt_ois[d_ois.selected==True]
 
     plt.figure(figsize=(12,4))
     plt.title('Luminosity function', fontsize=14)
