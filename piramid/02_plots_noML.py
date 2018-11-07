@@ -1070,32 +1070,32 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                      how='right')[['selected', 'app_mag', 'simulated_id']]
     und_o = und_o[und_o.selected==True].drop_duplicates()
 
-    simus2 = pd.merge(left=merged[['simulation_id', 'selected']],
+    simus = pd.merge(left=merged[['simulation_id', 'selected']],
                       right=simus[['simulation_id','app_mag']],
                       on='simulation_id', how='right')
-    simus2 = simus2[simus2.selected==True]
+    simus = simus[simus.selected==True]
     #simus.drop_duplicates(inplace=True)
 
     d_zps = pd.merge(left=merged[['image_id_zps', 'selected']],
-                     right=dt_zps[['image_id', 'mag', 'IS_REAL']],
+                     right=subset_zps[['image_id', 'mag', 'IS_REAL']],
                      left_on='image_id_zps', right_on='image_id',
                      how='right')
     d_zps = d_zps[d_zps.selected==True].drop_duplicates()
 
     d_sps = pd.merge(left=merged[['image_id_sps', 'selected']],
-                     right=dt_sps[['image_id', 'mag', 'IS_REAL']],
+                     right=subset_sps[['image_id', 'mag', 'IS_REAL']],
                      left_on='image_id_sps', right_on='image_id',
                      how='right')
     d_sps = d_sps[d_sps.selected==True].drop_duplicates()
 
     d_hot = pd.merge(left=merged[['image_id_hot', 'selected']],
-                     right=dt_hot[['image_id', 'mag', 'IS_REAL']],
+                     right=subset_hot[['image_id', 'mag', 'IS_REAL']],
                      left_on='image_id_hot', right_on='image_id',
                      how='right')
     d_hot = d_hot[d_hot.selected==True].drop_duplicates()
 
     d_ois = pd.merge(left=merged[['image_id_ois', 'selected']],
-                     right=dt_ois[['image_id', 'mag', 'IS_REAL']],
+                     right=subset_ois[['image_id', 'mag', 'IS_REAL']],
                      left_on='image_id_ois', right_on='image_id',
                      how='right')
     d_ois = d_ois[d_ois.selected==True].drop_duplicates()
