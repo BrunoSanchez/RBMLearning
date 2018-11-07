@@ -957,22 +957,22 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     pars = ['image_id', 'mean_goyet', 'mean_goyet_iso', 'id_simulation']
 
     sel_zps = pd.merge(left=subset_zps[pars].drop_duplicates(),
-                       right=ids_mix['simulation_id', 'image_id'],
+                       right=ids_mix[['simulation_id', 'image_id']],
                        left_on='image_id', right_on='image_id',
                        suffixes=('_id_mix', '_zps'))
 
     sel_ois = pd.merge(left=subset_ois[pars].drop_duplicates(),
-                       right=ids_mix['simulation_id', 'image_id_ois'],
+                       right=ids_mix[['simulation_id', 'image_id_ois']],
                        left_on='image_id', right_on='image_id_ois',
                        suffixes=('_id_mix', '_ois'))
 
     sel_sps = pd.merge(left=subset_sps[pars].drop_duplicates(),
-                       right=ids_mix['simulation_id', 'simage_id'],
+                       right=ids_mix[['simulation_id', 'simage_id']],
                        left_on='image_id', right_on='simage_id',
                        suffixes=('_id_mix', '_sps'))
 
     sel_hot = pd.merge(left=subset_hot[pars].drop_duplicates(),
-                       right=ids_mix['simulation_id', 'image_id_hot'],
+                       right=ids_mix[['simulation_id', 'image_id_hot']],
                        left_on='image_id', right_on='image_id_hot',
                        suffixes=('_id_mix', '_hot'))
 
