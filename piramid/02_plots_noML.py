@@ -1019,7 +1019,6 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
         store['merged'] = merged
         store.flush(fsync=True)
 
-
 # =============================================================================
 # Ahora vamos a usar los seleccionados para las funciones de luminosidad
 # =============================================================================
