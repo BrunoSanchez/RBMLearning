@@ -979,6 +979,11 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     merged = pd.merge(left=merged, right=sel_hot,
                       left_on='simulation_id', right_on='simulation_id',
                       how='inner', suffixes=('', '_hot2'))
+
+    del(sel_zps)
+    del(sel_sps)
+    del(sel_ois)
+    del(sel_hot)
     gc.collect()
 # =============================================================================
 # Simplemente usamos los thresholds definidos antes
