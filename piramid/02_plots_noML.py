@@ -1063,7 +1063,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                      left_on='image_id_ois', right_on='image_id',
                      how='right')
     und_o = und_o[und_o.selected==True].drop_duplicates()
-    import ipdb; ipdb.set_trace()
+
     simus2 = pd.merge(left=selection[['simulation_id', 'selected']],
                       right=simus[['simulation_id','app_mag']],
                       on='simulation_id', how='right')
@@ -1079,7 +1079,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                      right=dt_sps[['image_id', 'mag', 'IS_REAL']],
                      left_on='image_id_sps', right_on='image_id',
                      how='right')
-    d_sps = dt_sps[d_sps.selected==True]
+    d_sps = d_sps[d_sps.selected==True]
 
     d_hot = pd.merge(left=merged[['image_id_hot', 'selected']],
                      right=dt_hot[['image_id', 'mag', 'IS_REAL']],
@@ -1091,7 +1091,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                      right=dt_ois[['image_id', 'mag', 'IS_REAL']],
                      left_on='image_id_ois', right_on='image_id',
                      how='right')
-    dt_ois = dt_ois[d_ois.selected==True]
+    d_ois = d_ois[d_ois.selected==True]
 
     plt.figure(figsize=(12,4))
     plt.title('Luminosity function', fontsize=14)
@@ -1109,15 +1109,15 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'ro-', label='Bramich')
 
-    x_bins, vals = custom_histogram(dt_zps[dt_zps.IS_REAL==True].mag.values,
+    x_bins, vals = custom_histogram(d_zps[d_zps.IS_REAL==True].mag.values,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'b.-', label='Zackay')
 
-    x_bins, vals = custom_histogram(dt_sps[dt_sps.IS_REAL==True].mag.values,
+    x_bins, vals = custom_histogram(d_sps[d_sps.IS_REAL==True].mag.values,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'm:', label='$S_{corr}$')
 
-    x_bins, vals = custom_histogram(dt_hot[dt_hot.IS_REAL==True].mag.values,
+    x_bins, vals = custom_histogram(d_hot[d_hot.IS_REAL==True].mag.values,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'g--', label='A-Lupton')
 
@@ -1138,16 +1138,16 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     x_bins, vals = custom_histogram(simus.app_mag.values, bins=bins,
                                     cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'black', label='Injected')
-    x_bins, vals = custom_histogram(dt_ois[dt_ois.IS_REAL==False].mag.values,
+    x_bins, vals = custom_histogram(d_ois[d_ois.IS_REAL==False].mag.values,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'ro-', label='Bramich')
-    x_bins, vals = custom_histogram(dt_zps[dt_zps.IS_REAL==False].mag.values,
+    x_bins, vals = custom_histogram(d_zps[d_zps.IS_REAL==False].mag.values,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'b.-', label='Zackay')
-    x_bins, vals = custom_histogram(dt_sps[dt_sps.IS_REAL==False].mag.values,
+    x_bins, vals = custom_histogram(d_sps[d_sps.IS_REAL==False].mag.values,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'm:', label='$S_{corr}$')
-    x_bins, vals = custom_histogram(dt_hot[dt_hot.IS_REAL==False].mag.values,
+    x_bins, vals = custom_histogram(d_hot[d_hot.IS_REAL==False].mag.values,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'g--', label='A-Lupton')
     plt.xlim(7., 25.5)
