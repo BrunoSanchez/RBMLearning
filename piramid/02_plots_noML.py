@@ -935,7 +935,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.title('Simulated Data', fontsize=14)
     plt.legend(loc='best', fontsize=14)
 
-    plt.xlim(12, 22.5)
+    plt.xlim(10, 22.5)
     plt.ylim(-3, 3)
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_lo_goyet.svg'),
@@ -1167,7 +1167,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     x_bins, vals = cf.custom_histogram(simus.app_mag.values, bins=bins,
                                     cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'black', label='Injected')
-    x_bins, vals = cf.custom_histogram(und_b.app_mag.values, bins=bins,
+    x_bins, vals = cf.custom_histogram(und_o.app_mag.values, bins=bins,
                                     cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'ro-', label='Bramich')
     x_bins, vals = cf.custom_histogram(und_z.app_mag.values, bins=bins,
