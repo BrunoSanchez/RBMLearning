@@ -1021,7 +1021,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
 
     merged['selected'] = merged.mix_goyet>=3
-    import ipdb; ipdb.set_trace()
+
     merged = merged[['simulation_id', 'image_id_zps', 'image_id_sps',
                      'image_id_ois', 'image_id_hot', 'has_goyet_sps',
                      'has_goyet_zps', 'has_goyet_ois', 'has_goyet_hot',
