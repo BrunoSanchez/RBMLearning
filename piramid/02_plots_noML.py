@@ -719,6 +719,12 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     subset_sps = dt_sps[pars]
     subset_hot = dt_hot[pars]
 
+    del(dt_zps)
+    del(dt_sps)
+    del(dt_ois)
+    del(dt_hot)
+    gc.collect()
+
 # =============================================================================
 # Veamos la distrubicion general de las medias de los goyet
 # =============================================================================
