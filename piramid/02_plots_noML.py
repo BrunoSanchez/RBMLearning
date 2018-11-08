@@ -1084,7 +1084,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 
     simus = pd.merge(left=merged[['simulation_id', 'selected']],
                       right=simus[['simulation_id','app_mag']],
-                      on='simulation_id', how='right')
+                      on='simulation_id', how='right', sort=False, copy=False)
     simus = simus[simus.selected==True]
     #simus.drop_duplicates(inplace=True)
 
