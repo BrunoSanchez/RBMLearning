@@ -1080,57 +1080,6 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     subset_hot = subset_hot.loc[subset_hot['image_id'].isin(ids)].drop_duplicates()
 
 
-    #~ d_zps = pd.merge(left=merged[['image_id_zps', 'selected']],
-                     #~ right=subset_zps[['image_id', 'mag', 'IS_REAL']],
-                     #~ left_on='image_id_zps', right_on='image_id',
-                     #~ how='right')
-    #~ d_zps = d_zps[d_zps.selected==True].drop_duplicates()
-
-    #~ d_sps = pd.merge(left=merged[['image_id_sps', 'selected']],
-                     #~ right=subset_sps[['image_id', 'mag', 'IS_REAL']],
-                     #~ left_on='image_id_sps', right_on='image_id',
-                     #~ how='right')
-    #~ d_sps = d_sps[d_sps.selected==True].drop_duplicates()
-
-    #~ d_hot = pd.merge(left=merged[['image_id_hot', 'selected']],
-                     #~ right=subset_hot[['image_id', 'mag', 'IS_REAL']],
-                     #~ left_on='image_id_hot', right_on='image_id',
-                     #~ how='right')
-    #~ d_hot = d_hot[d_hot.selected==True].drop_duplicates()
-
-    #~ d_ois = pd.merge(left=merged[['image_id_ois', 'selected']],
-                     #~ right=subset_ois[['image_id', 'mag', 'IS_REAL']],
-                     #~ left_on='image_id_ois', right_on='image_id',
-                     #~ how='right')
-    #~ d_ois = d_ois[d_ois.selected==True].drop_duplicates()
-
-
-    #~ import ipdb; ipdb.set_trace()
-    #~ size=200
-    #~ pars = ['simulation_id','app_mag']
-    #~ res = []
-    #~ for i_chunk, chunk in enumerate(np.array_split(simus[pars], size)):
-        #~ cross = pd.merge(left=merged[['simulation_id', 'selected']],
-                         #~ right=chunk,
-                         #~ on='simulation_id', how='right', sort=False, copy=False)
-        #~ res.append(cross[cross.selected==True].drop_duplicates())
-        #~ if i_chunk%2:
-            #~ interm_res = cf.optimize_df(pd.concat(res))
-            #~ store['intermediate_res_{}'.format(i_chunk)] = interm_res
-            #~ store.flush()
-            #~ del(interm_res)
-            #~ res = []
-
-    #~ import ipdb; ipdb.set_trace()
-
-    #~ res = []
-    #~ for i in range(size):
-        #~ if i%2:
-            #~ res.append(store['intermediate_res_{}'.format(i)].drop_duplicates()['app_mag'].values)
-
-    #~ simus = pd.concat(res)
-    #~ del(res)
-
 # =============================================================================
 # plot de funcion de luminosidad inyectada
 # =============================================================================
