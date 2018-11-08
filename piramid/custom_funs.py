@@ -294,6 +294,3 @@ def cal_mags(df):
     dd = pd.DataFrame(np.array([ids, offsets, slopes]).T,
                       columns=['image_id', 'mean_offset', 'slope'])
     return dd
-
-def chunksplit(df, n_chunks=3):
-    return chunks

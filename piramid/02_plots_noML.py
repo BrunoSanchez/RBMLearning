@@ -1070,10 +1070,17 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                      left_on='image_id_ois', right_on='image_id',
                      how='right')[['selected', 'app_mag', 'simulated_id']]
     und_o = und_o[und_o.selected==True].drop_duplicates()
-    import ipdb; ipdb.set_trace()
-    chunks = cf.chunksplit(simus, n_chunks=20)
-    for a_chunk in chunks:
 
+    import ipdb; ipdb.set_trace()
+    #~ size=20
+    #~ pars = ['simulation_id','app_mag']
+    #~ res = []
+    #~ for i_chunk, chunk in enumerate(np.array_split(simus[pars], size)):
+        #~ cross = pd.merge(left=merged[['simulation_id', 'selected']],
+                         #~ right=chunk,
+                         #~ on='simulation_id', how='right', sort=False, copy=False)
+        #~ res.append(cross[cross.selected==True])
+    #~ simus = pd.concat(res)
 
     simus = pd.merge(left=merged[['simulation_id', 'selected']],
                       right=simus[['simulation_id','app_mag']],
