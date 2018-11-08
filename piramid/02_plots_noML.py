@@ -1054,17 +1054,17 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     und_z = store['und_z']
     und_z = und_z.loc[und_z['image_id'].isin(ids)].drop_duplicates()
 
-    ids = selected['image_id_zps'].drop_duplicates().values
-    und_z = store['und_z']
-    und_z = und_z.loc[und_z['image_id'].isin(ids)].drop_duplicates()
+    ids = selected['image_id_sps'].drop_duplicates().values
+    und_s = store['und_s']
+    und_s = und_s.loc[und_s['image_id'].isin(ids)].drop_duplicates()
 
-    ids = selected['image_id_zps'].drop_duplicates().values
-    und_z = store['und_z']
-    und_z = und_z.loc[und_z['image_id'].isin(ids)].drop_duplicates()
+    ids = selected['image_id_hot'].drop_duplicates().values
+    und_h = store['und_h']
+    und_h = und_h.loc[und_h['image_id'].isin(ids)].drop_duplicates()
 
-    ids = selected['image_id_zps'].drop_duplicates().values
-    und_z = store['und_z']
-    und_z = und_z.loc[und_z['image_id'].isin(ids)].drop_duplicates()
+    ids = selected['image_id_ois'].drop_duplicates().values
+    und_o = store['und_b']
+    und_o = und_o.loc[und_o['image_id'].isin(ids)].drop_duplicates()
 
 
     #~ und_z = pd.merge(left=merged[['image_id_zps', 'selected']],
