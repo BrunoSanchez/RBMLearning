@@ -1080,6 +1080,9 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                          right=chunk,
                          on='simulation_id', how='right', sort=False, copy=False)
         res.append(cross[cross.selected==True])
+        if i_chunk%%5:
+            interm_res = cf.optimize_df(pd.concat(res)).to_csv('./intermediate_res_{}.csv'.format(i_chunk))
+            res = []
     simus = pd.concat(res)
 
     #~ simus = pd.merge(left=merged[['simulation_id', 'selected']],
