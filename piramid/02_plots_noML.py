@@ -1011,7 +1011,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.figure(figsize=(4,3))
     plt.title('images passing goyet threshold')
 
-    plt.hist(merged.mix_goyet)
+    plt.hist(merged[['simulation_id', 'mix_goyet']].drop_duplicates().mix_goyet)
     plt.xlabel('combined goyet')
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mix_goyets.svg'), dpi=400)
