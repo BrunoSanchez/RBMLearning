@@ -1088,7 +1088,13 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
             res = []
 
     import ipdb; ipdb.set_trace()
-    #simus = pd.concat(res)
+
+    res = []
+    for i in range(size):
+        if i%2:
+            res.append(store['intermediate_res_{}'.format(i)]
+
+    simus = pd.concat(res)
 
     #~ simus = pd.merge(left=merged[['simulation_id', 'selected']],
                       #~ right=simus[['simulation_id','app_mag']],
