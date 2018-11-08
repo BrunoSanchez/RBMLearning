@@ -1072,7 +1072,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     und_o = und_o[und_o.selected==True].drop_duplicates()
 
     import ipdb; ipdb.set_trace()
-    size=20
+    size=200
     pars = ['simulation_id','app_mag']
     res = []
     for i_chunk, chunk in enumerate(np.array_split(simus[pars], size)):
@@ -1080,10 +1080,15 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                          right=chunk,
                          on='simulation_id', how='right', sort=False, copy=False)
         res.append(cross[cross.selected==True])
-        if i_chunk%%5:
-            interm_res = cf.optimize_df(pd.concat(res)).to_csv('./intermediate_res_{}.csv'.format(i_chunk))
+        if i_chunk%%2:
+            interm_res = cf.optimize_df(pd.concat(res))
+            store['intermediate_res_{}'.format(i_chunk)] = interm_res
+            store.flush()
+            del(interm_res)
             res = []
-    simus = pd.concat(res)
+
+    import ipdb; ipdb.set_trace()
+    #simus = pd.concat(res)
 
     #~ simus = pd.merge(left=merged[['simulation_id', 'selected']],
                       #~ right=simus[['simulation_id','app_mag']],
