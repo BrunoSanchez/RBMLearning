@@ -95,8 +95,13 @@ graph.render('simulations')
 
 merged = store['merged']
 
+pars = ['simulation_id', 'has_goyet_sps', 'has_goyet_zps', 'has_goyet_ois',
+       'has_goyet_hot', 'mix_goyet', 'selected', 'mean_goyet_zps',
+       'mean_goyet_sps', 'mean_goyet_hot', 'mean_goyet_ois']
 
-pd.merge(lef=merged, right=simus, right_on=
+dat = pd.merge(left=merged[pars], right=simus,
+               left_on='simulation_id', right_on='id',
+               how='inner')
 
 
 
