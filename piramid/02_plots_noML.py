@@ -1045,31 +1045,51 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 
     ## Primero necesitamos las inyecciones y los perdidos, seleccionados por
     ## mean_goyet
-    #selection = merged[merged.selected==True]
+    selected = merged[merged.selected==True]
 
-    und_z = pd.merge(left=merged[['image_id_zps', 'selected']],
-                     right=store['und_z'],
-                     left_on='image_id_zps', right_on='image_id',
-                     how='right')[['selected', 'app_mag', 'simulated_id']]
-    und_z = und_z[und_z.selected==True].drop_duplicates()
+    ids = selected['simulation_id'].drop_duplicates().values
+    simus = simus.loc[simus['simulation_id'].isin(ids)].drop_duplicates()
 
-    und_s = pd.merge(left=merged[['image_id_sps', 'selected']],
-                     right=store['und_s'],
-                     left_on='image_id_sps', right_on='image_id',
-                     how='right')[['selected', 'app_mag', 'simulated_id']]
-    und_s = und_s[und_s.selected==True].drop_duplicates()
+    ids = selected['image_id_zps'].drop_duplicates().values
+    und_z = store['und_z']
+    und_z = und_z.loc[und_z['image_id'].isin(ids)].drop_duplicates()
 
-    und_h = pd.merge(left=merged[['image_id_hot', 'selected']],
-                     right=store['und_h'],
-                     left_on='image_id_hot', right_on='image_id',
-                     how='right')[['selected', 'app_mag', 'simulated_id']]
-    und_h = und_h[und_h.selected==True].drop_duplicates()
+    ids = selected['image_id_zps'].drop_duplicates().values
+    und_z = store['und_z']
+    und_z = und_z.loc[und_z['image_id'].isin(ids)].drop_duplicates()
 
-    und_o = pd.merge(left=merged[['image_id_ois', 'selected']],
-                     right=store['und_b'],
-                     left_on='image_id_ois', right_on='image_id',
-                     how='right')[['selected', 'app_mag', 'simulated_id']]
-    und_o = und_o[und_o.selected==True].drop_duplicates()
+    ids = selected['image_id_zps'].drop_duplicates().values
+    und_z = store['und_z']
+    und_z = und_z.loc[und_z['image_id'].isin(ids)].drop_duplicates()
+
+    ids = selected['image_id_zps'].drop_duplicates().values
+    und_z = store['und_z']
+    und_z = und_z.loc[und_z['image_id'].isin(ids)].drop_duplicates()
+
+
+    #~ und_z = pd.merge(left=merged[['image_id_zps', 'selected']],
+                     #~ right=store['und_z'],
+                     #~ left_on='image_id_zps', right_on='image_id',
+                     #~ how='right')[['selected', 'app_mag', 'simulated_id']]
+    #~ und_z = und_z[und_z.selected==True].drop_duplicates()
+
+    #~ und_s = pd.merge(left=merged[['image_id_sps', 'selected']],
+                     #~ right=store['und_s'],
+                     #~ left_on='image_id_sps', right_on='image_id',
+                     #~ how='right')[['selected', 'app_mag', 'simulated_id']]
+    #~ und_s = und_s[und_s.selected==True].drop_duplicates()
+
+    #~ und_h = pd.merge(left=merged[['image_id_hot', 'selected']],
+                     #~ right=store['und_h'],
+                     #~ left_on='image_id_hot', right_on='image_id',
+                     #~ how='right')[['selected', 'app_mag', 'simulated_id']]
+    #~ und_h = und_h[und_h.selected==True].drop_duplicates()
+
+    #~ und_o = pd.merge(left=merged[['image_id_ois', 'selected']],
+                     #~ right=store['und_b'],
+                     #~ left_on='image_id_ois', right_on='image_id',
+                     #~ how='right')[['selected', 'app_mag', 'simulated_id']]
+    #~ und_o = und_o[und_o.selected==True].drop_duplicates()
 
     #~ simus = pd.merge(left=merged[['simulation_id', 'selected']],
                       #~ right=simus[['simulation_id','app_mag']],
@@ -1127,9 +1147,6 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 
     #~ simus = pd.concat(res)
     #~ del(res)
-
-    ids = merged[merged.selected==True]['simulation_id'].drop_duplicates().values
-    simus = simus.loc[simus['simulation_id'].isin(ids)]
 
 # =============================================================================
 # plot de funcion de luminosidad inyectada
