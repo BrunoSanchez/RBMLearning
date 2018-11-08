@@ -973,7 +973,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                        right=ids_mix[['simulation_id', 'image_id_hot']],
                        left_on='image_id', right_on='image_id_hot',
                        suffixes=('_id_mix', '_hot'))
-    ##
+    import ipdb; ipdb.set_trace()
     merged = pd.merge(left=sel_zps, right=sel_sps,
                       left_on='simulation_id', right_on='simulation_id',
                       how='inner', suffixes=('_zps', '_sps'))
