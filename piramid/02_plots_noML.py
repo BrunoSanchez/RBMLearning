@@ -1080,7 +1080,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                          right=chunk,
                          on='simulation_id', how='right', sort=False, copy=False)
         res.append(cross[cross.selected==True])
-        if i_chunk%%2:
+        if i_chunk%2:
             interm_res = cf.optimize_df(pd.concat(res))
             store['intermediate_res_{}'.format(i_chunk)] = interm_res
             store.flush()
