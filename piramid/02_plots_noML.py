@@ -879,10 +879,10 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
 # vetamos por mean goyet
 # =============================================================================
-    subset_zps_lo = subset_zps[subset_zps.mean_goyet<0.01]
-    subset_hot_lo = subset_hot[subset_hot.mean_goyet<0.01]
-    subset_sps_lo = subset_sps[subset_sps.mean_goyet<0.01]
-    subset_ois_lo = subset_ois[subset_ois.mean_goyet<0.01]
+    subset_zps_lo = subset_zps[subset_zps.mean_goyet<0.05]
+    subset_hot_lo = subset_hot[subset_hot.mean_goyet<0.05]
+    subset_sps_lo = subset_sps[subset_sps.mean_goyet<0.05]
+    subset_ois_lo = subset_ois[subset_ois.mean_goyet<0.05]
 
 # =============================================================================
 # Como quedan las distros de goyet individuales
@@ -995,10 +995,10 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # Simplemente usamos los thresholds definidos antes
 # =============================================================================
 
-    merged['has_goyet_zps'] = merged['mean_goyet_zps'] < 0.01
-    merged['has_goyet_sps'] = merged['mean_goyet_sps'] < 0.01
-    merged['has_goyet_ois'] = merged['mean_goyet'] < 0.01
-    merged['has_goyet_hot'] = merged['mean_goyet_hot2'] < 0.01
+    merged['has_goyet_zps'] = merged['mean_goyet_zps'] < 0.05
+    merged['has_goyet_sps'] = merged['mean_goyet_sps'] < 0.05
+    merged['has_goyet_ois'] = merged['mean_goyet'] < 0.05
+    merged['has_goyet_hot'] = merged['mean_goyet_hot2'] < 0.05
 
     merged['mix_goyet'] = merged.has_goyet_zps.astype(int) + \
                           merged.has_goyet_sps.astype(int) + \
