@@ -1067,35 +1067,18 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     und_o = und_o.loc[und_o['image_id'].isin(ids)].drop_duplicates()
 
 
-    #~ und_z = pd.merge(left=merged[['image_id_zps', 'selected']],
-                     #~ right=store['und_z'],
-                     #~ left_on='image_id_zps', right_on='image_id',
-                     #~ how='right')[['selected', 'app_mag', 'simulated_id']]
-    #~ und_z = und_z[und_z.selected==True].drop_duplicates()
+    ids = selected['image_id_zps'].drop_duplicates().values
+    subset_zps = subset_zps.loc[subset_zps['image_id'].isin(ids)].drop_duplicates()
 
-    #~ und_s = pd.merge(left=merged[['image_id_sps', 'selected']],
-                     #~ right=store['und_s'],
-                     #~ left_on='image_id_sps', right_on='image_id',
-                     #~ how='right')[['selected', 'app_mag', 'simulated_id']]
-    #~ und_s = und_s[und_s.selected==True].drop_duplicates()
+    ids = selected['image_id_sps'].drop_duplicates().values
+    subset_sps = subset_sps.loc[subset_sps['image_id'].isin(ids)].drop_duplicates()
 
-    #~ und_h = pd.merge(left=merged[['image_id_hot', 'selected']],
-                     #~ right=store['und_h'],
-                     #~ left_on='image_id_hot', right_on='image_id',
-                     #~ how='right')[['selected', 'app_mag', 'simulated_id']]
-    #~ und_h = und_h[und_h.selected==True].drop_duplicates()
+    ids = selected['image_id_ois'].drop_duplicates().values
+    subset_ois = subset_ois.loc[subset_ois['image_id'].isin(ids)].drop_duplicates()
 
-    #~ und_o = pd.merge(left=merged[['image_id_ois', 'selected']],
-                     #~ right=store['und_b'],
-                     #~ left_on='image_id_ois', right_on='image_id',
-                     #~ how='right')[['selected', 'app_mag', 'simulated_id']]
-    #~ und_o = und_o[und_o.selected==True].drop_duplicates()
+    ids = selected['image_id_hot'].drop_duplicates().values
+    subset_hot = subset_hot.loc[subset_hot['image_id'].isin(ids)].drop_duplicates()
 
-    #~ simus = pd.merge(left=merged[['simulation_id', 'selected']],
-                      #~ right=simus[['simulation_id','app_mag']],
-                      #~ on='simulation_id', how='right', sort=False, copy=False)
-    #~ simus = simus[simus.selected==True]
-    #simus.drop_duplicates(inplace=True)
 
     d_zps = pd.merge(left=merged[['image_id_zps', 'selected']],
                      right=subset_zps[['image_id', 'mag', 'IS_REAL']],
