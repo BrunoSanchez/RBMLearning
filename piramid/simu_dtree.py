@@ -101,9 +101,10 @@ pars = ['simulation_id', 'has_goyet_sps', 'has_goyet_zps', 'has_goyet_ois',
 
 dat = pd.merge(left=merged[pars], right=simus,
                left_on='simulation_id', right_on='id',
-               how='inner')
-
-
+               how='right')
+dat.drop(columns=['code', 'crossmatched', 'loaded', 'executed', 'possible_saturation'], inplace=True)
+dat = cf.optimize_df(dat)
+dat.drop_duplicates(inplace=True)
 
 #from sklearn import ensemble
 #clf2 = ensemble.RandomForestClassifier(criterion='entropy',
