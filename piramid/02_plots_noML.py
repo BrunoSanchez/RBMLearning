@@ -951,6 +951,11 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 #  Queremos los image id con buen goyet y ver quienes son
 # =============================================================================
     ids_mix = store['ids_mix']
+    cond = ids_mix['image_id']==ids_mix['simage_id']
+    cond = cond & (ids_mix['image_id']==ids_mix['image_id_hot'])
+    cond = cond & (ids_mix['image_id']==ids_mix['image_id_ois'])
+    ids_mix = ids_mix.loc[cond]
+
     import ipdb; ipdb.set_trace()
     pars = ['image_id', 'mean_goyet', 'mean_goyet_iso', 'id_simulation']
 
@@ -1011,6 +1016,13 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                           merged.has_goyet_sps.astype(int) + \
                           merged.has_goyet_ois.astype(int) + \
                           merged.has_goyet_hot.astype(int)
+# =============================================================================
+#  Cortamos por la suma... tiene que valer 3 o mas
+# =============================================================================
+
+    merged = merged.loc[merged[['simulation_id', 'mix_goyet']].drop_duplicates().index]
+    merged['selected'] = merged.mix_goyet>=3
+    merged = merged.loc[merged[['simulation_id', 'selected']].drop_duplicates().index]
 
 # =============================================================================
 # Distribucion de esta sumatoria
@@ -1024,11 +1036,8 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.savefig(os.path.join(plot_dir, 'mix_goyets.svg'), dpi=400)
 
 # =============================================================================
-#  Cortamos por la suma... tiene que valer 3 o mas
+#  Cantidades extra, para storage
 # =============================================================================
-
-    merged['selected'] = merged.mix_goyet>=3
-
     merged = merged[['simulation_id', 'image_id_zps', 'image_id_sps',
                      'image_id_ois', 'image_id_hot', 'has_goyet_sps',
                      'has_goyet_zps', 'has_goyet_ois', 'has_goyet_hot',
