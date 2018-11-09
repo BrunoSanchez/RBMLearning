@@ -957,6 +957,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     sel_zps = pd.merge(left=subset_zps[pars].drop_duplicates(),
                        right=ids_mix[['simulation_id', 'image_id']],
                        left_on='image_id', right_on='image_id',
+                       #left_on='id_simulation', right_on='simulation_id',
                        suffixes=('_id_mix', '_zps'))
 
     sel_ois = pd.merge(left=subset_ois[pars].drop_duplicates(),
@@ -985,6 +986,11 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     merged = pd.merge(left=merged, right=sel_hot,
                       left_on='simulation_id', right_on='simulation_id',
                       how='inner', suffixes=('', '_hot2'))
+
+    cond = merged['image_id_zps']==merged['image_id_sps']
+    cond = cond & (merged['image_id_zps']==merged['image_id_hot'])
+    cond = cond & (merged['image_id_zps']==merged['image_id_ois'])
+    merged = merged[cond]
 
     del(sel_zps)
     del(sel_sps)
