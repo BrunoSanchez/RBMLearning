@@ -951,7 +951,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 #  Queremos los image id con buen goyet y ver quienes son
 # =============================================================================
     ids_mix = store['ids_mix']
-
+    import ipdb; ipdb.set_trace()
     pars = ['image_id', 'mean_goyet', 'mean_goyet_iso', 'id_simulation']
 
     sel_zps = pd.merge(left=subset_zps[pars].drop_duplicates(),
@@ -990,7 +990,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     cond = merged['image_id_zps']==merged['image_id_sps']
     cond = cond & (merged['image_id_zps']==merged['image_id_hot'])
     cond = cond & (merged['image_id_zps']==merged['image_id_ois'])
-    import ipdb; ipdb.set_trace()
+
     merged = merged[cond]
 
     del(sel_zps)
