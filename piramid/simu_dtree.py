@@ -122,11 +122,19 @@ x = ['ref_starzp', 'ref_starslope', 'ref_fwhm',
      'eff_col_exp', 'new_back_px_exp', 'ref_back_px_exp']
 
 
-       ['ref_fwhm', 'new_fwhm', 'm1_diam', 'ref_starslope', 'm2_diam',
-     'eff_col', 'px_scale', 'ref_back_sbright', 'new_back_sbright', 'exp_time',
-     'new_fwhm_px', 'ref_fwhm_px', 'new_back_px', 'ref_back_px',
-     'm1_exp', 'm2_exp', 'eff_col_exp', 'new_back_px_exp', 'ref_back_px_exp']
-X = simus[x].values
+dat['new_fwhm_px'] = dat['new_fwhm'] / dat['px_scale']
+dat['ref_fwhm_px'] = dat['ref_fwhm'] / dat['px_scale']
+dat['new_back_px'] = dat['new_back_sbright'] / dat['px_scale']
+dat['ref_back_px'] = dat['ref_back_sbright'] / dat['px_scale']
+
+dat['m1_exp'] = dat['m1_diam'] * dat['exp_time']
+dat['m2_exp'] = dat['m2_diam'] * dat['exp_time']
+dat['eff_col_exp'] = dat['eff_col'] * dat['exp_time']
+
+dat['new_back_px_exp'] = dat['exp_time'] / dat['new_back_px']
+dat['ref_back_px_exp'] = dat['exp_time'] / dat['ref_back_px']
+
+X = dat[x].values
 
 
 clf = tree.DecisionTreeClassifier(criterion='entropy',
@@ -139,12 +147,13 @@ rslts_c45 = cf.experiment(clf, X, y, printing=True, nfolds=20)
 clf = rslts_c45['model']
 
 
-
 dot_data = tree.export_graphviz(clf, out_file=None,
                          feature_names=x,
-                         class_names=['simulated', 'failed'],
+                         class_names=['selected', 'disposed'],
                          filled=True, rounded=True,
                          special_characters=True)
 graph = graphviz.Source(dot_data)
-graph.render('simulations')
+graph.render('selected')
+
+
 
