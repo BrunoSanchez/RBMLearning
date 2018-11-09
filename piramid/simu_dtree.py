@@ -61,6 +61,7 @@ simus['resolving_power_px'] = simus['resolving_power_R'] / dat['px_scale']
 simus['new_fwhm_theta'] = simus['new_fwhm'] / simus['resolving_power_R']
 simus['ref_fwhm_theta'] = simus['ref_fwhm'] / simus['resolving_power_R']
 
+
 cols = ['id', 'code', 'executed', 'loaded', 'crossmatched',
         'failed_to_subtract', 'possible_saturation', 'ref_starzp',
         'ref_starslope', 'ref_fwhm', 'new_fwhm', 'm1_diam', 'm2_diam',
