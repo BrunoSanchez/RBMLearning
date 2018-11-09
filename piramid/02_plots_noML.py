@@ -956,7 +956,6 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     cond = cond & (ids_mix['image_id']==ids_mix['image_id_ois'])
     ids_mix = ids_mix.loc[cond]
 
-    import ipdb; ipdb.set_trace()
     pars = ['image_id', 'mean_goyet', 'mean_goyet_iso', 'id_simulation']
 
     sel_zps = pd.merge(left=subset_zps[pars].drop_duplicates(),
