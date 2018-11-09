@@ -77,7 +77,7 @@ x = ['ref_fwhm', 'new_fwhm', 'm1_diam', 'ref_starslope', 'm2_diam',
 X = simus[x].values
 
 clf = tree.DecisionTreeClassifier(criterion='entropy',
-                                  min_impurity_decrease=0.00001,
+                                  min_impurity_decrease=0.001,
                                   class_weight=None,
                                   max_depth=6,
                                   presort=True)
