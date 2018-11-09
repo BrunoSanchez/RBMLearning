@@ -56,7 +56,10 @@ simus['eff_col_exp'] = simus['eff_col'] * simus['exp_time']
 simus['new_back_px_exp'] = simus['exp_time'] / simus['new_back_px']
 simus['ref_back_px_exp'] = simus['exp_time'] / simus['ref_back_px']
 
-
+simus['resolving_power_R'] = (1.22 * (6.25e-9)/simus['m1_diam'])*(180.*3600./np.pi)
+simus['resolving_power_px'] = simus['resolving_power_R'] / dat['px_scale']
+simus['new_fwhm_theta'] = simus['new_fwhm'] / simus['resolving_power_R']
+simus['ref_fwhm_theta'] = simus['ref_fwhm'] / simus['resolving_power_R']
 
 cols = ['id', 'code', 'executed', 'loaded', 'crossmatched',
         'failed_to_subtract', 'possible_saturation', 'ref_starzp',
@@ -67,7 +70,9 @@ y = simus['failed_to_subtract'].values.astype(int)
 x = ['ref_fwhm', 'new_fwhm', 'm1_diam', 'ref_starslope', 'm2_diam',
      'eff_col', 'px_scale', 'ref_back_sbright', 'new_back_sbright', 'exp_time',
      'new_fwhm_px', 'ref_fwhm_px', 'new_back_px', 'ref_back_px',
-     'm1_exp', 'm2_exp', 'eff_col_exp', 'new_back_px_exp', 'ref_back_px_exp']
+     'm1_exp', 'm2_exp', 'eff_col_exp', 'new_back_px_exp', 'ref_back_px_exp'
+     'resolving_power_R', 'resolving_power_px',
+     'new_fwhm_theta', 'ref_fwhm_theta']
 X = simus[x].values
 
 clf = tree.DecisionTreeClassifier(criterion='entropy',
