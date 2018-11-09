@@ -103,6 +103,7 @@ dat = cf.optimize_df(dat)
 dat.drop_duplicates(inplace=True)
 
 
+
 cols = ['simulation_id', 'has_goyet_sps', 'has_goyet_zps', 'has_goyet_ois',
        'has_goyet_hot', 'mix_goyet', 'selected', 'mean_goyet_zps',
        'mean_goyet_sps', 'mean_goyet_hot', 'mean_goyet_ois', 'id',
@@ -112,9 +113,16 @@ cols = ['simulation_id', 'has_goyet_sps', 'has_goyet_zps', 'has_goyet_ois',
        'ref_fwhm_px', 'new_back_px', 'ref_back_px', 'm1_exp', 'm2_exp',
        'eff_col_exp', 'new_back_px_exp', 'ref_back_px_exp']
 
-y = dat['failed_to_subtract'].values.astype(int)
+y = (dat['selected'] | dat['failed_to_subtract']).values.astype(int)
 
-x = ['ref_fwhm', 'new_fwhm', 'm1_diam', 'ref_starslope', 'm2_diam',
+x = ['ref_starzp', 'ref_starslope', 'ref_fwhm',
+     'new_fwhm', 'm1_diam', 'm2_diam', 'eff_col', 'px_scale',
+     'ref_back_sbright', 'new_back_sbright', 'exp_time', 'new_fwhm_px',
+     'ref_fwhm_px', 'new_back_px', 'ref_back_px', 'm1_exp', 'm2_exp',
+     'eff_col_exp', 'new_back_px_exp', 'ref_back_px_exp']
+
+
+       ['ref_fwhm', 'new_fwhm', 'm1_diam', 'ref_starslope', 'm2_diam',
      'eff_col', 'px_scale', 'ref_back_sbright', 'new_back_sbright', 'exp_time',
      'new_fwhm_px', 'ref_fwhm_px', 'new_back_px', 'ref_back_px',
      'm1_exp', 'm2_exp', 'eff_col_exp', 'new_back_px_exp', 'ref_back_px_exp']
