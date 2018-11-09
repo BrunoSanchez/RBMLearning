@@ -113,14 +113,10 @@ cols = ['simulation_id', 'has_goyet_sps', 'has_goyet_zps', 'has_goyet_ois',
        'ref_fwhm_px', 'new_back_px', 'ref_back_px', 'm1_exp', 'm2_exp',
        'eff_col_exp', 'new_back_px_exp', 'ref_back_px_exp']
 
-y = (dat['selected'] | dat['failed_to_subtract']).values.astype(int)
-
-x = ['ref_starzp', 'ref_starslope', 'ref_fwhm',
-     'new_fwhm', 'm1_diam', 'm2_diam', 'eff_col', 'px_scale',
-     'ref_back_sbright', 'new_back_sbright', 'exp_time', 'new_fwhm_px',
-     'ref_fwhm_px', 'new_back_px', 'ref_back_px', 'm1_exp', 'm2_exp',
-     'eff_col_exp', 'new_back_px_exp', 'ref_back_px_exp']
-
+dat['resolving_power_R'] = (1.22 * (6.25e-9)/dat['m1_diam'])*(180.*3600./np.pi)
+dat['resolving_power_px'] = dat['resolving_power_R'] / dat['px_scale']
+dat['new_fwhm_theta'] = dat['new_fwhm'] / dat['resolving_power_R']
+dat['ref_fwhm_theta'] = dat['ref_fwhm'] / dat['resolving_power_R']
 
 dat['new_fwhm_px'] = dat['new_fwhm'] / dat['px_scale']
 dat['ref_fwhm_px'] = dat['ref_fwhm'] / dat['px_scale']
@@ -134,6 +130,16 @@ dat['eff_col_exp'] = dat['eff_col'] * dat['exp_time']
 dat['new_back_px_exp'] = dat['exp_time'] / dat['new_back_px']
 dat['ref_back_px_exp'] = dat['exp_time'] / dat['ref_back_px']
 
+
+x = ['ref_starzp', 'ref_starslope', 'ref_fwhm',
+     'new_fwhm', 'm1_diam', 'm2_diam', 'eff_col', 'px_scale',
+     'ref_back_sbright', 'new_back_sbright', 'exp_time', 'new_fwhm_px',
+     'ref_fwhm_px', 'new_back_px', 'ref_back_px', 'm1_exp', 'm2_exp',
+     'eff_col_exp', 'new_back_px_exp', 'ref_back_px_exp',
+     'resolving_power_R', 'resolving_power_px',
+     'new_fwhm_theta', 'ref_fwhm_theta']
+
+y = (dat['selected'] | dat['failed_to_subtract']).values.astype(int)
 X = dat[x].values
 
 
