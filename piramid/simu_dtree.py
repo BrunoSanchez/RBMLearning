@@ -66,6 +66,7 @@ cols = ['id', 'code', 'executed', 'loaded', 'crossmatched',
         'ref_starslope', 'ref_fwhm', 'new_fwhm', 'm1_diam', 'm2_diam',
         'eff_col', 'px_scale', 'ref_back_sbright', 'new_back_sbright',
         'exp_time']
+
 y = simus['failed_to_subtract'].values.astype(int)
 x = ['ref_fwhm', 'new_fwhm', 'm1_diam', 'ref_starslope', 'm2_diam',
      'eff_col', 'px_scale', 'ref_back_sbright', 'new_back_sbright', 'exp_time',
