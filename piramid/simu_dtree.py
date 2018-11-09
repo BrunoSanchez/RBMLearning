@@ -138,7 +138,7 @@ X = dat[x].values
 
 
 clf = tree.DecisionTreeClassifier(criterion='entropy',
-                                  min_impurity_decrease=0.0001,
+                                  min_impurity_decrease=0.01,
                                   class_weight=None,
                                   max_depth=6,
                                   presort=True)
