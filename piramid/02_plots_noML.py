@@ -1121,19 +1121,19 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                                     cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'black', label='Injected')
 
-    x_bins, vals = cf.custom_histogram(d_ois[d_ois.IS_REAL==True].mag.values,
+    x_bins, vals = cf.custom_histogram(subset_ois[subset_ois.IS_REAL==True].mag.values,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'ro-', label='Bramich')
 
-    x_bins, vals = cf.custom_histogram(d_zps[d_zps.IS_REAL==True].mag.values,
+    x_bins, vals = cf.custom_histogram(subset_zps[subset_zps.IS_REAL==True].mag.values,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'b.-', label='Zackay')
 
-    x_bins, vals = cf.custom_histogram(d_sps[d_sps.IS_REAL==True].mag.values,
+    x_bins, vals = cf.custom_histogram(subset_sps[subset_sps.IS_REAL==True].mag.values,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'm:', label='$S_{corr}$')
 
-    x_bins, vals = cf.custom_histogram(d_hot[d_hot.IS_REAL==True].mag.values,
+    x_bins, vals = cf.custom_histogram(subset_hot[subset_hot.IS_REAL==True].mag.values,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'g--', label='A-Lupton')
 
@@ -1154,16 +1154,16 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     x_bins, vals = cf.custom_histogram(simus.app_mag.values, bins=bins,
                                     cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'black', label='Injected')
-    x_bins, vals = cf.custom_histogram(d_ois[d_ois.IS_REAL==False].mag.values,
+    x_bins, vals = cf.custom_histogram(subset_ois[subset_ois.IS_REAL==False].mag.values,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'ro-', label='Bramich')
-    x_bins, vals = cf.custom_histogram(d_zps[d_zps.IS_REAL==False].mag.values,
+    x_bins, vals = cf.custom_histogram(subset_zps[subset_zps.IS_REAL==False].mag.values,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'b.-', label='Zackay')
-    x_bins, vals = cf.custom_histogram(d_sps[d_sps.IS_REAL==False].mag.values,
+    x_bins, vals = cf.custom_histogram(subset_sps[subset_sps.IS_REAL==False].mag.values,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'm:', label='$S_{corr}$')
-    x_bins, vals = cf.custom_histogram(d_hot[d_hot.IS_REAL==False].mag.values,
+    x_bins, vals = cf.custom_histogram(subset_hot[subset_hot.IS_REAL==False].mag.values,
                                     bins=bins, cumulative=cumulative)
     plt.semilogy(x_bins, vals, 'g--', label='A-Lupton')
     plt.xlim(7., 25.5)
