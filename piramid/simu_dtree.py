@@ -63,8 +63,56 @@ cols = ['id', 'code', 'executed', 'loaded', 'crossmatched',
         'ref_starslope', 'ref_fwhm', 'new_fwhm', 'm1_diam', 'm2_diam',
         'eff_col', 'px_scale', 'ref_back_sbright', 'new_back_sbright',
         'exp_time']
-
 y = simus['failed_to_subtract'].values.astype(int)
+x = ['ref_fwhm', 'new_fwhm', 'm1_diam', 'ref_starslope', 'm2_diam',
+     'eff_col', 'px_scale', 'ref_back_sbright', 'new_back_sbright', 'exp_time',
+     'new_fwhm_px', 'ref_fwhm_px', 'new_back_px', 'ref_back_px',
+     'm1_exp', 'm2_exp', 'eff_col_exp', 'new_back_px_exp', 'ref_back_px_exp']
+X = simus[x].values
+
+clf = tree.DecisionTreeClassifier(criterion='entropy',
+                                  min_impurity_decrease=0.000001,
+                                  class_weight=None,
+                                  max_depth=6,
+                                  presort=True)
+rslts_c45 = cf.experiment(clf, X, y, printing=True, nfolds=20)
+clf = rslts_c45['model']
+
+dot_data = tree.export_graphviz(clf, out_file=None,
+                         feature_names=x,
+                         class_names=['simulated', 'failed'],
+                         filled=True, rounded=True,
+                         special_characters=True)
+graph = graphviz.Source(dot_data)
+graph.render('simulations')
+
+# =============================================================================
+# Ahora con goyet
+# =============================================================================
+merged = store['merged']
+
+pars = ['simulation_id', 'has_goyet_sps', 'has_goyet_zps', 'has_goyet_ois',
+       'has_goyet_hot', 'mix_goyet', 'selected', 'mean_goyet_zps',
+       'mean_goyet_sps', 'mean_goyet_hot', 'mean_goyet_ois']
+
+dat = pd.merge(left=merged[pars], right=simus,
+               left_on='simulation_id', right_on='id',
+               how='right')
+dat.drop(columns=['code', 'crossmatched', 'loaded', 'executed', 'possible_saturation'], inplace=True)
+dat = cf.optimize_df(dat)
+dat.drop_duplicates(inplace=True)
+
+
+cols = ['simulation_id', 'has_goyet_sps', 'has_goyet_zps', 'has_goyet_ois',
+       'has_goyet_hot', 'mix_goyet', 'selected', 'mean_goyet_zps',
+       'mean_goyet_sps', 'mean_goyet_hot', 'mean_goyet_ois', 'id',
+       'failed_to_subtract', 'ref_starzp', 'ref_starslope', 'ref_fwhm',
+       'new_fwhm', 'm1_diam', 'm2_diam', 'eff_col', 'px_scale',
+       'ref_back_sbright', 'new_back_sbright', 'exp_time', 'new_fwhm_px',
+       'ref_fwhm_px', 'new_back_px', 'ref_back_px', 'm1_exp', 'm2_exp',
+       'eff_col_exp', 'new_back_px_exp', 'ref_back_px_exp']
+
+y = dat['failed_to_subtract'].values.astype(int)
 
 x = ['ref_fwhm', 'new_fwhm', 'm1_diam', 'ref_starslope', 'm2_diam',
      'eff_col', 'px_scale', 'ref_back_sbright', 'new_back_sbright', 'exp_time',
@@ -91,28 +139,4 @@ dot_data = tree.export_graphviz(clf, out_file=None,
                          special_characters=True)
 graph = graphviz.Source(dot_data)
 graph.render('simulations')
-
-
-merged = store['merged']
-
-pars = ['simulation_id', 'has_goyet_sps', 'has_goyet_zps', 'has_goyet_ois',
-       'has_goyet_hot', 'mix_goyet', 'selected', 'mean_goyet_zps',
-       'mean_goyet_sps', 'mean_goyet_hot', 'mean_goyet_ois']
-
-dat = pd.merge(left=merged[pars], right=simus,
-               left_on='simulation_id', right_on='id',
-               how='right')
-dat.drop(columns=['code', 'crossmatched', 'loaded', 'executed', 'possible_saturation'], inplace=True)
-dat = cf.optimize_df(dat)
-dat.drop_duplicates(inplace=True)
-
-#from sklearn import ensemble
-#clf2 = ensemble.RandomForestClassifier(criterion='entropy',
-#                                       min_impurity_decrease=0.0,
-#                                       n_estimators=300)
-#rslts_rforest = cf.experiment(clf2, X, y, printing=True)
-
-
-
-
 
