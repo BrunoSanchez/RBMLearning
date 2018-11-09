@@ -71,13 +71,13 @@ y = simus['failed_to_subtract'].values.astype(int)
 x = ['ref_fwhm', 'new_fwhm', 'm1_diam', 'ref_starslope', 'm2_diam',
      'eff_col', 'px_scale', 'ref_back_sbright', 'new_back_sbright', 'exp_time',
      'new_fwhm_px', 'ref_fwhm_px', 'new_back_px', 'ref_back_px',
-     'm1_exp', 'm2_exp', 'eff_col_exp', 'new_back_px_exp', 'ref_back_px_exp'
+     'm1_exp', 'm2_exp', 'eff_col_exp', 'new_back_px_exp', 'ref_back_px_exp',
      'resolving_power_R', 'resolving_power_px',
      'new_fwhm_theta', 'ref_fwhm_theta']
 X = simus[x].values
 
 clf = tree.DecisionTreeClassifier(criterion='entropy',
-                                  min_impurity_decrease=0.000001,
+                                  min_impurity_decrease=0.00001,
                                   class_weight=None,
                                   max_depth=6,
                                   presort=True)
