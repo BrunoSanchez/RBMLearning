@@ -924,16 +924,16 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.figure(figsize=(8,4))
     bins = np.arange(6.5, 26.5, .5)
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_lo.dropna(), bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=3*stdv_det/sqrtn, fmt='m:', label='Scorr')
+    plt.errorbar(mean_sim, mean_det, yerr=3*stdv_det, fmt='m:', label='Scorr')
 
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_lo.dropna(), bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=3*stdv_det/sqrtn, fmt='b.-', label='Zackay')
+    plt.errorbar(mean_sim, mean_det, yerr=3*stdv_det, fmt='b.-', label='Zackay')
 
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_lo.dropna(), bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=3*stdv_det/sqrtn, fmt='ro-', label='Bramich')
+    plt.errorbar(mean_sim, mean_det, yerr=3*stdv_det, fmt='ro-', label='Bramich')
 
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo.dropna(), bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=3*stdv_det/sqrtn, fmt='g--', label='Hotpants')
+    plt.errorbar(mean_sim, mean_det, yerr=3*stdv_det, fmt='g--', label='Hotpants')
 
     plt.tick_params(labelsize=16)
     plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
