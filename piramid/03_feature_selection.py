@@ -115,20 +115,35 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dt_sps['SN'] = dt_sps.cflux/np.sqrt(dt_sps.cflux)
 
     merged = store['merged']
+    selected = merged[merged.selected==True]
 
 # =============================================================================
 # Usar los seleccionados desde la tabla merged
 # =============================================================================
 
-    pars = ['image_id', 'selected', 'mean_goyet_zps', 'mean_goyet_iso_zps',
-            'has_goyet_zps', 'mixed_goyet']
-    dt_zps = pd.merge(left=merged[pars], right=dt_zps, on='image_id', how='right')
-    dt_ois = pd.merge(left=merged[pars], right=dt_ois, on='image_id', how='right')
-    dt_sps = pd.merge(left=merged[pars], right=dt_sps, on='image_id', how='right')
-    dt_hot = pd.merge(left=merged[pars], right=dt_hot, on='image_id', how='right')
+    ids = selected['image_id_zps'].drop_duplicates().values
+    dt_zps = dt_zps.loc[dt_zps['image_id'].isin(ids)].drop_duplicates()
+
+    ids = selected['image_id_sps'].drop_duplicates().values
+    dt_sps = dt_sps.loc[dt_sps['image_id'].isin(ids)].drop_duplicates()
+
+    ids = selected['image_id_ois'].drop_duplicates().values
+    dt_ois = dt_ois.loc[dt_ois['image_id'].isin(ids)].drop_duplicates()
+
+    ids = selected['image_id_hot'].drop_duplicates().values
+    dt_hot = dt_hot.loc[dt_hot['image_id'].isin(ids)].drop_duplicates()
 
 
-    dt_zps = dt_zps[dt_zps.selected=True]
+
+    #~ pars = ['image_id', 'selected', 'mean_goyet_zps', 'mean_goyet_iso_zps',
+            #~ 'has_goyet_zps', 'mixed_goyet']
+    #~ dt_zps = pd.merge(left=merged[pars], right=dt_zps, on='image_id', how='right')
+    #~ dt_ois = pd.merge(left=merged[pars], right=dt_ois, on='image_id', how='right')
+    #~ dt_sps = pd.merge(left=merged[pars], right=dt_sps, on='image_id', how='right')
+    #~ dt_hot = pd.merge(left=merged[pars], right=dt_hot, on='image_id', how='right')
+
+
+    #~ dt_zps = dt_zps[dt_zps.selected=True]
 
 
 if __name__ == '__main__':
