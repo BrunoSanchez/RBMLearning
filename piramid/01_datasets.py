@@ -170,7 +170,7 @@ def main(argv):
 
         dt_zps['VALID_MAG'] = dt_zps['MAG_APER']<30
         dt_zps['mag_offset'] = dt_zps['sim_mag'] - dt_zps['MAG_APER']
-        cals, mask = cf.cal_mags(dt_zps)
+        cals = cf.cal_mags(dt_zps)
         dt_zps = pd.merge(dt_zps, cals, on='image_id', how='left')
         dt_zps['mag'] = dt_zps['MAG_APER'] * dt_zps['slope'] + dt_zps['mean_offset']
 
