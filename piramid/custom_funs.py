@@ -288,10 +288,10 @@ def cal_mags(df):
     offsets = []
     slopes  = []
     for name, group in df.dropna().groupby(['image_id'], sort=False):
-        b, a = get_mags(group)
+        b, a, mask = get_mags(group)
         ids.append(name)
         offsets.append(b)
         slopes.append(a)
     dd = pd.DataFrame(np.array([ids, offsets, slopes]).T,
                       columns=['image_id', 'mean_offset', 'slope'])
-    return dd
+    return dd, mask
