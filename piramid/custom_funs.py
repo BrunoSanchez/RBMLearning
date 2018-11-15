@@ -236,23 +236,6 @@ def experiment(clf, x, y, nfolds=10, printing=False, probs=True):
 
 from sklearn.linear_model import RANSACRegressor
 
-def get_mags(df):
-    model = RANSACRegressor()
-    try:
-        model.fit(df['MAG_APER'].values.reshape(-1, 1),
-                  df['sim_mag'].values.reshape(-1, 1))
-    except:
-        mean_offset = sigma_clipped_stats(df['mag_offset'])[0]
-        slope = 1.0
-        return [mean_offset, slope]
-    mean_offset = model.estimator_.intercept_[0]
-    slope = model.estimator_.coef_[0][0]
-    mask = model.inlier_mask_
-
-    res = [mean_offset, slope, mask]
-    return res
-
-
 def get_mags_iso(df):
     model = RANSACRegressor()
     try:
@@ -282,16 +265,38 @@ def cal_mags_iso(df):
                       columns=['image_id', 'mean_offset_iso', 'slope_iso'])
     return dd
 
+def get_mags(df):
+    model = RANSACRegressor()
+    try:
+        model.fit(df['MAG_APER'].values.reshape(-1, 1),
+                  df['sim_mag'].values.reshape(-1, 1))
+    except:
+        mean_offset = sigma_clipped_stats(df['mag_offset'])[0]
+        slope = 1.0
+        return [mean_offset, slope]
+    mean_offset = model.estimator_.intercept_[0]
+    slope = model.estimator_.coef_[0][0]
+    mask = model.inlier_mask_
+    mags = model.predict(df['MAG_APER'])
+    p05, p95 = np.percentile(mags, [5., 95.])
+
+    res = [mean_offset, slope, p05, p95]
+    return res
+
 
 def cal_mags(df):
     ids = []
     offsets = []
     slopes  = []
+    per_05 = []
+    per_95 = []
     for name, group in df.dropna().groupby(['image_id'], sort=False):
-        b, a, mask = get_mags(group)
+        b, a, p05, p95 = get_mags(group)
         ids.append(name)
         offsets.append(b)
         slopes.append(a)
+        per_05.append()
+
     dd = pd.DataFrame(np.array([ids, offsets, slopes]).T,
                       columns=['image_id', 'mean_offset', 'slope'])
-    return dd, mask
+    return dd
