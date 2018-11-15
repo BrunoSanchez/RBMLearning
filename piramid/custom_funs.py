@@ -295,8 +295,9 @@ def cal_mags(df):
         ids.append(name)
         offsets.append(b)
         slopes.append(a)
-        per_05.append()
+        per_05.append(p05)
+        per_95.append(p95)
 
-    dd = pd.DataFrame(np.array([ids, offsets, slopes]).T,
-                      columns=['image_id', 'mean_offset', 'slope'])
+    dd = pd.DataFrame(np.array([ids, offsets, slopes, per_05, per_95]).T,
+                      columns=['image_id', 'mean_offset', 'slope', 'p05', 'p95'])
     return dd
