@@ -278,7 +278,7 @@ def get_mags(df):
     slope = model.estimator_.coef_[0][0]
     mask = model.inlier_mask_
     mags = model.predict(df['MAG_APER'].values.reshape(-1,1))
-    p05, p95 = np.percentile(mags, [5., 95.])
+    p05, p95 = np.percentile(mags[mask], [5., 95.])
 
     res = [mean_offset, slope, p05, p95]
     return res
