@@ -712,7 +712,6 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
 # Seleccionamos los mean_goyet
 # =============================================================================
-    import ipdb; ipdb.set_trace()
     pars = ['mean_goyet', 'image_id', 'id_simulation', 'mag', 'sim_mag',
             'goyet', 'goyet_iso', 'mean_goyet_iso', 'IS_REAL']
     subset_zps = dt_zps[pars+['FLAGS']]
