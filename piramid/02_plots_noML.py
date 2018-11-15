@@ -713,7 +713,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # Seleccionamos los mean_goyet
 # =============================================================================
     pars = ['mean_goyet', 'image_id', 'id_simulation', 'mag', 'sim_mag',
-            'goyet', 'goyet_iso', 'mean_goyet_iso', 'IS_REAL']
+            'goyet', 'goyet_iso', 'mean_goyet_iso', 'IS_REAL', 'FLAGS']
     subset_zps = dt_zps[pars]
     subset_ois = dt_ois[pars]
     subset_sps = dt_sps[pars]
@@ -838,16 +838,20 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
     plt.figure(figsize=(8,4))
     bins = np.arange(6.5, 26.5, .5)
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_hi, bins=bins)
+    ff = subset_hot_hi.FLAGS<=1
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_hi[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
 
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_hi, bins=bins)
+    ff = subset_sps_hi.FLAGS<=1
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_hi[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
 
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_hi, bins=bins)
+    ff = subset_zps_hi.FLAGS<=1
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_hi[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
 
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_hi, bins=bins)
+    ff = subset_ois_hi.FLAGS<=1
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_hi[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
 
     plt.tick_params(labelsize=16)

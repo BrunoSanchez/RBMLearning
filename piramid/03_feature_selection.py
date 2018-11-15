@@ -104,10 +104,10 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
         dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
     dt_zps = cf.optimize_df(dt_zps)
 
-    dt_ois['MU'] = dt_ois.MAG/(dt_ois.A_IMAGE*dt_ois.B_IMAGE)
-    dt_zps['MU'] = dt_zps.MAG/(dt_zps.A_IMAGE*dt_zps.B_IMAGE)
-    dt_hot['MU'] = dt_hot.MAG/(dt_hot.A_IMAGE*dt_hot.B_IMAGE)
-    dt_sps['MU'] = dt_sps.MAG/(dt_sps.a*dt_sps.b)
+    dt_ois['MU'] = dt_ois.mag/(dt_ois.A_IMAGE*dt_ois.B_IMAGE)
+    dt_zps['MU'] = dt_zps.mag/(dt_zps.A_IMAGE*dt_zps.B_IMAGE)
+    dt_hot['MU'] = dt_hot.mag/(dt_hot.A_IMAGE*dt_hot.B_IMAGE)
+    dt_sps['MU'] = dt_sps.mag/(dt_sps.a*dt_sps.b)
 
     dt_ois['SN'] = dt_ois.FLUX_APER/dt_ois.FLUXERR_APER
     dt_zps['SN'] = dt_zps.FLUX_APER/dt_zps.FLUXERR_APER
@@ -134,14 +134,12 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dt_hot = dt_hot.loc[dt_hot['image_id'].isin(ids)].drop_duplicates()
 
 
-
     #~ pars = ['image_id', 'selected', 'mean_goyet_zps', 'mean_goyet_iso_zps',
             #~ 'has_goyet_zps', 'mixed_goyet']
     #~ dt_zps = pd.merge(left=merged[pars], right=dt_zps, on='image_id', how='right')
     #~ dt_ois = pd.merge(left=merged[pars], right=dt_ois, on='image_id', how='right')
     #~ dt_sps = pd.merge(left=merged[pars], right=dt_sps, on='image_id', how='right')
     #~ dt_hot = pd.merge(left=merged[pars], right=dt_hot, on='image_id', how='right')
-
 
     #~ dt_zps = dt_zps[dt_zps.selected=True]
 
