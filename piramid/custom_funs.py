@@ -247,8 +247,9 @@ def get_mags(df):
         return [mean_offset, slope]
     mean_offset = model.estimator_.intercept_[0]
     slope = model.estimator_.coef_[0][0]
+    mask = model.inlier_mask_
 
-    res = [mean_offset, slope]
+    res = [mean_offset, slope, mask]
     return res
 
 
