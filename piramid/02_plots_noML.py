@@ -1222,14 +1222,15 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     cals = cf.cal_mags(dt_zps)
     dt_zps = pd.merge(dt_zps, cals[pars], on='image_id', how='left')
 
-    cals = cf.cal_mags(dt_zps)
-    dt_zps = pd.merge(dt_zps, cals[pars], on='image_id', how='left')
+    cals = cf.cal_mags(dt_sps)
+    dt_sps = pd.merge(dt_sps, cals[pars], on='image_id', how='left')
 
-    cals = cf.cal_mags(dt_zps)
-    dt_zps = pd.merge(dt_zps, cals[pars], on='image_id', how='left')
+    cals = cf.cal_mags(dt_hot)
+    dt_hot = pd.merge(dt_hot, cals[pars], on='image_id', how='left')
 
-    cals = cf.cal_mags(dt_zps)
-    dt_zps = pd.merge(dt_zps, cals[pars], on='image_id', how='left')
+    cals = cf.cal_mags(dt_ois)
+    dt_ois = pd.merge(dt_ois, cals[pars], on='image_id', how='left')
+
 
 
 
