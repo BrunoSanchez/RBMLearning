@@ -196,6 +196,34 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 
 
 # =============================================================================
+#   Percentiles de la calibracion
+# =============================================================================
+    import ipdb; ipdb.set_trace()
+
+    pars = ['image_id', 'p05', 'p95']
+
+    cals = cf.cal_mags(dt_zps)
+    dt_zps = pd.merge(dt_zps, cals[pars], on='image_id', how='left')
+
+    cals = cf.cal_mags(dt_sps)
+    dt_sps = pd.merge(dt_sps, cals[pars], on='image_id', how='left')
+
+    cals = cf.cal_mags(dt_hot)
+    dt_hot = pd.merge(dt_hot, cals[pars], on='image_id', how='left')
+
+    cals = cf.cal_mags(dt_ois)
+    dt_ois = pd.merge(dt_ois, cals[pars], on='image_id', how='left')
+
+
+    in_range = dt_zps.mag > dt_zps.p05 && dt_zps.mag < dt_zps.p95
+    in_mags = dt_zps.loc[in_range].sim_mag.dropna()
+    out_mags = dt_zps.loc[~in_range].sim_mag.dropna()
+
+    bins = np.arange(7, 26.5, 0.5)
+    plt.hist(in_mags, bins=bins,
+
+
+# =============================================================================
 # plot de goyet factor vs pars
 # =============================================================================
     def goyet_vs_pars_plot(dataset, dia='zackay'):
@@ -1211,28 +1239,6 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 
     plt.savefig(os.path.join(plot_dir, 'combined_luminosities_functions.svg'),
                 format='svg', dpi=720)
-
-# =============================================================================
-#   Percentiles de la calibracion
-# =============================================================================
-    import ipdb; ipdb.set_trace()
-
-    pars = ['image_id', 'p05', 'p95']
-
-    cals = cf.cal_mags(dt_zps)
-    dt_zps = pd.merge(dt_zps, cals[pars], on='image_id', how='left')
-
-    cals = cf.cal_mags(dt_sps)
-    dt_sps = pd.merge(dt_sps, cals[pars], on='image_id', how='left')
-
-    cals = cf.cal_mags(dt_hot)
-    dt_hot = pd.merge(dt_hot, cals[pars], on='image_id', how='left')
-
-    cals = cf.cal_mags(dt_ois)
-    dt_ois = pd.merge(dt_ois, cals[pars], on='image_id', how='left')
-
-
-
 
     store.close()
     return
