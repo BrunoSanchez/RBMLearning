@@ -1212,6 +1212,26 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.savefig(os.path.join(plot_dir, 'combined_luminosities_functions.svg'),
                 format='svg', dpi=720)
 
+# =============================================================================
+#   Percentiles de la calibracion
+# =============================================================================
+    import ipdb; ipdb.set_trace()
+
+    pars = ['image_id', 'p05', 'p95']
+
+    cals = cf.cal_mags(dt_zps)
+    dt_zps = pd.merge(dt_zps, cals[pars], on='image_id', how='left')
+
+    cals = cf.cal_mags(dt_zps)
+    dt_zps = pd.merge(dt_zps, cals[pars], on='image_id', how='left')
+
+    cals = cf.cal_mags(dt_zps)
+    dt_zps = pd.merge(dt_zps, cals[pars], on='image_id', how='left')
+
+    cals = cf.cal_mags(dt_zps)
+    dt_zps = pd.merge(dt_zps, cals[pars], on='image_id', how='left')
+
+
 
     store.close()
     return
