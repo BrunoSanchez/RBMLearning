@@ -215,7 +215,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     dt_ois = pd.merge(dt_ois, cals[pars], on='image_id', how='left')
 
 
-    in_range = dt_zps.mag > dt_zps.p05 && dt_zps.mag < dt_zps.p95
+    in_range = dt_zps.mag > dt_zps.p05 & dt_zps.mag < dt_zps.p95
     in_mags = dt_zps.loc[in_range].sim_mag.dropna()
     out_mags = dt_zps.loc[~in_range].sim_mag.dropna()
 
