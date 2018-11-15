@@ -927,7 +927,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 
     plt.figure(figsize=(8,4))
     bins = np.arange(6.5, 26.5, .5)
-    ff = subset_hot_lo.FLAGS<=1
+    ff = subset_hot_lo.FLAGS<=0
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
 
@@ -935,11 +935,11 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_lo, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
 
-    ff = subset_zps_lo.FLAGS<=1
+    ff = subset_zps_lo.FLAGS<=0
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_lo[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
 
-    ff = subset_ois_lo.FLAGS<=1
+    ff = subset_ois_lo.FLAGS<=0
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_lo[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
 
