@@ -220,7 +220,8 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     out_mags = dt_zps.loc[~in_range].sim_mag.dropna()
 
     bins = np.arange(7, 26.5, 0.5)
-    plt.hist(in_mags, bins=bins,
+    plt.hist(in_mags, bins=bins)
+    plt.hist(out_mags, bins=bins)
 
 
 # =============================================================================
