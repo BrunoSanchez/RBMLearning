@@ -220,8 +220,9 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     in_range = (dt_zps.mag > dt_zps.p05) & (dt_zps.mag < dt_zps.p95)
     in_mags = dt_zps.loc[in_range].sim_mag.dropna()
     out_mags = dt_zps.loc[~in_range].sim_mag.dropna()
-    plt.hist(in_mags, bins=bins)
-    plt.hist(out_mags, bins=bins)
+    plt.hist(in_mags, bins=bins, alpha=0.5, label='inliers')
+    plt.hist(out_mags, bins=bins, alpha=0.5, label='outliers')
+    plt.legend(loc='best')
 
     plt.subplot(222)
     in_range = (dt_sps.mag > dt_sps.p05) & (dt_sps.mag < dt_sps.p95)
