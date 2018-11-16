@@ -214,14 +214,36 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     cals = cf.cal_mags(dt_ois)
     dt_ois = pd.merge(dt_ois, cals[pars], on='image_id', how='left')
 
+    bins = np.arange(7, 26.5, 0.5)
 
+    plt.subplot(221)
     in_range = (dt_zps.mag > dt_zps.p05) & (dt_zps.mag < dt_zps.p95)
     in_mags = dt_zps.loc[in_range].sim_mag.dropna()
     out_mags = dt_zps.loc[~in_range].sim_mag.dropna()
-
-    bins = np.arange(7, 26.5, 0.5)
     plt.hist(in_mags, bins=bins)
     plt.hist(out_mags, bins=bins)
+
+    plt.subplot(222)
+    in_range = (dt_sps.mag > dt_sps.p05) & (dt_sps.mag < dt_sps.p95)
+    in_mags = dt_sps.loc[in_range].sim_mag.dropna()
+    out_mags = dt_sps.loc[~in_range].sim_mag.dropna()
+    plt.hist(in_mags, bins=bins)
+    plt.hist(out_mags, bins=bins)
+
+    plt.subplot(223)
+    in_range = (dt_hot.mag > dt_hot.p05) & (dt_hot.mag < dt_hot.p95)
+    in_mags = dt_hot.loc[in_range].sim_mag.dropna()
+    out_mags = dt_hot.loc[~in_range].sim_mag.dropna()
+    plt.hist(in_mags, bins=bins)
+    plt.hist(out_mags, bins=bins)
+
+    plt.subplot(224)
+    in_range = (dt_ois.mag > dt_ois.p05) & (dt_ois.mag < dt_ois.p95)
+    in_mags = dt_ois.loc[in_range].sim_mag.dropna()
+    out_mags = dt_ois.loc[~in_range].sim_mag.dropna()
+    plt.hist(in_mags, bins=bins)
+    plt.hist(out_mags, bins=bins)
+
     plt.savefig(os.path.join(plot_dir, 'inliers_range.svg'), dpi=400)
     plt.clf()
 
