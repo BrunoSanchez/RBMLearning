@@ -213,6 +213,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     dt_ois = pd.merge(dt_ois, cals[pars], on='image_id', how='left')
 
     bins = np.arange(7, 26.5, 0.5)
+    plt.figure(figsize=(8, 8))
     plt.subplot(221)
     plt.title('zackay')
     in_range = (dt_zps.mag > dt_zps.p05) & (dt_zps.mag < dt_zps.p95)
