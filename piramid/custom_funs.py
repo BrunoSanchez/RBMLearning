@@ -273,7 +273,9 @@ def get_mags(df):
     except:
         mean_offset = sigma_clipped_stats(df['mag_offset'])[0]
         slope = 1.0
-        return [mean_offset, slope]
+        mags = df['MAG_APER'] + mean_offset
+        p05, p95 = np.percentile(mags, [5., 95.])
+        return [mean_offset, slope, p05, p95]
     mean_offset = model.estimator_.intercept_[0]
     slope = model.estimator_.coef_[0][0]
     mask = model.inlier_mask_
