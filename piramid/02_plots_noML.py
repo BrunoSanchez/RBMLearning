@@ -198,8 +198,6 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
 #   Percentiles de la calibracion
 # =============================================================================
-    import ipdb; ipdb.set_trace()
-
     pars = ['image_id', 'p05', 'p95']
 
     cals = cf.cal_mags(dt_zps)
