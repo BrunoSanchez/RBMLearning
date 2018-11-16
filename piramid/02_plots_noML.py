@@ -218,7 +218,8 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     in_range = (dt_zps.mag > dt_zps.p05) & (dt_zps.mag < dt_zps.p95)
     in_mags = dt_zps.loc[in_range].sim_mag.dropna()
     out_mags = dt_zps.loc[~in_range].sim_mag.dropna()
-    plt.hist(simus.app_mag, bins=bins, histtype='step', color='k', label='simulated')
+    plt.hist(simus.app_mag, bins=bins, histtype='step', color='k',
+             label='simulated', log=True)
     plt.hist(in_mags, bins=bins, alpha=0.5, label='inliers', stacked=True)
     plt.hist(out_mags, bins=bins, alpha=0.5, label='outliers', stacked=True)
     plt.legend(loc='best')
@@ -228,7 +229,8 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     in_range = (dt_sps.mag > dt_sps.p05) & (dt_sps.mag < dt_sps.p95)
     in_mags = dt_sps.loc[in_range].sim_mag.dropna()
     out_mags = dt_sps.loc[~in_range].sim_mag.dropna()
-    plt.hist(simus.app_mag, bins=bins, histtype='step', color='k', label='simulated')
+    plt.hist(simus.app_mag, bins=bins, histtype='step', color='k',
+             label='simulated', log=True)
     plt.hist(in_mags, bins=bins, alpha=0.5, label='inliers', stacked=True)
     plt.hist(out_mags, bins=bins, alpha=0.5, label='outliers', stacked=True)
     plt.legend(loc='best')
@@ -238,7 +240,8 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     in_range = (dt_hot.mag > dt_hot.p05) & (dt_hot.mag < dt_hot.p95)
     in_mags = dt_hot.loc[in_range].sim_mag.dropna()
     out_mags = dt_hot.loc[~in_range].sim_mag.dropna()
-    plt.hist(simus.app_mag, bins=bins, histtype='step', color='k', label='simulated')
+    plt.hist(simus.app_mag, bins=bins, histtype='step', color='k',
+             label='simulated', log=True)
     plt.hist(in_mags, bins=bins, alpha=0.5, label='inliers', stacked=True)
     plt.hist(out_mags, bins=bins, alpha=0.5, label='outliers', stacked=True)
     plt.legend(loc='best')
@@ -248,7 +251,8 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     in_range = (dt_ois.mag > dt_ois.p05) & (dt_ois.mag < dt_ois.p95)
     in_mags = dt_ois.loc[in_range].sim_mag.dropna()
     out_mags = dt_ois.loc[~in_range].sim_mag.dropna()
-    plt.hist(simus.app_mag, bins=bins, histtype='step', color='k', label='simulated')
+    plt.hist(simus.app_mag, bins=bins, histtype='step', color='k',
+             label='simulated', log=True)
     plt.hist(in_mags, bins=bins, alpha=0.5, label='inliers', stacked=True)
     plt.hist(out_mags, bins=bins, alpha=0.5, label='outliers', stacked=True)
     plt.legend(loc='best')
