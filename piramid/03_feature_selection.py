@@ -231,6 +231,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
 # %%%%%  Univariate f_mutual_info_classif
 
+    percentile = 20.
 
 
 # =============================================================================
