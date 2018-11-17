@@ -172,15 +172,15 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     d_hot = dt_hot[cols+target].sample(n_samples).dropna()
     d_sps = dt_sps[scols+target].sample(n_samples).dropna()
 
-    y_zps = d_zps[target].values
-    y_ois = d_ois[target].values
-    y_sps = d_sps[target].values
-    y_hot = d_hot[target].values
+    y_zps = d_zps[target]
+    y_ois = d_ois[target]
+    y_sps = d_sps[target]
+    y_hot = d_hot[target]
 
-    d_ois = d_ois[cols].values
-    d_zps = d_zps[cols].values
-    d_sps = d_sps[scols].values
-    d_hot = d_hot[cols].values
+    d_ois = d_ois[cols]
+    d_zps = d_zps[cols]
+    d_sps = d_sps[scols]
+    d_hot = d_hot[cols]
 
 # =============================================================================
 # Ahora que tengo los datos seleccionados hago preprocessing general
@@ -201,6 +201,28 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
 
 # %%%%%  Variance threshold
+    from sklearn.feature_selection import VarianceThreshold
+
+    thresh = 0.1
+    sel = VarianceThreshold(threshold=thresh)
+
+    X_ois = sel.fit_transform(X_ois)
+    newcols_ois = d_ois.columns[sel.get_support()]
+    print('Dropped columns = {}'.format(d_ois.columns[~sel.get_support()]))
+
+    X_zps = sel.fit_transform(X_zps)
+    newcols_zps = d_zps.columns[sel.get_support()]
+    print('Dropped columns = {}'.format(d_zps.columns[~sel.get_support()]))
+
+    X_sps = sel.fit_transform(X_sps)
+    newcols_sps = d_sps.columns[sel.get_support()]
+    print('Dropped columns = {}'.format(d_sps.columns[~sel.get_support()]))
+
+    X_hot = sel.fit_transform(X_hot)
+    newcols_hot = d_hot.columns[sel.get_support()]
+    print('Dropped columns = {}'.format(d_hot.columns[~sel.get_support()]))
+
+
 
 # %%%%%
 
