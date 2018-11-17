@@ -133,17 +133,63 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     ids = selected['image_id_hot'].drop_duplicates().values
     dt_hot = dt_hot.loc[dt_hot['image_id'].isin(ids)].drop_duplicates()
 
+# =============================================================================
+# Columnas usables
+# =============================================================================
+    cols = ['FLUX_ISO', 'FLUXERR_ISO', 'MAG_ISO', 'MAGERR_ISO',
+            'FLUX_APER', 'FLUXERR_APER', 'MAG_APER', 'MAGERR_APER', 'FLUX_AUTO',
+            'FLUXERR_AUTO', 'MAG_AUTO', 'MAGERR_AUTO', 'BACKGROUND', 'THRESHOLD',
+            'FLUX_MAX', 'XMIN_IMAGE', 'YMIN_IMAGE', 'XMAX_IMAGE', 'YMAX_IMAGE',
+            'XPEAK_IMAGE', 'YPEAK_IMAGE', 'X_IMAGE', 'Y_IMAGE', 'X2_IMAGE',
+            'Y2_IMAGE', 'XY_IMAGE', 'CXX_IMAGE', 'CYY_IMAGE', 'CXY_IMAGE',
+            'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'MU_MAX', 'FLAGS', 'FWHM_IMAGE',
+            'ELONGATION', 'ELLIPTICITY', 'CLASS_STAR', 'MU_THRESHOLD', 'SNR_WIN',
+            'DELTAX', 'DELTAY', 'RATIO', 'ROUNDNESS', 'PEAK_CENTROID',
+            'ref_fwhm', 'new_fwhm', 'px_scale', 'ref_back_sbright',
+            'new_back_sbright', 'exp_time', 'VALID_MAG', 'mean_offset',
+            'slope', 'mag', 'VALID_MAG_iso', 'mean_offset_iso',
+            'slope_iso', 'mag_iso', 'mean_goyet', 'mean_goyet_iso', 'MU', 'SN']
 
+    scols = ['thresh', 'npix', 'tnpix', 'xmin_col', 'xmax_col', 'ymin', 'ymax',
+            'x', 'y', 'x2', 'y2', 'xy', 'errx2', 'erry2', 'errxy', 'a', 'b',
+            'theta', 'cxx', 'cyy', 'cxy', 'cflux', 'flux', 'cpeak', 'peak',
+            'xcpeak', 'ycpeak', 'xpeak', 'ypeak', 'flag', 'DELTAX', 'DELTAY',
+            'RATIO', 'ROUNDNESS', 'PEAK_CENTROID', 'ref_fwhm', 'new_fwhm',
+            'px_scale', 'ref_back_sbright', 'new_back_sbright',
+            'exp_time', 'MAG_APER', 'MAG_ISO', 'VALID_MAG',
+            'mean_offset', 'slope', 'mag', 'VALID_MAG_iso', 'mag_iso',
+            'goyet_iso', 'mean_goyet', 'mean_goyet_iso', 'MU', 'SN']
 
-    #~ pars = ['image_id', 'selected', 'mean_goyet_zps', 'mean_goyet_iso_zps',
-            #~ 'has_goyet_zps', 'mixed_goyet']
-    #~ dt_zps = pd.merge(left=merged[pars], right=dt_zps, on='image_id', how='right')
-    #~ dt_ois = pd.merge(left=merged[pars], right=dt_ois, on='image_id', how='right')
-    #~ dt_sps = pd.merge(left=merged[pars], right=dt_sps, on='image_id', how='right')
-    #~ dt_hot = pd.merge(left=merged[pars], right=dt_hot, on='image_id', how='right')
+    target = ['IS_REAL']
 
+# =============================================================================
+# Para que entre en memoria hacemos un sampling de esto
+# =============================================================================
+    n_samples = 45000
 
-    #~ dt_zps = dt_zps[dt_zps.selected=True]
+    d_ois = dt_ois[cols+target].sample(n_samples).dropna()
+    d_zps = dt_zps[cols+target].sample(n_samples).dropna()
+    d_hot = dt_hot[cols+target].sample(n_samples).dropna()
+    d_sps = dt_sps[scols+target].sample(n_samples).dropna()
+
+    y_zps = d_zps[target].values
+    y_ois = d_ois[target].values
+    y_sps = d_sps[target].values
+    y_hot = d_hot[target].values
+
+    d_ois = d_ois[cols].values
+    d_zps = d_zps[cols].values
+    d_sps = d_sps[scols].values
+    d_hot = d_hot[cols].values
+
+# =============================================================================
+# Ahora que tengo los datos seleccionados
+# =============================================================================
+    scaler_ois = preprocessing.StandardScaler().fit(d_ois)
+    scaler_zps = preprocessing.StandardScaler().fit(d_zps)
+    scaler_hot = preprocessing.StandardScaler().fit(d_hot)
+    scaler_sps = preprocessing.StandardScaler().fit(d_sps)
+
 
 
 if __name__ == '__main__':
