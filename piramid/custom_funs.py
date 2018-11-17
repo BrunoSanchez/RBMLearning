@@ -9,6 +9,10 @@ from sklearn.model_selection import KFold
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import train_test_split
 
+from sklearn.feature_selection import SelectPercentile
+from sklearn.feature_selection import f_classif
+from sklearn.feature_selection import mutual_info_classif
+from sklearn.feature_selection import chi2
 
 # We're going to be calculating memory usage a lot,
 # so we'll create a function to save us some time!
@@ -387,3 +391,13 @@ def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
         imp.append(importances(forest, X_test, y_test)) # permutation
     #imp = pd.concat(imp, axis=1)
     return imp
+
+def select(X, Y):
+    selector = SelectPercentile(mutual_info_classif, percentile=percentile)
+    selector.fit(X, Y)
+    scores = selector.scores_  # -np.log10(selector.pvalues_)
+    scores /= scores.max()
+
+    X_indices = np.arange(X.shape[-1]).reshape(1, -1)
+    selected_cols = selector.transform(X_indices)
+    return scores, selector, selected_cols
