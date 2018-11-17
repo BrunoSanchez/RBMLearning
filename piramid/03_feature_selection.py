@@ -48,6 +48,13 @@ from sklearn.externals import joblib
 from sklearn.model_selection import KFold
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import train_test_split
+
+from sklearn.feature_selection import SelectPercentile
+from sklearn.feature_selection import f_classif
+from sklearn.feature_selection import mutual_info_classif
+from sklearn.feature_selection import chi2
+
+
 from rfpimp import *
 
 import custom_funs as cf
@@ -222,9 +229,8 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     newcols_hot = d_hot.columns[sel.get_support()]
     print('Dropped columns = {}'.format(d_hot.columns[~sel.get_support()]))
 
+# %%%%%  Univariate f_mutual_info_classif
 
-
-# %%%%%
 
 
 # =============================================================================
