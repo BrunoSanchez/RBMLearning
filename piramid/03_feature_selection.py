@@ -183,14 +183,40 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     d_hot = d_hot[cols].values
 
 # =============================================================================
-# Ahora que tengo los datos seleccionados
+# Ahora que tengo los datos seleccionados hago preprocessing general
 # =============================================================================
     scaler_ois = preprocessing.StandardScaler().fit(d_ois)
     scaler_zps = preprocessing.StandardScaler().fit(d_zps)
     scaler_hot = preprocessing.StandardScaler().fit(d_hot)
     scaler_sps = preprocessing.StandardScaler().fit(d_sps)
 
+    X_ois = scaler_ois.transform(d_ois)
+    X_zps = scaler_zps.transform(d_zps)
+    X_hot = scaler_hot.transform(d_hot)
+    X_sps = scaler_sps.transform(d_sps)
 
+
+# =============================================================================
+# Analisis univariado
+# =============================================================================
+
+# %%%%%  Variance threshold
+
+# %%%%%
+
+
+# =============================================================================
+# RandomForests
+# =============================================================================
+
+
+# =============================================================================
+# Support Vector Machines
+# =============================================================================
+
+# =============================================================================
+# KNN Neighbors
+# =============================================================================
 
 if __name__ == '__main__':
     import argparse

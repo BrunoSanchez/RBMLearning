@@ -303,3 +303,87 @@ def cal_mags(df):
     dd = pd.DataFrame(np.array([ids, offsets, slopes, per_05, per_95]).T,
                       columns=['image_id', 'mean_offset', 'slope', 'p05', 'p95'])
     return dd
+
+from sklearn.ensemble import ExtraTreesClassifier
+
+def importance_forest(X, y, forest=None, cols=None, method=None):
+    if forest is None:
+        forest = ExtraTreesClassifier(n_estimators=250,
+                                      random_state=0)
+    forest.fit(X, y)
+    importances = forest.feature_importances_
+    std = np.std([tree.feature_importances_ for tree in forest.estimators_],
+                 axis=0)
+    indices = np.argsort(importances)[::-1]
+    #print indices
+    #print importances
+    #print cols
+    # Print the feature ranking
+    #print("Feature ranking:")
+
+    # Plot the feature importances of the forest
+    #plt.figure(figsize=(6, 6))
+    plt.title("{}".format(method))
+    plt.barh(range(X.shape[1])[0:8], importances[indices][0:8],
+           color="r", xerr=std[indices][0:8], align="center")
+    if cols is not None:
+        plt.yticks(range(X.shape[1])[0:8], cols[indices-1][0:8], rotation='horizontal', fontsize=10)
+    else:
+        plt.yticks(range(X.shape[1]), indices)
+    #plt.ylim([-1, X.shape[1]])
+    plt.xlim(0, np.max(importances)+np.max(std))
+    ax = plt.gca()
+    ax.invert_yaxis()
+    #plt.show()
+    return [(cols[indices[f]-1], importances[indices[f]]) for f in range(X.shape[1])]
+
+def full_importance_forest(X, y, forest=None, cols=None, method=None):
+    if forest is None:
+        forest = ExtraTreesClassifier(n_estimators=250,
+                                  random_state=0)
+    forest.fit(X, y)
+    importances = forest.feature_importances_
+    std = np.std([tree.feature_importances_ for tree in forest.estimators_],
+                 axis=0)
+    indices = np.argsort(importances)[::-1]
+
+    return [indices, importances, cols]
+
+def importance_perm(X, y, forest=None, cols=None, method=None):
+
+    X = pd.DataFrame(X, columns=cols)
+    y = pd.DataFrame(y)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
+
+    if forest is None:
+        forest = RandomForestClassifier(n_estimators=250, random_state=33, n_jobs=-1)
+
+    X_train['Random'] = np.random.random(size=len(X_train))
+    X_test['Random'] = np.random.random(size=len(X_test))
+
+    forest.fit(X_train, y_train)
+    imp = importances(forest, X_test, y_test) # permutation
+    return imp
+
+
+def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
+    skf = StratifiedKFold(n_splits=nfolds)
+    imp = []
+
+    for train, test in skf.split(X, y):
+        X_train = pd.DataFrame(X[train], columns=cols)
+        X_test = pd.DataFrame(X[test], columns=cols)
+        y_train = pd.DataFrame(y[train])
+        y_test = pd.DataFrame(y[test])
+
+        if forest is None:
+            forest = RandomForestClassifier(n_estimators=250, random_state=33, n_jobs=-1)
+
+        X_train['Random'] = np.random.random(size=len(X_train))
+        X_test['Random'] = np.random.random(size=len(X_test))
+
+        forest.fit(X_train, y_train)
+        imp.append(importances(forest, X_test, y_test)) # permutation
+    #imp = pd.concat(imp, axis=1)
+    return imp
