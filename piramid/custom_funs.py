@@ -396,8 +396,8 @@ def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
 def select(X, Y, percentile):
     selector = SelectPercentile(mutual_info_classif, percentile=percentile)
     selector.fit(X, Y)
-    #scores = selector.scores_
-    scores = -np.log10(selector.pvalues_)
+    scores = selector.scores_
+    #scores = -np.log10(selector.pvalues_)
     scores /= scores.max()
 
     X_indices = np.arange(X.shape[-1]).reshape(1, -1)

@@ -246,44 +246,15 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     scores, selector, sps_selected_cols = cf.select(X_sps, y_sps, percentile)
     scoring_sps = pd.DataFrame(scores, index=newcols_sps, columns=['sps'])
-
     scoring_sps = scoring_sps.rename(index=cf.transl)
 
     scoring = pd.concat([scoring_ois, scoring_zps, scoring_sps, scoring_hot], axis=1)
     scoring = scoring.fillna(0)
 
-    #plt.figure(figsize=(6, 16))
-    sns.heatmap(scoring, vmin=0., vmax=1., cmap='Blues', annot=True, cbar=True)
+    sns.heatmap(scoring, vmin=0., vmax=1., cmap='Blues',
+                annot=np.round(scoring.values, 2), cbar=True)
     plt.savefig(os.path.join(plots_path, 'select_percentile_mutual_info_heatmap.png'))
 
-    #~ plt.bar(np.arange(x.shape[-1]), scores, width=.25,
-            #~ label=r'Univariate score ($-Log(p_{value})$) OIS', color='red')
-    #~ plt.xticks(np.arange(x.shape[-1])+0.3, d_ois.columns, rotation='vertical', fontsize=11)
-    #~ ois_selected_cols = selected_cols
-
-
-    #~ plt.bar(np.arange(x.shape[-1])+0.25, scores, width=.25,
-            #~ label=r'Univariate score ($-Log(p_{value})$) Zackay', color='blue')
-    #~ zps_selected_cols = selected_cols
-
-    #~ plt.bar(np.arange(x.shape[-1])+0.5, scores, width=.25,
-            #~ label=r'Univariate score ($-Log(p_{value})$) Hotpants', color='green')
-    #~ hot_selected_cols = selected_cols
-    #~ plt.legend(loc='best')
-    #~ plt.hlines(y=percentile/100., xmin=-1, xmax=48)
-    #~ plt.tight_layout()
-    #~ plt.savefig(os.path.join(plots_path, 'select_percentile_mutual_info.png'))
-
-    #~ plt.figure(figsize=(12, 6))
-
-    #~ plt.bar(np.arange(x.shape[-1]), scores, width=.25,
-            #~ label=r'Univariate score ($-Log(p_{value})$) Scorr', color='magenta')
-    #~ plt.xticks(np.arange(x.shape[-1]), sps_cols[0], rotation='vertical', fontsize=11)
-    #~ #plt.title('OIS')
-    #~ plt.hlines(y=percentile/100., xmin=-1, xmax=38)
-
-    #~ plt.savefig(os.path.join(plots_path,
-                             #~ 'select_percentile_mutual_info_scorr.png'))
 
 # =============================================================================
 # RandomForests
