@@ -261,7 +261,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.legend(loc='best')
     plt.hlines(y=percentile/100., xmin=-1, xmax=48)
 
-    plt.savefig('select_percentile_mutual_info.png')
+    plt.savefig(os.path.join(plots, 'select_percentile_mutual_info.png'))
 
 # =============================================================================
 # RandomForests
