@@ -436,24 +436,7 @@ def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
         y_test = pd.DataFrame(y[test])
 
         if forest is None:
-            forest = RandomForestClassifier(n_estimators=250, random_state=33, n_jobs=-1)
-
-        X_train['Random'] = np.random.random(size=len(X_train))
-        X_test['Random'] = np.random.random(size=len(X_test))
-
-        forest.fit(X_train, y_train)
-        imp.append(imdef importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
-    skf = StratifiedKFold(n_splits=nfolds)
-    imp = []
-
-    for train, test in skf.split(X, y):
-        X_train = pd.DataFrame(X[train], columns=cols)
-        X_test = pd.DataFrame(X[test], columns=cols)
-        y_train = pd.DataFrame(y[train])
-        y_test = pd.DataFrame(y[test])
-
-        if forest is None:
-            forest = RandomForestClassifier(n_estimators=250, random_state=33, n_jobs=-1)
+            forest = RandomForestClassifier(n_estimators=250, n_jobs=-1)
 
         X_train['Random'] = np.random.random(size=len(X_train))
         X_test['Random'] = np.random.random(size=len(X_test))
@@ -462,8 +445,6 @@ def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
         imp.append(importances(forest, X_test, y_test)) # permutation
     #imp = pd.concat(imp, axis=1)
     return imp
-
-
 
 transl = {u'thresh': u'THRESHOLD',
           u'peak': u'FLUX_MAX',
