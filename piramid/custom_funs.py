@@ -405,6 +405,65 @@ def select(X, Y, percentile, selector_f=mutual_info_classif, log=False):
     selected_cols = selector.transform(X_indices)
     return scores, selector, selected_cols
 
+from rfpimp import *
+
+def importance_perm(X, y, forest=None, cols=None, method=None):
+
+    X = pd.DataFrame(X, columns=cols)
+    y = pd.DataFrame(y)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
+
+    if forest is None:
+        forest = RandomForestClassifier(n_estimators=250, random_state=33, n_jobs=-1)
+
+    X_train['Random'] = np.random.random(size=len(X_train))
+    X_test['Random'] = np.random.random(size=len(X_test))
+
+    forest.fit(X_train, y_train)
+    imp = importances(forest, X_test, y_test) # permutation
+    return imp
+
+
+def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
+    skf = StratifiedKFold(n_splits=nfolds)
+    imp = []
+
+    for train, test in skf.split(X, y):
+        X_train = pd.DataFrame(X[train], columns=cols)
+        X_test = pd.DataFrame(X[test], columns=cols)
+        y_train = pd.DataFrame(y[train])
+        y_test = pd.DataFrame(y[test])
+
+        if forest is None:
+            forest = RandomForestClassifier(n_estimators=250, random_state=33, n_jobs=-1)
+
+        X_train['Random'] = np.random.random(size=len(X_train))
+        X_test['Random'] = np.random.random(size=len(X_test))
+
+        forest.fit(X_train, y_train)
+        imp.append(imdef importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
+    skf = StratifiedKFold(n_splits=nfolds)
+    imp = []
+
+    for train, test in skf.split(X, y):
+        X_train = pd.DataFrame(X[train], columns=cols)
+        X_test = pd.DataFrame(X[test], columns=cols)
+        y_train = pd.DataFrame(y[train])
+        y_test = pd.DataFrame(y[test])
+
+        if forest is None:
+            forest = RandomForestClassifier(n_estimators=250, random_state=33, n_jobs=-1)
+
+        X_train['Random'] = np.random.random(size=len(X_train))
+        X_test['Random'] = np.random.random(size=len(X_test))
+
+        forest.fit(X_train, y_train)
+        imp.append(importances(forest, X_test, y_test)) # permutation
+    #imp = pd.concat(imp, axis=1)
+    return imp
+
+
 
 transl = {u'thresh': u'THRESHOLD',
           u'peak': u'FLUX_MAX',

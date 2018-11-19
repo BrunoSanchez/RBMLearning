@@ -43,6 +43,7 @@ from sklearn.svm import SVC
 
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.externals import joblib
 
 from sklearn.model_selection import KFold
@@ -447,6 +448,20 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.clf()
 
     # datasets are now in decorr frames...
+
+    ois_importance = importance_perm(decorr_ois, y_ois,
+        RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1),
+        cols=decorr_ois.columns, method='Bramich')
+    zps_importance = importance_perm(decorr_zps, y_zps,
+        RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1),
+        cols=decorr_zps.columns, method='Zackay')
+    hot_importance = importance_perm(decorr_hot, y_hot,
+        RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1),
+        cols=decorr_hot.columns, method='Alard-Lupton')
+    sps_importance = importance_perm(decorr_sps, y_sps,
+        RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1),
+        cols=decorr_sps.columns, method='Scorr')
+
 
 # =============================================================================
 # Support Vector Machines
