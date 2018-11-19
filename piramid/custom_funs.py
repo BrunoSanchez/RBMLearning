@@ -407,6 +407,8 @@ def select(X, Y, percentile):
 
 transl = {u'thresh': u'THRESHOLD',
           u'peak': u'FLUX_MAX',
+          u'x': u'X_IMAGE',
+          u'y': u'Y_IMAGE',
           u'x2': u'X2_IMAGE',
           u'y2': u'Y2_IMAGE',
           u'xy': u'XY_IMAGE',
