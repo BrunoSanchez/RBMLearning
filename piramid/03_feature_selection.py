@@ -229,41 +229,13 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     newcols_hot = d_hot.columns[sel.get_support()]
     print('Dropped columns = {}'.format(d_hot.columns[~sel.get_support()]))
 
-# %%%%%  Univariate f_info_classif
 
-    percentile = 10.
-
-    scores, selector, selected_cols = cf.select(X_ois, y_ois, percentile, cf.f_classif, log=True)
-    scoring_ois = pd.DataFrame(scores, index=newcols_ois, columns=['ois'])
-    selection_ois = scoring_ois.loc[newcols_ois.values[selected_cols][0]]
-
-    scores, selector, selected_cols = cf.select(X_zps, y_zps, percentile, cf.f_classif, log=True)
-    scoring_zps = pd.DataFrame(scores, index=newcols_zps, columns=['zps'])
-    selection_zps = scoring_zps.loc[newcols_zps.values[selected_cols][0]]
-
-    scores, selector, selected_cols = cf.select(X_hot, y_hot, percentile, cf.f_classif, log=True)
-    scoring_hot = pd.DataFrame(scores, index=newcols_hot, columns=['hot'])
-    selection_hot = scoring_hot.loc[newcols_hot.values[selected_cols][0]]
-
-    scores, selector, selected_cols = cf.select(X_sps, y_sps, percentile, cf.f_classif, log=True)
-    scoring_sps = pd.DataFrame(scores, index=newcols_sps, columns=['sps'])
-    selection_sps = scoring_sps.loc[newcols_sps.values[selected_cols][0]]
-    scoring_sps = scoring_sps.rename(index=cf.transl)
-    selection_sps = selection_sps.rename(index=cf.transl)
-
-    scoring = pd.concat([scoring_ois, scoring_zps, scoring_hot, scoring_sps], axis=1)
-    scoring = scoring.fillna(0)
-    selected = pd.concat([selection_ois, selection_zps, selection_hot, selection_sps], axis=1)
-    selected = selected.reindex(scoring.index)
-
-    sns.heatmap(scoring, vmin=0., vmax=1., cmap='Blues',
-                annot=np.round(selected.fillna(-1).values, 2), cbar=True)
-    plt.savefig(os.path.join(plots_path, 'select_percentile_f_class_heatmap.png'))
-    plt.clf()
-
+# =============================================================================
+# KNN Neighbors
+# =============================================================================
 # %%%%%  Univariate f_mutual_info_classif
 
-    percentile = 10.
+    percentile = 20.
 
     scores, selector, selected_cols = cf.select(X_ois, y_ois, percentile)
     scoring_ois = pd.DataFrame(scores, index=newcols_ois, columns=['ois'])
@@ -292,24 +264,194 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
                 annot=np.round(selected.fillna(-1).values, 2), cbar=True)
     plt.savefig(os.path.join(plots_path, 'select_percentile_mutual_info_heatmap.png'))
     plt.clf()
-# =============================================================================
-#  Ahora de este lio salen los features elegidos??
-# =============================================================================
 
+    #  Selected features are then
+    features = list(selection_ois.index)
+    features += list(selection_zps.index)
+    features += list(selection_sps.index)
+    features += list(selection_hot.index)
+    features = np.unique(features)
 
 
 # =============================================================================
 # RandomForests
 # =============================================================================
+# =============================================================================
+# Get the correlations out first, as suggested by referee
+# =============================================================================
+    corr = pd.DataFrame(X_ois, columns=newcols_ois).corr()
 
+    # Generate a mask for the upper triangle
+    mask = np.zeros_like(corr, dtype=np.bool)
+    mask[np.triu_indices_from(mask)] = True
+
+    # Set up the matplotlib figure
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    corr_plot = sns.heatmap(corr, mask=mask, cmap='RdBu', center=0,
+                    square=True, linewidths=.2, cbar_kws={"shrink": .5})
+    plt.tight_layout()
+    plt.savefig(os.path.join(plots_path, 'corr_ois.png'))
+    plt.clf()
+
+    # remove corr columns
+    correlated_features = set()
+    for i in range(len(corr.columns)):
+        for j in range(i):
+            if abs(corr.iloc[i, j]) > 0.8:
+                colname = corr.columns[i]
+                correlated_features.add(colname)
+
+    decorr_ois = pd.DataFrame(X_ois, columns=newcols_ois).drop(correlated_features, axis=1)
+
+    corr = decorr_ois.corr()
+        # Generate a mask for the upper triangle
+    mask = np.zeros_like(corr, dtype=np.bool)
+    mask[np.triu_indices_from(mask)] = True
+
+    # Set up the matplotlib figure
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    corr_plot = sns.heatmap(corr, mask=mask, cmap='RdBu', center=0,
+                    square=True, linewidths=.2, cbar_kws={"shrink": .5})
+    plt.tight_layout()
+    plt.savefig(os.path.join(plots_path, 'decorr_ois.png'))
+    plt.clf()
+
+    # -------------------------- #
+    corr = pd.DataFrame(X_hot, columns=newcols_hot).corr()
+
+    # Generate a mask for the upper triangle
+    mask = np.zeros_like(corr, dtype=np.bool)
+    mask[np.triu_indices_from(mask)] = True
+
+    # Set up the matplotlib figure
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    corr_plot = sns.heatmap(corr, mask=mask, cmap='RdBu', center=0,
+                    square=True, linewidths=.2, cbar_kws={"shrink": .5})
+    plt.tight_layout()
+    plt.savefig(os.path.join(plots_path, 'corr_hot.png'))
+    plt.clf()
+
+    # remove corr columns
+    correlated_features = set()
+    for i in range(len(corr.columns)):
+        for j in range(i):
+            if abs(corr.iloc[i, j]) > 0.8:
+                colname = corr.columns[i]
+                correlated_features.add(colname)
+
+    decorr_hot = pd.DataFrame(X_hot, columns=newcols_hot).drop(correlated_features, axis=1)
+
+    corr = decorr_hot.corr()
+        # Generate a mask for the upper triangle
+    mask = np.zeros_like(corr, dtype=np.bool)
+    mask[np.triu_indices_from(mask)] = True
+
+    # Set up the matplotlib figure
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    corr_plot = sns.heatmap(corr, mask=mask, cmap='RdBu', center=0,
+                    square=True, linewidths=.2, cbar_kws={"shrink": .5})
+    plt.tight_layout()
+    plt.savefig(os.path.join(plots_path, 'decorr_hot.png'))
+    plt.clf()
+
+    # -------------------------- #
+    corr = pd.DataFrame(X_zps, columns=newcols_zps).corr()
+
+    # Generate a mask for the upper triangle
+    mask = np.zeros_like(corr, dtype=np.bool)
+    mask[np.triu_indices_from(mask)] = True
+
+    # Set up the matplotlib figure
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    corr_plot = sns.heatmap(corr, mask=mask, cmap='RdBu', center=0,
+                    square=True, linewidths=.2, cbar_kws={"shrink": .5})
+    plt.tight_layout()
+    plt.savefig(os.path.join(plots_path, 'corr_zps.png'))
+    plt.clf()
+
+    # remove corr columns
+    correlated_features = set()
+    for i in range(len(corr.columns)):
+        for j in range(i):
+            if abs(corr.iloc[i, j]) > 0.8:
+                colname = corr.columns[i]
+                correlated_features.add(colname)
+
+    decorr_zps = pd.DataFrame(X_zps, columns=newcols_zps).drop(correlated_features, axis=1)
+
+    corr = decorr_zps.corr()
+        # Generate a mask for the upper triangle
+    mask = np.zeros_like(corr, dtype=np.bool)
+    mask[np.triu_indices_from(mask)] = True
+
+    # Set up the matplotlib figure
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    corr_plot = sns.heatmap(corr, mask=mask, cmap='RdBu', center=0,
+                    square=True, linewidths=.2, cbar_kws={"shrink": .5})
+    plt.tight_layout()
+    plt.savefig(os.path.join(plots_path, 'decorr_zps.png'))
+    plt.clf()
+
+    # -------------------------- #
+    corr = pd.DataFrame(X_sps, columns=newcols_sps).corr()
+
+    # Generate a mask for the upper triangle
+    mask = np.zeros_like(corr, dtype=np.bool)
+    mask[np.triu_indices_from(mask)] = True
+
+    # Set up the matplotlib figure
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    corr_plot = sns.heatmap(corr, mask=mask, cmap='RdBu', center=0,
+                    square=True, linewidths=.2, cbar_kws={"shrink": .5})
+    plt.tight_layout()
+    plt.savefig(os.path.join(plots_path, 'corr_sps.png'))
+    plt.clf()
+
+    # remove corr columns
+    correlated_features = set()
+    for i in range(len(corr.columns)):
+        for j in range(i):
+            if abs(corr.iloc[i, j]) > 0.8:
+                colname = corr.columns[i]
+                correlated_features.add(colname)
+
+    decorr_sps = pd.DataFrame(X_sps, columns=newcols_sps).drop(correlated_features, axis=1)
+
+    corr = decorr_sps.corr()
+        # Generate a mask for the upper triangle
+    mask = np.zeros_like(corr, dtype=np.bool)
+    mask[np.triu_indices_from(mask)] = True
+
+    # Set up the matplotlib figure
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    corr_plot = sns.heatmap(corr, mask=mask, cmap='RdBu', center=0,
+                    square=True, linewidths=.2, cbar_kws={"shrink": .5})
+    plt.tight_layout()
+    plt.savefig(os.path.join(plots_path, 'decorr_sps.png'))
+    plt.clf()
+
+    # datasets are now in decorr frames...
 
 # =============================================================================
 # Support Vector Machines
 # =============================================================================
 
-# =============================================================================
-# KNN Neighbors
-# =============================================================================
 
 if __name__ == '__main__':
     import argparse
