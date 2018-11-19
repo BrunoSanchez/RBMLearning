@@ -392,6 +392,7 @@ def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
     #imp = pd.concat(imp, axis=1)
     return imp
 
+
 def select(X, Y, percentile):
     selector = SelectPercentile(mutual_info_classif, percentile=percentile)
     selector.fit(X, Y)
@@ -402,3 +403,35 @@ def select(X, Y, percentile):
     X_indices = np.arange(X.shape[-1]).reshape(1, -1)
     selected_cols = selector.transform(X_indices)
     return scores, selector, selected_cols
+
+
+transl = {u'thresh': u'THRESHOLD',
+          u'peak': u'FLUX_MAX',
+          u'x2': u'X2_IMAGE',
+          u'y2': u'Y2_IMAGE',
+          u'xy': u'XY_IMAGE',
+          u'a':u'A_IMAGE',
+          u'b':u'B_IMAGE',
+          u'theta':u'THETA_IMAGE',
+          u'cxx':u'CXX_IMAGE',
+          u'cyy':u'CYY_IMAGE',
+          u'cxy':u'CXY_IMAGE',
+          u'cflux':u'FLUX_ISO',
+          u'flux':u'FLUX_APER',
+          u'flag': u'FLAGS',
+          u'DELTAX': u'DELTAX',
+          u'DELTAY': u'DELTAY',
+          u'RATIO': u'RATIO',
+          u'ROUNDNESS': u'ROUNDNESS',
+          u'PEAK_CENTROID': u'PEAK_CENTROID',
+          u'MAG': u'MAG',
+          u'MU': u'MU',
+          u'SN': u'SN'}
+
+detransl = {v: k for k, v in transl.items()}
+
+complement = []
+for v in d_sps.columns:
+    if v not in detransl.values():
+        complement.append(v)
+

@@ -232,36 +232,57 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # %%%%%  Univariate f_mutual_info_classif
 
     percentile = 20.
-    plt.figure(figsize=(12, 6))
+
     #plt.subplot(131)
 
-    x = X_ois
-    y = y_ois
-    scores, selector, selected_cols = cf.select(x, y, percentile)
-    plt.bar(np.arange(x.shape[-1]), scores, width=.25,
-            label=r'Univariate score ($-Log(p_{value})$) OIS', color='red')
-    plt.xticks(np.arange(x.shape[-1])+0.3, d_ois.columns, rotation='vertical', fontsize=11)
-    ois_selected_cols = selected_cols
+    scores, selector, selected_cols = cf.select(X_ois, y_ois, percentile)
+    scoring_ois = pd.DataFrame(scores, index=newcols_ois, columns=['ois'])
 
-    x = X_zps
-    y = y_zps
-    scores, selector, selected_cols = cf.select(x, y, percentile)
+    scores, selector, selected_cols = cf.select(X_zps, y_zps, percentile)
+    scoring_zps = pd.DataFrame(scores, index=newcols_zps, columns=['zps'])
 
-    plt.bar(np.arange(x.shape[-1])+0.25, scores, width=.25,
-            label=r'Univariate score ($-Log(p_{value})$) Zackay', color='blue')
-    zps_selected_cols = selected_cols
+    scores, selector, selected_cols = cf.select(X_hot, y_hot, percentile)
+    scoring_hot = pd.DataFrame(scores, index=newcols_hot, columns=['hot'])
 
-    x = X_hot
-    y = y_hot
-    scores, selector, selected_cols = cf.select(x, y, percentile)
+    scores, selector, sps_selected_cols = cf.select(X_sps, y_sps, percentile)
+    scoring_sps = pd.DataFrame(scores, index=newcols_sps, columns=['sps'])
+    scoring_sps = scoring_sps.rename(index=cf.transl)
 
-    plt.bar(np.arange(x.shape[-1])+0.5, scores, width=.25,
-            label=r'Univariate score ($-Log(p_{value})$) Hotpants', color='green')
-    hot_selected_cols = selected_cols
-    plt.legend(loc='best')
-    plt.hlines(y=percentile/100., xmin=-1, xmax=48)
-    plt.tight_layout()
-    plt.savefig(os.path.join(plots_path, 'select_percentile_mutual_info.png'))
+    scoring = pd.concat([scoring_ois, scoring_zps, scoring_sps, scoring_hot], axis=1)
+    scoring = scoring.fillna(0)
+
+    #plt.figure(figsize=(6, 16))
+    sns.heatmap(scoring, vmin=0., vmax=1., cmap='Blues', annot=True, cbar=True)
+    plt.savefig(os.path.join(plots_path, 'select_percentile_mutual_info_heatmap.png'))
+
+    #~ plt.bar(np.arange(x.shape[-1]), scores, width=.25,
+            #~ label=r'Univariate score ($-Log(p_{value})$) OIS', color='red')
+    #~ plt.xticks(np.arange(x.shape[-1])+0.3, d_ois.columns, rotation='vertical', fontsize=11)
+    #~ ois_selected_cols = selected_cols
+
+
+    #~ plt.bar(np.arange(x.shape[-1])+0.25, scores, width=.25,
+            #~ label=r'Univariate score ($-Log(p_{value})$) Zackay', color='blue')
+    #~ zps_selected_cols = selected_cols
+
+    #~ plt.bar(np.arange(x.shape[-1])+0.5, scores, width=.25,
+            #~ label=r'Univariate score ($-Log(p_{value})$) Hotpants', color='green')
+    #~ hot_selected_cols = selected_cols
+    #~ plt.legend(loc='best')
+    #~ plt.hlines(y=percentile/100., xmin=-1, xmax=48)
+    #~ plt.tight_layout()
+    #~ plt.savefig(os.path.join(plots_path, 'select_percentile_mutual_info.png'))
+
+    #~ plt.figure(figsize=(12, 6))
+
+    #~ plt.bar(np.arange(x.shape[-1]), scores, width=.25,
+            #~ label=r'Univariate score ($-Log(p_{value})$) Scorr', color='magenta')
+    #~ plt.xticks(np.arange(x.shape[-1]), sps_cols[0], rotation='vertical', fontsize=11)
+    #~ #plt.title('OIS')
+    #~ plt.hlines(y=percentile/100., xmin=-1, xmax=38)
+
+    #~ plt.savefig(os.path.join(plots_path,
+                             #~ 'select_percentile_mutual_info_scorr.png'))
 
 # =============================================================================
 # RandomForests
