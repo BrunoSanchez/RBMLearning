@@ -229,31 +229,74 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     newcols_hot = d_hot.columns[sel.get_support()]
     print('Dropped columns = {}'.format(d_hot.columns[~sel.get_support()]))
 
+# %%%%%  Univariate f_info_classif
+
+    percentile = 10.
+
+    scores, selector, selected_cols = cf.select(X_ois, y_ois, percentile, cf.f_classif)
+    scoring_ois = pd.DataFrame(scores, index=newcols_ois, columns=['ois'])
+    selection_ois = scoring_ois.loc[newcols_ois.values[selected_cols][0]]
+
+    scores, selector, selected_cols = cf.select(X_zps, y_zps, percentilecf.f_classif)
+    scoring_zps = pd.DataFrame(scores, index=newcols_zps, columns=['zps'])
+    selection_zps = scoring_zps.loc[newcols_zps.values[selected_cols][0]]
+
+    scores, selector, selected_cols = cf.select(X_hot, y_hot, percentilecf.f_classif)
+    scoring_hot = pd.DataFrame(scores, index=newcols_hot, columns=['hot'])
+    selection_hot = scoring_hot.loc[newcols_hot.values[selected_cols][0]]
+
+    scores, selector, selected_cols = cf.select(X_sps, y_sps, percentilecf.f_classif)
+    scoring_sps = pd.DataFrame(scores, index=newcols_sps, columns=['sps'])
+    selection_sps = scoring_sps.loc[newcols_sps.values[selected_cols][0]]
+    scoring_sps = scoring_sps.rename(index=cf.transl)
+    selection_sps = selection_sps.rename(index=cf.transl)
+
+    scoring = pd.concat([scoring_ois, scoring_zps, scoring_hot, scoring_sps], axis=1)
+    scoring = scoring.fillna(0)
+    selected = pd.concat([selection_ois, selection_zps, selection_hot, selection_sps], axis=1)
+    selected = selected.reindex(scoring.index)
+
+    sns.heatmap(scoring, vmin=0., vmax=1., cmap='Blues',
+                annot=np.round(selected.fillna(-1).values, 2), cbar=True)
+    plt.savefig(os.path.join(plots_path, 'select_percentile_f_class_heatmap.png'))
+
+
+
 # %%%%%  Univariate f_mutual_info_classif
 
-    percentile = 20.
-
-    #plt.subplot(131)
+    percentile = 10.
 
     scores, selector, selected_cols = cf.select(X_ois, y_ois, percentile)
     scoring_ois = pd.DataFrame(scores, index=newcols_ois, columns=['ois'])
+    selection_ois = scoring_ois.loc[newcols_ois.values[selected_cols][0]]
 
     scores, selector, selected_cols = cf.select(X_zps, y_zps, percentile)
     scoring_zps = pd.DataFrame(scores, index=newcols_zps, columns=['zps'])
+    selection_zps = scoring_zps.loc[newcols_zps.values[selected_cols][0]]
 
     scores, selector, selected_cols = cf.select(X_hot, y_hot, percentile)
     scoring_hot = pd.DataFrame(scores, index=newcols_hot, columns=['hot'])
+    selection_hot = scoring_hot.loc[newcols_hot.values[selected_cols][0]]
 
-    scores, selector, sps_selected_cols = cf.select(X_sps, y_sps, percentile)
+    scores, selector, selected_cols = cf.select(X_sps, y_sps, percentile)
     scoring_sps = pd.DataFrame(scores, index=newcols_sps, columns=['sps'])
+    selection_sps = scoring_sps.loc[newcols_sps.values[selected_cols][0]]
     scoring_sps = scoring_sps.rename(index=cf.transl)
+    selection_sps = selection_sps.rename(index=cf.transl)
 
-    scoring = pd.concat([scoring_ois, scoring_zps, scoring_sps, scoring_hot], axis=1)
+    scoring = pd.concat([scoring_ois, scoring_zps, scoring_hot, scoring_sps], axis=1)
     scoring = scoring.fillna(0)
+    selected = pd.concat([selection_ois, selection_zps, selection_hot, selection_sps], axis=1)
+    selected = selected.reindex(scoring.index)
 
     sns.heatmap(scoring, vmin=0., vmax=1., cmap='Blues',
-                annot=np.round(scoring.values, 2), cbar=True)
+                annot=np.round(selected.fillna(-1).values, 2), cbar=True)
     plt.savefig(os.path.join(plots_path, 'select_percentile_mutual_info_heatmap.png'))
+
+# =============================================================================
+#  Ahora de este lio salen los features elegidos??
+# =============================================================================
+
 
 
 # =============================================================================
