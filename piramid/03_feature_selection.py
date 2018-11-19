@@ -67,7 +67,7 @@ store.open()
 
 #sns.set_context(font_scale=16)
 plt.rcParams["patch.force_edgecolor"] = True
-plt.rcParams['text.usetex'] = True
+plt.rcParams['text.usetex'] = False
 
 
 def main(m1_diam=1.54, plots_path='./plots/.'):
@@ -261,7 +261,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.legend(loc='best')
     plt.hlines(y=percentile/100., xmin=-1, xmax=48)
 
-    plt.savefig(os.path.join(plots, 'select_percentile_mutual_info.png'))
+    plt.savefig(os.path.join(plots_path, 'select_percentile_mutual_info.png'))
 
 # =============================================================================
 # RandomForests
