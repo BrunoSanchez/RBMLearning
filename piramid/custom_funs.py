@@ -392,7 +392,7 @@ def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
     #imp = pd.concat(imp, axis=1)
     return imp
 
-def select(X, Y):
+def select(X, Y, percentile):
     selector = SelectPercentile(mutual_info_classif, percentile=percentile)
     selector.fit(X, Y)
     scores = selector.scores_  # -np.log10(selector.pvalues_)

@@ -232,7 +232,36 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # %%%%%  Univariate f_mutual_info_classif
 
     percentile = 20.
+    plt.figure(figsize=(12, 6))
+    #plt.subplot(131)
 
+    x = X_ois
+    y = y_ois
+    scores, selector, selected_cols = cf.select(x, y, percentile)
+    plt.bar(np.arange(x.shape[-1]), scores, width=.25,
+            label=r'Univariate score ($-Log(p_{value})$) OIS', color='red')
+    plt.xticks(np.arange(x.shape[-1])+0.3, d_ois.columns, rotation='vertical', fontsize=11)
+    ois_selected_cols = selected_cols
+
+    x = X_zps
+    y = y_zps
+    scores, selector, selected_cols = cf.select(x, y, percentile)
+
+    plt.bar(np.arange(x.shape[-1])+0.25, scores, width=.25,
+            label=r'Univariate score ($-Log(p_{value})$) Zackay', color='blue')
+    zps_selected_cols = selected_cols
+
+    x = X_hot
+    y = y_hot
+    scores, selector, selected_cols = cf.select(x, y, percentile)
+
+    plt.bar(np.arange(x.shape[-1])+0.5, scores, width=.25,
+            label=r'Univariate score ($-Log(p_{value})$) Hotpants', color='green')
+    hot_selected_cols = selected_cols
+    plt.legend(loc='best')
+    plt.hlines(y=percentile/100., xmin=-1, xmax=48)
+
+    plt.savefig('select_percentile_mutual_info.png')
 
 # =============================================================================
 # RandomForests
