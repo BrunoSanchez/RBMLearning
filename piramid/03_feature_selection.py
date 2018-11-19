@@ -260,7 +260,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     hot_selected_cols = selected_cols
     plt.legend(loc='best')
     plt.hlines(y=percentile/100., xmin=-1, xmax=48)
-
+    plt.tight_layout()
     plt.savefig(os.path.join(plots_path, 'select_percentile_mutual_info.png'))
 
 # =============================================================================
