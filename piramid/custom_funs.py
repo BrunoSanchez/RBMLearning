@@ -424,14 +424,9 @@ transl = {u'thresh': u'THRESHOLD',
           u'RATIO': u'RATIO',
           u'ROUNDNESS': u'ROUNDNESS',
           u'PEAK_CENTROID': u'PEAK_CENTROID',
-          u'MAG': u'MAG',
+          #u'MAG': u'mag',
           u'MU': u'MU',
           u'SN': u'SN'}
 
 detransl = {v: k for k, v in transl.items()}
-
-complement = []
-for v in d_sps.columns:
-    if v not in detransl.values():
-        complement.append(v)
 

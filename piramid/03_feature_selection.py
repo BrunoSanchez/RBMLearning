@@ -246,6 +246,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     scores, selector, sps_selected_cols = cf.select(X_sps, y_sps, percentile)
     scoring_sps = pd.DataFrame(scores, index=newcols_sps, columns=['sps'])
+
     scoring_sps = scoring_sps.rename(index=cf.transl)
 
     scoring = pd.concat([scoring_ois, scoring_zps, scoring_sps, scoring_hot], axis=1)
