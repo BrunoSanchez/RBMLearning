@@ -233,19 +233,19 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     percentile = 10.
 
-    scores, selector, selected_cols = cf.select(X_ois, y_ois, percentile, cf.f_classif)
+    scores, selector, selected_cols = cf.select(X_ois, y_ois, percentile, cf.f_classif, log=True)
     scoring_ois = pd.DataFrame(scores, index=newcols_ois, columns=['ois'])
     selection_ois = scoring_ois.loc[newcols_ois.values[selected_cols][0]]
 
-    scores, selector, selected_cols = cf.select(X_zps, y_zps, percentilecf.f_classif)
+    scores, selector, selected_cols = cf.select(X_zps, y_zps, percentile, cf.f_classif, log=True)
     scoring_zps = pd.DataFrame(scores, index=newcols_zps, columns=['zps'])
     selection_zps = scoring_zps.loc[newcols_zps.values[selected_cols][0]]
 
-    scores, selector, selected_cols = cf.select(X_hot, y_hot, percentilecf.f_classif)
+    scores, selector, selected_cols = cf.select(X_hot, y_hot, percentile, cf.f_classif, log=True)
     scoring_hot = pd.DataFrame(scores, index=newcols_hot, columns=['hot'])
     selection_hot = scoring_hot.loc[newcols_hot.values[selected_cols][0]]
 
-    scores, selector, selected_cols = cf.select(X_sps, y_sps, percentilecf.f_classif)
+    scores, selector, selected_cols = cf.select(X_sps, y_sps, percentile, cf.f_classif, log=True)
     scoring_sps = pd.DataFrame(scores, index=newcols_sps, columns=['sps'])
     selection_sps = scoring_sps.loc[newcols_sps.values[selected_cols][0]]
     scoring_sps = scoring_sps.rename(index=cf.transl)
@@ -259,8 +259,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     sns.heatmap(scoring, vmin=0., vmax=1., cmap='Blues',
                 annot=np.round(selected.fillna(-1).values, 2), cbar=True)
     plt.savefig(os.path.join(plots_path, 'select_percentile_f_class_heatmap.png'))
-
-
+    plt.clf()
 
 # %%%%%  Univariate f_mutual_info_classif
 
@@ -292,7 +291,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     sns.heatmap(scoring, vmin=0., vmax=1., cmap='Blues',
                 annot=np.round(selected.fillna(-1).values, 2), cbar=True)
     plt.savefig(os.path.join(plots_path, 'select_percentile_mutual_info_heatmap.png'))
-
+    plt.clf()
 # =============================================================================
 #  Ahora de este lio salen los features elegidos??
 # =============================================================================
