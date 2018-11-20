@@ -447,25 +447,80 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.savefig(os.path.join(plots_path, 'decorr_sps.png'))
     plt.clf()
 
+    full_cols = list(decorr_ois.index)
+    full_cols += list(decorr_zps.index)
+    full_cols += list(decorr_hot.index)
+    full_cols += list(decorr_sps.index)
+    full_cols = np.unique(full_cols)
+
     # datasets are now in decorr frames...
 
-    ois_importance = importance_perm(decorr_ois, y_ois,
+    ois_importance = cf.importance_perm_kfold(decorr_ois.values, y_ois.values.ravel(),
         RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1),
         cols=decorr_ois.columns, method='Bramich')
-    zps_importance = importance_perm(decorr_zps, y_zps,
+
+    zps_importance = cf.importance_perm_kfold(decorr_zps.values, y_zps.values.ravel(),
         RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1),
         cols=decorr_zps.columns, method='Zackay')
-    hot_importance = importance_perm(decorr_hot, y_hot,
+
+    hot_importance = cf.importance_perm_kfold(decorr_hot.values, y_hot.values.ravel(),
         RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1),
         cols=decorr_hot.columns, method='Alard-Lupton')
-    sps_importance = importance_perm(decorr_sps, y_sps,
+
+    sps_importance = cf.importance_perm_kfold(decorr_sps.values, y_sps.values.ravel(),
         RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1),
         cols=decorr_sps.columns, method='Scorr')
+
+    sps_newimp = []
+    for animp in sps_importance:
+        sps_newimp.append(animp.rename(index=cf.transl))
+
+    res_ois = pd.concat(ois_importance, axis=1)
+    res_zps = pd.concat(zps_importance, axis=1)
+    res_hot = pd.concat(hot_importance, axis=1)
+    res_sps = pd.concat(sps_newimp, axis=1)
+
+    full_cols = list(full_cols).extend(['Random'])
+    m = pd.concat([res_ois.mean(axis=1),
+                   res_zps.mean(axis=1),
+                   res_hot.mean(axis=1),
+                   res_sps.mean(axis=1)], axis=1).reindex(full_cols)
+    s = pd.concat([res_ois.std(axis=1),
+                   res_zps.std(axis=1),
+                   res_hot.std(axis=1),
+                   res_sps.std(axis=1)], axis=1).reindex(full_cols)
+
+    m2 = m.copy()
+    for i in range(4):
+        m2[i] = m2[i] - m2[i]['Random']
+        m2[i] = m2[i]/np.max(m2[i])
+
+    plt.figure(figsize=(6, 12))
+    plt.imshow(m2.fillna(0).values, vmin=0, vmax=1., cmap='gray_r', aspect='auto')
+    plt.yticks(np.arange(len(m)), m.index, rotation='horizontal')
+    plt.xticks(np.arange(4)+0.5, ['Bramich', 'Zackay', 'A.-Lupton', 'Scorr'], rotation=45)
+    plt.colorbar()
+    plt.savefig(os.path.join(plots_path, 'feature_heatmap_simdata.svg'),
+                bbox_inches='tight')
+    plt.close()
+
+    plt.figure(figsize=(3, 12))
+    sns.heatmap(m.fillna(0).values, robust=True, cmap='Greys', cbar=True)
+    plt.yticks(np.arange(len(m))+0.5, rotation='horizontal')
+    plt.xticks(np.arange(4)+0.5, ['Bramich', 'Zackay', 'A.-Lupton', 'Scorr'], rotation=45)
+    #plt.colorbar()
+    plt.savefig(os.path.join(plots_path, './feature_heatmap_simdata.pdf'),
+                bbox_inches='tight')
+    plt.close()
+
 
 
 # =============================================================================
 # Support Vector Machines
 # =============================================================================
+
+#  here we will use recursive feature elimination
+
 
 
 if __name__ == '__main__':

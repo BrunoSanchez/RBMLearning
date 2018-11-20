@@ -405,7 +405,8 @@ def select(X, Y, percentile, selector_f=mutual_info_classif, log=False):
     selected_cols = selector.transform(X_indices)
     return scores, selector, selected_cols
 
-from rfpimp import *
+from rfpimp import importances
+from rfpimp import plot_corr_heatmap
 
 def importance_perm(X, y, forest=None, cols=None, method=None):
 
@@ -443,7 +444,6 @@ def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
 
         forest.fit(X_train, y_train)
         imp.append(importances(forest, X_test, y_test)) # permutation
-    #imp = pd.concat(imp, axis=1)
     return imp
 
 transl = {u'thresh': u'THRESHOLD',
