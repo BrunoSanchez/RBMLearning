@@ -780,7 +780,8 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # Seleccionamos los mean_goyet
 # =============================================================================
     pars = ['mean_goyet', 'image_id', 'id_simulation', 'mag', 'sim_mag',
-            'goyet', 'goyet_iso', 'mean_goyet_iso', 'IS_REAL']
+            'goyet', 'goyet_iso', 'mean_goyet_iso', 'IS_REAL', 'p05', 'p95'
+            ]
     subset_zps = dt_zps[pars+['FLAGS']]
     subset_ois = dt_ois[pars+['FLAGS']]
     subset_sps = dt_sps[pars]
@@ -994,19 +995,23 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 
     plt.figure(figsize=(8,4))
     bins = np.arange(6.5, 26.5, .5)
-    ff = subset_hot_lo.FLAGS<=0
+    #~ ff = subset_hot_lo.FLAGS<=0
+    ff = (subset_hot_lo.mag > subset_hot_lo.p05) & (subset_hot_lo.mag < subset_hot_lo.p95)
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
 
     #ff = subset_sps_hi.FLAGS<=1
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_lo, bins=bins)
+    ff = (subset_sps_lo.mag > subset_sps_lo.p05) & (subset_sps_lo.mag < subset_sps_lo.p95)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_lo[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
 
-    ff = subset_zps_lo.FLAGS<=0
+    #~ ff = subset_zps_lo.FLAGS<=0
+    ff = (subset_zps_lo.mag > subset_zps_lo.p05) & (subset_zps_lo.mag < subset_zps_lo.p95)
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_lo[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
 
-    ff = subset_ois_lo.FLAGS<=0
+    #~ ff = subset_ois_lo.FLAGS<=0
+    ff = (subset_ois_lo.mag > subset_ois_lo.p05) & (subset_ois_lo.mag < subset_ois_lo.p95)
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_lo[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
 
