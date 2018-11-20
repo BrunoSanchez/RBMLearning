@@ -1280,10 +1280,9 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     #plt.show()
     plt.ylim(1, 1e8)
     plt.tight_layout()
-
     plt.savefig(os.path.join(plot_dir, 'combined_luminosities_functions.svg'),
                 format='svg', dpi=720)
-
+    plt.close()
     store.close()
     return
 
