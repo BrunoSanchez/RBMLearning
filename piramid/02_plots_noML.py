@@ -263,6 +263,45 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.clf()
 
 # =============================================================================
+# Como quedan los diagramas de error de magnitud vs magnitud simulada
+# =============================================================================
+
+    plt.figure(figsize=(8,4))
+    bins = np.arange(6.5, 26.5, .5)
+    #~ ff = subset_hot_lo.FLAGS<=0
+    ff = (dt_hot.mag > dt_hot.p05) & (dt_hot.mag < dt_hot.p95)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(dt_hot.loc[ff], bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
+
+    #ff = subset_sps_hi.FLAGS<=1
+    ff = (dt_sps.mag > dt_sps.p05) & (dt_sps.mag < dt_sps.p95)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(dt_sps.loc[ff], bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
+
+    #~ ff = subset_zps_lo.FLAGS<=0
+    ff = (dt_zps.mag > dt_zps.p05) & (dt_zps.mag < dt_zps.p95)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(dt_zps.loc[ff], bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
+
+    #~ ff = subset_ois_lo.FLAGS<=0
+    ff = (dt_ois.mag > dt_ois.p05) & (dt_ois.mag < dt_ois.p95)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(dt_ois.loc[ff], bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
+
+    plt.tick_params(labelsize=16)
+    plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
+    plt.xlabel('Sim Mag', fontsize=16)
+    plt.title('Simulated Data', fontsize=14)
+    plt.legend(loc='best', fontsize=14)
+
+    plt.xlim(10, 22.5)
+    plt.ylim(-3, 3)
+    plt.tight_layout()
+    plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_inliers.svg'),
+                format='svg', dpi=480)
+
+
+# =============================================================================
 # plot de goyet factor vs pars
 # =============================================================================
     def goyet_vs_pars_plot(dataset, dia='zackay'):
@@ -1194,7 +1233,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     cumulative=True
     #magnitude bins
     bins = np.arange(7, 26.5, 0.5)
-    plt.rcParams['text.usetex'] = True
+    plt.rcParams['text.usetex'] = False
 
     plt.subplot(131)
     x_bins, vals = cf.custom_histogram(simus.app_mag.values, bins=bins,
