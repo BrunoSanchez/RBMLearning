@@ -273,16 +273,26 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     features += list(selection_hot.index)
     features = np.unique(features)
 
+    d_ois = pd.DataFrame(X_ois, columns=newcols_ois).loc[selection_ois.index]
+    d_zps = pd.DataFrame(X_zps, columns=newcols_zps).loc[selection_zps.index]
+    d_sps = pd.DataFrame(X_sps, columns=newcols_sps).loc[selection_hot.index]
+    d_hot = pd.DataFrame(X_hot, columns=newcols_hot).loc[newcols_sps.values[selected_cols][0]]
+
     model = neighbors.KNeighborsClassifier(n_neighbors=7, weights='uniform', n_jobs=-1)
 
-    rslts_knn_ois_uniform = cf.experiment(model, X_ois.loc[selection_ois.index],
+    rslts_knn_ois_uniform = cf.experiment(model, d_ois.values,
                                           y_ois, printing=True)
-    rslts_knn_zps_uniform = cf.experiment(model, X_zps.loc[selection_zps.index],
+    rslts_knn_zps_uniform = cf.experiment(model, d_zps.values,
                                           y_zps, printing=True)
-    rslts_knn_hot_uniform = cf.experiment(model, X_hot.loc[selection_hot.index],
+    rslts_knn_hot_uniform = cf.experiment(model, d_hot.values,
                                           y_hot, printing=True)
-    rslts_knn_sps_uniform = cf.experiment(model, X_sps.loc[newcols_sps.values[selected_cols][0]],
+    rslts_knn_sps_uniform = cf.experiment(model, d_sps.values,
                                           y_sps, printing=True)
+
+    del(d_ois)
+    del(d_zps)
+    del(d_sps)
+    del(d_hot)
 
 # =============================================================================
 # RandomForests
