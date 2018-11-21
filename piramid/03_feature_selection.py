@@ -261,7 +261,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     selected = pd.concat([selection_ois, selection_zps, selection_hot, selection_sps], axis=1)
     selected = selected.reindex(scoring.index)
 
-    sns.heatmap(scoring, vmin=0., vmax=1., cmap='Blues',
+    sns.heatmap(scoring, vmin=0., vmax=1., cmap='Blues', figsize=(12, 6),
                 annot=np.round(selected.fillna(-1).values, 2), cbar=True)
     plt.savefig(os.path.join(plots_path, 'select_percentile_mutual_info_heatmap.png'))
     plt.clf()
@@ -273,6 +273,16 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     features += list(selection_hot.index)
     features = np.unique(features)
 
+    model = neighbors.KNeighborsClassifier(n_neighbors=7, weights='uniform', n_jobs=-1)
+
+    rslts_knn_ois_uniform = experiment(model, X_ois.loc[selection_ois.index],
+                                       y_ois, printing=True)
+    rslts_knn_zps_uniform = experiment(model, X_zps.loc[selection_zps.index],
+                                       y_zps, printing=True)
+    rslts_knn_hot_uniform = experiment(model, X_hot.loc[selection_hot.index],
+                                       y_hot, printing=True)
+    rslts_knn_sps_uniform = experiment(model, X_sps.loc[newcols_sps.values[selected_cols][0]],
+                                       y_sps, printing=True)
 
 # =============================================================================
 # RandomForests
@@ -533,22 +543,27 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     rfecv.fit(np.ascontiguousarray(X_ois), y_ois)
     print("Optimal number of features : %d" % rfecv.n_features_)
-    print(newcols_ois[rfecv.support_])
+    sel_cols_ois = newcols_ois[rfecv.support_]
+    print(sel_cols_ois)
 
     # hot
     rfecv.fit(np.ascontiguousarray(X_hot), y_hot)
     print("Optimal number of features : %d" % rfecv.n_features_)
-    print(newcols_hot[rfecv.support_])
+    sel_cols_hot = newcols_hot[rfecv.support_]
+    print(sel_cols_hot)
 
     # zps
     rfecv.fit(np.ascontiguousarray(X_zps), y_zps)
     print("Optimal number of features : %d" % rfecv.n_features_)
-    print(newcols_zps[rfecv.support_])
+    sel_cols_zps = newcols_zps[rfecv.support_]
+    print(sel_cols_zps)
 
     # sps
     rfecv.fit(np.ascontiguousarray(X_sps), y_sps)
     print("Optimal number of features : %d" % rfecv.n_features_)
-    print(newcols_sps[rfecv.support_])
+    sel_cols_sps = newcols_sps[rfecv.support_]
+    print(sel_cols_sps)
+
 
 
 
