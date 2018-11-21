@@ -275,14 +275,14 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     model = neighbors.KNeighborsClassifier(n_neighbors=7, weights='uniform', n_jobs=-1)
 
-    rslts_knn_ois_uniform = experiment(model, X_ois.loc[selection_ois.index],
-                                       y_ois, printing=True)
-    rslts_knn_zps_uniform = experiment(model, X_zps.loc[selection_zps.index],
-                                       y_zps, printing=True)
-    rslts_knn_hot_uniform = experiment(model, X_hot.loc[selection_hot.index],
-                                       y_hot, printing=True)
-    rslts_knn_sps_uniform = experiment(model, X_sps.loc[newcols_sps.values[selected_cols][0]],
-                                       y_sps, printing=True)
+    rslts_knn_ois_uniform = cf.experiment(model, X_ois.loc[selection_ois.index],
+                                          y_ois, printing=True)
+    rslts_knn_zps_uniform = cf.experiment(model, X_zps.loc[selection_zps.index],
+                                          y_zps, printing=True)
+    rslts_knn_hot_uniform = cf.experiment(model, X_hot.loc[selection_hot.index],
+                                          y_hot, printing=True)
+    rslts_knn_sps_uniform = cf.experiment(model, X_sps.loc[newcols_sps.values[selected_cols][0]],
+                                          y_sps, printing=True)
 
 # =============================================================================
 # RandomForests
