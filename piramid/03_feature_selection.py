@@ -519,7 +519,37 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # Support Vector Machines
 # =============================================================================
 
-#  here we will use recursive feature elimination
+    #  here we will use recursive feature elimination
+    ## ois
+    svc = SVC(kernel='linear',
+              cache_size=2048,
+              class_weight='balanced',
+              probability=False)
+
+    svc = svm.LinearSVC(dual=False, tol=1e-5)
+
+    rfecv = feature_selection.RFECV(estimator=svc, step=1, cv=StratifiedKFold(6),
+                  scoring='accuracy', n_jobs=-1)
+
+    rfecv.fit(np.ascontiguousarray(X_ois), y_ois)
+    print("Optimal number of features : %d" % rfecv.n_features_)
+    print(newcols_ois[rfecv.support_])
+
+    # hot
+    rfecv.fit(np.ascontiguousarray(X_hot), y_hot)
+    print("Optimal number of features : %d" % rfecv.n_features_)
+    print(newcols_hot[rfecv.support_])
+
+    # zps
+    rfecv.fit(np.ascontiguousarray(X_zps), y_zps)
+    print("Optimal number of features : %d" % rfecv.n_features_)
+    print(newcols_zps[rfecv.support_])
+
+    # sps
+    rfecv.fit(np.ascontiguousarray(X_sps), y_sps)
+    print("Optimal number of features : %d" % rfecv.n_features_)
+    print(newcols_sps[rfecv.support_])
+
 
 
 
