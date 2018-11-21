@@ -261,7 +261,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     selected = pd.concat([selection_ois, selection_zps, selection_hot, selection_sps], axis=1)
     selected = selected.reindex(scoring.index)
 
-    sns.heatmap(scoring, vmin=0., vmax=1., cmap='Blues', figsize=(12, 6),
+    sns.heatmap(scoring, vmin=0., vmax=1., cmap='Blues', #figsize=(12, 6),
                 annot=np.round(selected.fillna(-1).values, 2), cbar=True)
     plt.savefig(os.path.join(plots_path, 'select_percentile_mutual_info_heatmap.png'))
     plt.clf()
