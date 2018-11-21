@@ -273,9 +273,9 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     features += list(selection_hot.index)
     features = np.unique(features)
 
-    d_ois = pd.DataFrame(X_ois, columns=newcols_ois).loc[selection_ois.index]
-    d_zps = pd.DataFrame(X_zps, columns=newcols_zps).loc[selection_zps.index]
-    d_sps = pd.DataFrame(X_sps, columns=newcols_sps).loc[selection_hot.index]
+    d_ois = pd.DataFrame(X_ois, columns=newcols_ois).loc[selection_ois.columns]
+    d_zps = pd.DataFrame(X_zps, columns=newcols_zps).loc[selection_zps.columns]
+    d_sps = pd.DataFrame(X_sps, columns=newcols_sps).loc[selection_hot.columns]
     d_hot = pd.DataFrame(X_hot, columns=newcols_hot).loc[newcols_sps.values[selected_cols][0]]
 
     model = neighbors.KNeighborsClassifier(n_neighbors=7, weights='uniform', n_jobs=-1)
@@ -526,7 +526,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     plt.figure(figsize=(3, 12))
     sns.heatmap(m.fillna(0).values, robust=True, cmap='Greys', cbar=True)
-    plt.yticks(np.arange(len(m))+0.5, rotation='horizontal')
+    plt.yticks(np.arange(len(m))+0.5, m.index, rotation='horizontal')
     plt.xticks(np.arange(4)+0.5, ['Bramich', 'Zackay', 'A.-Lupton', 'Scorr'], rotation=45)
     #plt.colorbar()
     plt.savefig(os.path.join(plots_path, './feature_heatmap_simdata.pdf'),
