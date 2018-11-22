@@ -9,6 +9,10 @@ from sklearn.model_selection import KFold
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import train_test_split
 
+from sklearn.feature_selection import SelectPercentile
+from sklearn.feature_selection import f_classif
+from sklearn.feature_selection import mutual_info_classif
+from sklearn.feature_selection import chi2
 
 # We're going to be calculating memory usage a lot,
 # so we'll create a function to save us some time!
@@ -236,22 +240,6 @@ def experiment(clf, x, y, nfolds=10, printing=False, probs=True):
 
 from sklearn.linear_model import RANSACRegressor
 
-def get_mags(df):
-    model = RANSACRegressor()
-    try:
-        model.fit(df['MAG_APER'].values.reshape(-1, 1),
-                  df['sim_mag'].values.reshape(-1, 1))
-    except:
-        mean_offset = sigma_clipped_stats(df['mag_offset'])[0]
-        slope = 1.0
-        return [mean_offset, slope]
-    mean_offset = model.estimator_.intercept_[0]
-    slope = model.estimator_.coef_[0][0]
-
-    res = [mean_offset, slope]
-    return res
-
-
 def get_mags_iso(df):
     model = RANSACRegressor()
     try:
@@ -281,16 +269,207 @@ def cal_mags_iso(df):
                       columns=['image_id', 'mean_offset_iso', 'slope_iso'])
     return dd
 
+def get_mags(df):
+    model = RANSACRegressor()
+    try:
+        model.fit(df['MAG_APER'].values.reshape(-1, 1),
+                  df['sim_mag'].values.reshape(-1, 1))
+    except:
+        mean_offset = sigma_clipped_stats(df['mag_offset'])[0]
+        slope = 1.0
+        mags = df['MAG_APER'] + mean_offset
+        p05, p95 = np.percentile(mags, [5., 95.])
+        return [mean_offset, slope, p05, p95]
+    mean_offset = model.estimator_.intercept_[0]
+    slope = model.estimator_.coef_[0][0]
+    mask = model.inlier_mask_
+    mags = model.predict(df['MAG_APER'].values.reshape(-1,1))
+    p05, p95 = np.percentile(mags[mask], [5., 95.])
+
+    res = [mean_offset, slope, p05, p95]
+    return res
+
 
 def cal_mags(df):
     ids = []
     offsets = []
     slopes  = []
+    per_05 = []
+    per_95 = []
     for name, group in df.dropna().groupby(['image_id'], sort=False):
-        b, a = get_mags(group)
+        b, a, p05, p95 = get_mags(group)
         ids.append(name)
         offsets.append(b)
         slopes.append(a)
-    dd = pd.DataFrame(np.array([ids, offsets, slopes]).T,
-                      columns=['image_id', 'mean_offset', 'slope'])
+        per_05.append(p05)
+        per_95.append(p95)
+
+    dd = pd.DataFrame(np.array([ids, offsets, slopes, per_05, per_95]).T,
+                      columns=['image_id', 'mean_offset', 'slope', 'p05', 'p95'])
     return dd
+
+from sklearn.ensemble import ExtraTreesClassifier
+
+def importance_forest(X, y, forest=None, cols=None, method=None):
+    if forest is None:
+        forest = ExtraTreesClassifier(n_estimators=250,
+                                      random_state=0)
+    forest.fit(X, y)
+    importances = forest.feature_importances_
+    std = np.std([tree.feature_importances_ for tree in forest.estimators_],
+                 axis=0)
+    indices = np.argsort(importances)[::-1]
+    #print indices
+    #print importances
+    #print cols
+    # Print the feature ranking
+    #print("Feature ranking:")
+
+    # Plot the feature importances of the forest
+    #plt.figure(figsize=(6, 6))
+    plt.title("{}".format(method))
+    plt.barh(range(X.shape[1])[0:8], importances[indices][0:8],
+           color="r", xerr=std[indices][0:8], align="center")
+    if cols is not None:
+        plt.yticks(range(X.shape[1])[0:8], cols[indices-1][0:8], rotation='horizontal', fontsize=10)
+    else:
+        plt.yticks(range(X.shape[1]), indices)
+    #plt.ylim([-1, X.shape[1]])
+    plt.xlim(0, np.max(importances)+np.max(std))
+    ax = plt.gca()
+    ax.invert_yaxis()
+    #plt.show()
+    return [(cols[indices[f]-1], importances[indices[f]]) for f in range(X.shape[1])]
+
+def full_importance_forest(X, y, forest=None, cols=None, method=None):
+    if forest is None:
+        forest = ExtraTreesClassifier(n_estimators=250,
+                                  random_state=0)
+    forest.fit(X, y)
+    importances = forest.feature_importances_
+    std = np.std([tree.feature_importances_ for tree in forest.estimators_],
+                 axis=0)
+    indices = np.argsort(importances)[::-1]
+
+    return [indices, importances, cols]
+
+def importance_perm(X, y, forest=None, cols=None, method=None):
+
+    X = pd.DataFrame(X, columns=cols)
+    y = pd.DataFrame(y)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
+
+    if forest is None:
+        forest = RandomForestClassifier(n_estimators=250, random_state=33, n_jobs=-1)
+
+    X_train['Random'] = np.random.random(size=len(X_train))
+    X_test['Random'] = np.random.random(size=len(X_test))
+
+    forest.fit(X_train, y_train)
+    imp = importances(forest, X_test, y_test) # permutation
+    return imp
+
+
+def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
+    skf = StratifiedKFold(n_splits=nfolds)
+    imp = []
+
+    for train, test in skf.split(X, y):
+        X_train = pd.DataFrame(X[train], columns=cols)
+        X_test = pd.DataFrame(X[test], columns=cols)
+        y_train = pd.DataFrame(y[train])
+        y_test = pd.DataFrame(y[test])
+
+        if forest is None:
+            forest = RandomForestClassifier(n_estimators=250, random_state=33, n_jobs=-1)
+
+        X_train['Random'] = np.random.random(size=len(X_train))
+        X_test['Random'] = np.random.random(size=len(X_test))
+
+        forest.fit(X_train, y_train)
+        imp.append(importances(forest, X_test, y_test)) # permutation
+    #imp = pd.concat(imp, axis=1)
+    return imp
+
+
+def select(X, Y, percentile, selector_f=mutual_info_classif, log=False):
+    selector = SelectPercentile(selector_f, percentile=percentile)
+    selector.fit(X, Y)
+    scores = selector.scores_
+    if log:
+        scores = -np.log10(selector.pvalues_)
+    scores /= scores.max()
+
+    X_indices = np.arange(X.shape[-1]).reshape(1, -1)
+    selected_cols = selector.transform(X_indices)
+    return scores, selector, selected_cols
+
+from rfpimp import importances
+from rfpimp import plot_corr_heatmap
+
+def importance_perm(X, y, forest=None, cols=None, method=None):
+
+    X = pd.DataFrame(X, columns=cols)
+    y = pd.DataFrame(y)
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
+
+    if forest is None:
+        forest = RandomForestClassifier(n_estimators=250, random_state=33, n_jobs=-1)
+
+    X_train['Random'] = np.random.random(size=len(X_train))
+    X_test['Random'] = np.random.random(size=len(X_test))
+
+    forest.fit(X_train, y_train)
+    imp = importances(forest, X_test, y_test) # permutation
+    return imp
+
+
+def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
+    skf = StratifiedKFold(n_splits=nfolds)
+    imp = []
+
+    for train, test in skf.split(X, y):
+        X_train = pd.DataFrame(X[train], columns=cols)
+        X_test = pd.DataFrame(X[test], columns=cols)
+        y_train = pd.DataFrame(y[train])
+        y_test = pd.DataFrame(y[test])
+
+        if forest is None:
+            forest = RandomForestClassifier(n_estimators=250, n_jobs=-1)
+
+        X_train['Random'] = np.random.random(size=len(X_train))
+        X_test['Random'] = np.random.random(size=len(X_test))
+
+        forest.fit(X_train, y_train)
+        imp.append(importances(forest, X_test, y_test)) # permutation
+    return imp
+
+transl = {u'thresh': u'THRESHOLD',
+          u'peak': u'FLUX_MAX',
+          u'x': u'X_IMAGE',
+          u'y': u'Y_IMAGE',
+          u'x2': u'X2_IMAGE',
+          u'y2': u'Y2_IMAGE',
+          u'xy': u'XY_IMAGE',
+          u'a':u'A_IMAGE',
+          u'b':u'B_IMAGE',
+          u'theta':u'THETA_IMAGE',
+          u'cxx':u'CXX_IMAGE',
+          u'cyy':u'CYY_IMAGE',
+          u'cxy':u'CXY_IMAGE',
+          u'cflux':u'FLUX_ISO',
+          u'flux':u'FLUX_APER',
+          u'flag': u'FLAGS',
+          u'DELTAX': u'DELTAX',
+          u'DELTAY': u'DELTAY',
+          u'RATIO': u'RATIO',
+          u'ROUNDNESS': u'ROUNDNESS',
+          u'PEAK_CENTROID': u'PEAK_CENTROID',
+          #u'MAG': u'mag',
+          u'MU': u'MU',
+          u'SN': u'SN'}
+
+detransl = {v: k for k, v in transl.items()}
+

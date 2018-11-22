@@ -196,6 +196,112 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 
 
 # =============================================================================
+#   Percentiles de la calibracion
+# =============================================================================
+    pars = ['image_id', 'p05', 'p95']
+
+    cals = cf.cal_mags(dt_zps)
+    dt_zps = pd.merge(dt_zps, cals[pars], on='image_id', how='left')
+
+    cals = cf.cal_mags(dt_sps)
+    dt_sps = pd.merge(dt_sps, cals[pars], on='image_id', how='left')
+
+    cals = cf.cal_mags(dt_hot)
+    dt_hot = pd.merge(dt_hot, cals[pars], on='image_id', how='left')
+
+    cals = cf.cal_mags(dt_ois)
+    dt_ois = pd.merge(dt_ois, cals[pars], on='image_id', how='left')
+
+    bins = np.arange(7, 26.5, 0.5)
+    plt.figure(figsize=(8, 8))
+    plt.subplot(221)
+    plt.title('zackay')
+    in_range = (dt_zps.mag > dt_zps.p05) & (dt_zps.mag < dt_zps.p95)
+    in_mags = dt_zps.loc[in_range].sim_mag.dropna()
+    out_mags = dt_zps.loc[~in_range].sim_mag.dropna()
+    plt.hist(simus.app_mag, bins=bins, histtype='step', color='k',
+             label='simulated', log=True)
+    plt.hist(in_mags, bins=bins, alpha=0.5, label='inliers', stacked=True)
+    plt.hist(out_mags, bins=bins, alpha=0.5, label='outliers', stacked=True)
+    plt.legend(loc='best')
+
+    plt.subplot(222)
+    plt.title('scorr')
+    in_range = (dt_sps.mag > dt_sps.p05) & (dt_sps.mag < dt_sps.p95)
+    in_mags = dt_sps.loc[in_range].sim_mag.dropna()
+    out_mags = dt_sps.loc[~in_range].sim_mag.dropna()
+    plt.hist(simus.app_mag, bins=bins, histtype='step', color='k',
+             label='simulated', log=True)
+    plt.hist(in_mags, bins=bins, alpha=0.5, label='inliers', stacked=True)
+    plt.hist(out_mags, bins=bins, alpha=0.5, label='outliers', stacked=True)
+    plt.legend(loc='best')
+
+    plt.subplot(223)
+    plt.title('hotpants')
+    in_range = (dt_hot.mag > dt_hot.p05) & (dt_hot.mag < dt_hot.p95)
+    in_mags = dt_hot.loc[in_range].sim_mag.dropna()
+    out_mags = dt_hot.loc[~in_range].sim_mag.dropna()
+    plt.hist(simus.app_mag, bins=bins, histtype='step', color='k',
+             label='simulated', log=True)
+    plt.hist(in_mags, bins=bins, alpha=0.5, label='inliers', stacked=True)
+    plt.hist(out_mags, bins=bins, alpha=0.5, label='outliers', stacked=True)
+    plt.legend(loc='best')
+
+    plt.subplot(224)
+    plt.title('bramich')
+    in_range = (dt_ois.mag > dt_ois.p05) & (dt_ois.mag < dt_ois.p95)
+    in_mags = dt_ois.loc[in_range].sim_mag.dropna()
+    out_mags = dt_ois.loc[~in_range].sim_mag.dropna()
+    plt.hist(simus.app_mag, bins=bins, histtype='step', color='k',
+             label='simulated', log=True)
+    plt.hist(in_mags, bins=bins, alpha=0.5, label='inliers', stacked=True)
+    plt.hist(out_mags, bins=bins, alpha=0.5, label='outliers', stacked=True)
+    plt.legend(loc='best')
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(plot_dir, 'inliers_range.svg'), dpi=400)
+    plt.clf()
+
+# =============================================================================
+# Como quedan los diagramas de error de magnitud vs magnitud simulada
+# =============================================================================
+
+    plt.figure(figsize=(8,4))
+    bins = np.arange(6.5, 26.5, .5)
+    #~ ff = subset_hot_lo.FLAGS<=0
+    ff = (dt_hot.mag > dt_hot.p05) & (dt_hot.mag < dt_hot.p95)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(dt_hot.loc[ff], bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
+
+    #ff = subset_sps_hi.FLAGS<=1
+    ff = (dt_sps.mag > dt_sps.p05) & (dt_sps.mag < dt_sps.p95)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(dt_sps.loc[ff], bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
+
+    #~ ff = subset_zps_lo.FLAGS<=0
+    ff = (dt_zps.mag > dt_zps.p05) & (dt_zps.mag < dt_zps.p95)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(dt_zps.loc[ff], bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
+
+    #~ ff = subset_ois_lo.FLAGS<=0
+    ff = (dt_ois.mag > dt_ois.p05) & (dt_ois.mag < dt_ois.p95)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(dt_ois.loc[ff], bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
+
+    plt.tick_params(labelsize=16)
+    plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
+    plt.xlabel('Sim Mag', fontsize=16)
+    plt.title('Simulated Data', fontsize=14)
+    plt.legend(loc='best', fontsize=14)
+
+    plt.xlim(10, 22.5)
+    plt.ylim(-3, 3)
+    plt.tight_layout()
+    plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_inliers.svg'),
+                format='svg', dpi=480)
+
+
+# =============================================================================
 # plot de goyet factor vs pars
 # =============================================================================
     def goyet_vs_pars_plot(dataset, dia='zackay'):
@@ -713,11 +819,12 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # Seleccionamos los mean_goyet
 # =============================================================================
     pars = ['mean_goyet', 'image_id', 'id_simulation', 'mag', 'sim_mag',
-            'goyet', 'goyet_iso', 'mean_goyet_iso', 'IS_REAL']
-    subset_zps = dt_zps[pars]
-    subset_ois = dt_ois[pars]
+            'goyet', 'goyet_iso', 'mean_goyet_iso', 'IS_REAL', 'p05', 'p95'
+            ]
+    subset_zps = dt_zps[pars+['FLAGS']]
+    subset_ois = dt_ois[pars+['FLAGS']]
     subset_sps = dt_sps[pars]
-    subset_hot = dt_hot[pars]
+    subset_hot = dt_hot[pars+['FLAGS']]
 
     del(dt_zps)
     del(dt_sps)
@@ -838,16 +945,20 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
     plt.figure(figsize=(8,4))
     bins = np.arange(6.5, 26.5, .5)
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_hi, bins=bins)
+    ff = subset_hot_hi.FLAGS<=1
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res_robust(subset_hot_hi[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
 
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_hi, bins=bins)
+    #ff = subset_sps_hi.FLAGS<=1
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res_robust(subset_sps_hi, bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
 
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_hi, bins=bins)
+    ff = subset_zps_hi.FLAGS<=1
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res_robust(subset_zps_hi[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
 
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_hi, bins=bins)
+    ff = subset_ois_hi.FLAGS<=1
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res_robust(subset_ois_hi[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
 
     plt.tick_params(labelsize=16)
@@ -923,17 +1034,25 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 
     plt.figure(figsize=(8,4))
     bins = np.arange(6.5, 26.5, .5)
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_lo.dropna(), bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=3*stdv_det/sqrtn, fmt='m:', label='Scorr')
+    #~ ff = subset_hot_lo.FLAGS<=0
+    ff = (subset_hot_lo.mag > subset_hot_lo.p05) & (subset_hot_lo.mag < subset_hot_lo.p95)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo[ff], bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
 
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_lo.dropna(), bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=3*stdv_det/sqrtn, fmt='b.-', label='Zackay')
+    #ff = subset_sps_hi.FLAGS<=1
+    ff = (subset_sps_lo.mag > subset_sps_lo.p05) & (subset_sps_lo.mag < subset_sps_lo.p95)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_lo[ff], bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
 
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_lo.dropna(), bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=3*stdv_det/sqrtn, fmt='ro-', label='Bramich')
+    #~ ff = subset_zps_lo.FLAGS<=0
+    ff = (subset_zps_lo.mag > subset_zps_lo.p05) & (subset_zps_lo.mag < subset_zps_lo.p95)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_lo[ff], bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
 
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo.dropna(), bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=3*stdv_det/sqrtn, fmt='g--', label='Hotpants')
+    #~ ff = subset_ois_lo.FLAGS<=0
+    ff = (subset_ois_lo.mag > subset_ois_lo.p05) & (subset_ois_lo.mag < subset_ois_lo.p95)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_lo[ff], bins=bins)
+    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
 
     plt.tick_params(labelsize=16)
     plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
@@ -1114,7 +1233,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     cumulative=True
     #magnitude bins
     bins = np.arange(7, 26.5, 0.5)
-    plt.rcParams['text.usetex'] = True
+    plt.rcParams['text.usetex'] = False
 
     plt.subplot(131)
     x_bins, vals = cf.custom_histogram(simus.app_mag.values, bins=bins,
@@ -1200,11 +1319,9 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     #plt.show()
     plt.ylim(1, 1e8)
     plt.tight_layout()
-
     plt.savefig(os.path.join(plot_dir, 'combined_luminosities_functions.svg'),
                 format='svg', dpi=720)
-
-
+    plt.close()
     store.close()
     return
 
