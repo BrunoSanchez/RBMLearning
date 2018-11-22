@@ -173,7 +173,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
 # Para que entre en memoria hacemos un sampling de esto
 # =============================================================================
-    n_samples = 45000
+    n_samples = 100000
 
     d_ois = dt_ois[cols+target].sample(n_samples).dropna()
     d_zps = dt_zps[cols+target].sample(n_samples).dropna()
@@ -273,21 +273,21 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     features += list(selection_hot.index)
     features = np.unique(features)
 
-    d_ois = pd.DataFrame(X_ois, columns=newcols_ois).loc[selection_ois.columns]
-    d_zps = pd.DataFrame(X_zps, columns=newcols_zps).loc[selection_zps.columns]
-    d_sps = pd.DataFrame(X_sps, columns=newcols_sps).loc[selection_hot.columns]
-    d_hot = pd.DataFrame(X_hot, columns=newcols_hot).loc[newcols_sps.values[selected_cols][0]]
+    d_ois = pd.DataFrame(X_ois, columns=newcols_ois)[selection_ois.index]
+    d_zps = pd.DataFrame(X_zps, columns=newcols_zps)[selection_zps.index]
+    d_hot = pd.DataFrame(X_hot, columns=newcols_hot)[selection_hot.index]
+    d_sps = pd.DataFrame(X_sps, columns=newcols_sps)[newcols_sps.values[selected_cols][0]]
 
     model = neighbors.KNeighborsClassifier(n_neighbors=7, weights='uniform', n_jobs=-1)
 
     rslts_knn_ois_uniform = cf.experiment(model, d_ois.values,
-                                          y_ois, printing=True)
+                                          y_ois.values.ravel(), printing=True)
     rslts_knn_zps_uniform = cf.experiment(model, d_zps.values,
-                                          y_zps, printing=True)
+                                          y_zps.values.ravel(), printing=True)
     rslts_knn_hot_uniform = cf.experiment(model, d_hot.values,
-                                          y_hot, printing=True)
+                                          y_hot.values.ravel(), printing=True)
     rslts_knn_sps_uniform = cf.experiment(model, d_sps.values,
-                                          y_sps, printing=True)
+                                          y_sps.values.ravel(), printing=True)
 
     del(d_ois)
     del(d_zps)
