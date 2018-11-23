@@ -164,9 +164,9 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
             'xcpeak', 'ycpeak', 'xpeak', 'ypeak', 'flag', 'DELTAX', 'DELTAY',
             'RATIO', 'ROUNDNESS', 'PEAK_CENTROID', 'ref_fwhm', 'new_fwhm',
             'px_scale', 'ref_back_sbright', 'new_back_sbright',
-            'exp_time', 'MAG_APER', 'MAG_ISO', 'VALID_MAG',
-            'mean_offset', 'slope', 'mag', 'VALID_MAG_iso', 'mag_iso',
-            'goyet_iso', 'mean_goyet', 'mean_goyet_iso', 'MU', 'SN']
+            'exp_time', 'MAG_APER', 'MAG_ISO', 'VALID_MAG', 'mag_iso',
+            'mean_offset', 'slope', 'mag', 'VALID_MAG_iso',
+            'mean_goyet', 'mean_goyet_iso', 'MU', 'SN']
 
     target = ['IS_REAL']
 
@@ -230,6 +230,10 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     newcols_hot = d_hot.columns[sel.get_support()]
     print('Dropped columns = {}'.format(d_hot.columns[~sel.get_support()]))
 
+    d_ois = pd.DataFrame(X_ois, columns=newcols_ois)
+    d_zps = pd.DataFrame(X_zps, columns=newcols_zps)
+    d_hot = pd.DataFrame(X_hot, columns=newcols_hot)
+    d_sps = pd.DataFrame(X_sps, columns=newcols_sps)
 
 # =============================================================================
 # KNN Neighbors
@@ -261,6 +265,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     selected = pd.concat([selection_ois, selection_zps, selection_hot, selection_sps], axis=1)
     selected = selected.reindex(scoring.index)
 
+    plt.figure(figsize=(3, 12))
     sns.heatmap(scoring, vmin=0., vmax=1., cmap='Blues', #figsize=(12, 6),
                 annot=np.round(selected.fillna(-1).values, 2), cbar=True)
     plt.savefig(os.path.join(plots_path, 'select_percentile_mutual_info_heatmap.png'))
@@ -273,26 +278,26 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     features += list(selection_hot.index)
     features = np.unique(features)
 
-    d_ois = pd.DataFrame(X_ois, columns=newcols_ois)[selection_ois.index]
-    d_zps = pd.DataFrame(X_zps, columns=newcols_zps)[selection_zps.index]
-    d_hot = pd.DataFrame(X_hot, columns=newcols_hot)[selection_hot.index]
-    d_sps = pd.DataFrame(X_sps, columns=newcols_sps)[newcols_sps.values[selected_cols][0]]
+    dat_ois = pd.DataFrame(X_ois, columns=newcols_ois)[selection_ois.index]
+    dat_zps = pd.DataFrame(X_zps, columns=newcols_zps)[selection_zps.index]
+    dat_hot = pd.DataFrame(X_hot, columns=newcols_hot)[selection_hot.index]
+    dat_sps = pd.DataFrame(X_sps, columns=newcols_sps)[newcols_sps.values[selected_cols][0]]
 
     model = neighbors.KNeighborsClassifier(n_neighbors=7, weights='uniform', n_jobs=-1)
 
-    rslts_knn_ois_uniform = cf.experiment(model, d_ois.values,
+    rslts_knn_ois_uniform = cf.experiment(model, dat_ois.values,
                                           y_ois.values.ravel(), printing=True)
-    rslts_knn_zps_uniform = cf.experiment(model, d_zps.values,
+    rslts_knn_zps_uniform = cf.experiment(model, dat_zps.values,
                                           y_zps.values.ravel(), printing=True)
-    rslts_knn_hot_uniform = cf.experiment(model, d_hot.values,
+    rslts_knn_hot_uniform = cf.experiment(model, dat_hot.values,
                                           y_hot.values.ravel(), printing=True)
-    rslts_knn_sps_uniform = cf.experiment(model, d_sps.values,
+    rslts_knn_sps_uniform = cf.experiment(model, dat_sps.values,
                                           y_sps.values.ravel(), printing=True)
 
-    del(d_ois)
-    del(d_zps)
-    del(d_sps)
-    del(d_hot)
+    del(dat_ois)
+    del(dat_zps)
+    del(dat_sps)
+    del(dat_hot)
 
 # =============================================================================
 # RandomForests
@@ -300,7 +305,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
 # Get the correlations out first, as suggested by referee
 # =============================================================================
-    corr = pd.DataFrame(X_ois, columns=newcols_ois).corr()
+    corr = d_ois.corr()
 
     # Generate a mask for the upper triangle
     mask = np.zeros_like(corr, dtype=np.bool)
@@ -324,7 +329,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
                 colname = corr.columns[i]
                 correlated_features.add(colname)
 
-    decorr_ois = pd.DataFrame(X_ois, columns=newcols_ois).drop(correlated_features, axis=1)
+    decorr_ois = d_ois.drop(correlated_features, axis=1)
 
     corr = decorr_ois.corr()
         # Generate a mask for the upper triangle
@@ -342,7 +347,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.clf()
 
     # -------------------------- #
-    corr = pd.DataFrame(X_hot, columns=newcols_hot).corr()
+    corr = d_hot.corr()
 
     # Generate a mask for the upper triangle
     mask = np.zeros_like(corr, dtype=np.bool)
@@ -366,7 +371,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
                 colname = corr.columns[i]
                 correlated_features.add(colname)
 
-    decorr_hot = pd.DataFrame(X_hot, columns=newcols_hot).drop(correlated_features, axis=1)
+    decorr_hot = d_hot.drop(correlated_features, axis=1)
 
     corr = decorr_hot.corr()
         # Generate a mask for the upper triangle
@@ -384,7 +389,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.clf()
 
     # -------------------------- #
-    corr = pd.DataFrame(X_zps, columns=newcols_zps).corr()
+    corr = d_zps.corr()
 
     # Generate a mask for the upper triangle
     mask = np.zeros_like(corr, dtype=np.bool)
@@ -408,7 +413,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
                 colname = corr.columns[i]
                 correlated_features.add(colname)
 
-    decorr_zps = pd.DataFrame(X_zps, columns=newcols_zps).drop(correlated_features, axis=1)
+    decorr_zps = d_zps.drop(correlated_features, axis=1)
 
     corr = decorr_zps.corr()
         # Generate a mask for the upper triangle
@@ -426,7 +431,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.clf()
 
     # -------------------------- #
-    corr = pd.DataFrame(X_sps, columns=newcols_sps).corr()
+    corr = d_sps.corr()
 
     # Generate a mask for the upper triangle
     mask = np.zeros_like(corr, dtype=np.bool)
@@ -450,7 +455,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
                 colname = corr.columns[i]
                 correlated_features.add(colname)
 
-    decorr_sps = pd.DataFrame(X_sps, columns=newcols_sps).drop(correlated_features, axis=1)
+    decorr_sps = d_sps.drop(correlated_features, axis=1)
 
     corr = decorr_sps.corr()
         # Generate a mask for the upper triangle
@@ -475,21 +480,18 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     # datasets are now in decorr frames...
 
+    model = RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1)
     ois_importance = cf.importance_perm_kfold(decorr_ois.values, y_ois.values.ravel(),
-        RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1),
-        cols=decorr_ois.columns, method='Bramich')
+        model, cols=decorr_ois.columns, method='Bramich')
 
     zps_importance = cf.importance_perm_kfold(decorr_zps.values, y_zps.values.ravel(),
-        RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1),
-        cols=decorr_zps.columns, method='Zackay')
+        model, cols=decorr_zps.columns, method='Zackay')
 
     hot_importance = cf.importance_perm_kfold(decorr_hot.values, y_hot.values.ravel(),
-        RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1),
-        cols=decorr_hot.columns, method='Alard-Lupton')
+        model, cols=decorr_hot.columns, method='Alard-Lupton')
 
     sps_importance = cf.importance_perm_kfold(decorr_sps.values, y_sps.values.ravel(),
-        RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1),
-        cols=decorr_sps.columns, method='Scorr')
+        model, cols=decorr_sps.columns, method='Scorr')
 
     sps_newimp = []
     for animp in sps_importance:
@@ -504,18 +506,27 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     m = pd.concat([res_ois.mean(axis=1),
                    res_zps.mean(axis=1),
                    res_hot.mean(axis=1),
-                   res_sps.mean(axis=1)], axis=1).reindex(full_cols)
+                   res_sps.mean(axis=1)],
+                   axis=1).reindex(full_cols)
+    m.columns = ['ois', 'zps', 'hot', 'sps']
+
     s = pd.concat([res_ois.std(axis=1),
                    res_zps.std(axis=1),
                    res_hot.std(axis=1),
                    res_sps.std(axis=1)], axis=1).reindex(full_cols)
+    s.columns = ['ois', 'zps', 'hot', 'sps']
+
+    thresh = m.loc['Random'] + 3*s.loc['Random']
+    spikes = m - 3*s
+
+    selected = spikes > thresh
 
     m2 = m.copy()
     for i in range(4):
         m2[i] = m2[i] - m2[i]['Random']
         m2[i] = m2[i]/np.max(m2[i])
 
-    plt.figure(figsize=(6, 12))
+    plt.figure(figsize=(3, 12))
     plt.imshow(m2.fillna(0).values, vmin=0, vmax=1., cmap='gray_r', aspect='auto')
     plt.yticks(np.arange(len(m)), m.index, rotation='horizontal')
     plt.xticks(np.arange(4)+0.5, ['Bramich', 'Zackay', 'A.-Lupton', 'Scorr'], rotation=45)
@@ -532,6 +543,22 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     plt.savefig(os.path.join(plots_path, './feature_heatmap_simdata.pdf'),
                 bbox_inches='tight')
     plt.close()
+
+    dat_ois = d_ois[selected.ois[selected.ois].index]
+    dat_hot = d_hot[selected.hot[selected.hot].index]
+    dat_zps = d_zps[selected.zps[selected.zps].index]
+    dat_sps = d_sps[selected.sps[selected.sps].index]
+
+    model = RandomForestClassifier(n_estimators=800, min_samples_leaf=20, n_jobs=-1)
+    rslts_ois_rforest = cf.experiment(model, dat_ois.values, y_ois.values.ravel(), printing=True)
+    rslts_hot_rforest = cf.experiment(model, dat_hot.values, y_hot.values.ravel(), printing=True)
+    rslts_zps_rforest = cf.experiment(model, dat_zps.values, y_zps.values.ravel(), printing=True)
+    rslts_sps_rforest = cf.experiment(model, dat_sps.values, y_sps.values.ravel(), printing=True)
+
+    rslt0_ois_rforest = cf.experiment(model, d_ois.values, y_ois.values.ravel(), printing=True)
+    rslt0_hot_rforest = cf.experiment(model, d_hot.values, y_hot.values.ravel(), printing=True)
+    rslt0_zps_rforest = cf.experiment(model, d_zps.values, y_zps.values.ravel(), printing=True)
+    rslt0_sps_rforest = cf.experiment(model, d_sps.values, y_sps.values.ravel(), printing=True)
 
 
 
