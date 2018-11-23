@@ -173,12 +173,29 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
 # Para que entre en memoria hacemos un sampling de esto
 # =============================================================================
-    n_samples = 100000
+    train_ois, ftest_ois = train_test_split(dt_ois[cols+target], test_size=0.8,
+                                           stratify=dt_ois.IS_REAL)
+    train_zps, ftest_zps = train_test_split(dt_zps[cols+target], test_size=0.8,
+                                           stratify=dt_zps.IS_REAL)
+    train_hot, ftest_hot = train_test_split(dt_hot[cols+target], test_size=0.8,
+                                           stratify=dt_hot.IS_REAL)
+    train_sps, ftest_sps = train_test_split(dt_sps[scols+target], test_size=0.8,
+                                           stratify=dt_sps.IS_REAL)
 
-    d_ois = dt_ois[cols+target].sample(n_samples).dropna()
-    d_zps = dt_zps[cols+target].sample(n_samples).dropna()
-    d_hot = dt_hot[cols+target].sample(n_samples).dropna()
-    d_sps = dt_sps[scols+target].sample(n_samples).dropna()
+    #n_samples = 50000
+    train_ois, test_ois = train_test_split(train_ois, test_size=0.65,
+                                            stratify=train_ois.IS_REAL)
+    train_zps, test_zps = train_test_split(train_zps, test_size=0.65,
+                                            stratify=train_zps.IS_REAL)
+    train_hot, test_hot = train_test_split(train_hot, test_size=0.65,
+                                            stratify=train_hot.IS_REAL)
+    train_sps, test_sps = train_test_split(train_sps, test_size=0.65,
+                                            stratify=train_sps.IS_REAL)
+
+    d_ois = train_ois.dropna()  #.sample(n_samples).dropna()
+    d_zps = train_zps.dropna()  #.sample(n_samples).dropna()
+    d_hot = train_hot.dropna()  #.sample(n_samples).dropna()
+    d_sps = train_sps.dropna()  #.sample(n_samples).dropna()
 
     y_zps = d_zps[target]
     y_ois = d_ois[target]
@@ -203,6 +220,10 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     X_hot = scaler_hot.transform(d_hot)
     X_sps = scaler_sps.transform(d_sps)
 
+    X_test_ois = scaler_ois.transform(test_ois[cols].dropna())
+    X_test_hot = scaler_hot.transform(test_hot[cols].dropna())
+    X_test_zps = scaler_zps.transform(test_zps[cols].dropna())
+    X_test_sps = scaler_sps.transform(test_sps[scols].dropna())
 
 # =============================================================================
 # Analisis univariado
@@ -215,18 +236,22 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     sel = VarianceThreshold(threshold=thresh)
 
     X_ois = sel.fit_transform(X_ois)
+    X_test_ois = sel.transform(X_test_ois)
     newcols_ois = d_ois.columns[sel.get_support()]
     print('Dropped columns = {}'.format(d_ois.columns[~sel.get_support()]))
 
     X_zps = sel.fit_transform(X_zps)
+    X_test_zps = sel.transform(X_test_zps)
     newcols_zps = d_zps.columns[sel.get_support()]
     print('Dropped columns = {}'.format(d_zps.columns[~sel.get_support()]))
 
     X_sps = sel.fit_transform(X_sps)
+    X_test_sps = sel.transform(X_test_sps)
     newcols_sps = d_sps.columns[sel.get_support()]
     print('Dropped columns = {}'.format(d_sps.columns[~sel.get_support()]))
 
     X_hot = sel.fit_transform(X_hot)
+    X_test_hot = sel.transform(X_test_hot)
     newcols_hot = d_hot.columns[sel.get_support()]
     print('Dropped columns = {}'.format(d_hot.columns[~sel.get_support()]))
 
@@ -240,7 +265,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
 # %%%%%  Univariate f_mutual_info_classif
 
-    percentile = 20.
+    percentile = 30.
 
     scores, selector, selected_cols = cf.select(X_ois, y_ois, percentile)
     scoring_ois = pd.DataFrame(scores, index=newcols_ois, columns=['ois'])
@@ -285,14 +310,21 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     model = neighbors.KNeighborsClassifier(n_neighbors=7, weights='uniform', n_jobs=-1)
 
-    rslts_knn_ois_uniform = cf.experiment(model, dat_ois.values,
-                                          y_ois.values.ravel(), printing=True)
-    rslts_knn_zps_uniform = cf.experiment(model, dat_zps.values,
-                                          y_zps.values.ravel(), printing=True)
-    rslts_knn_hot_uniform = cf.experiment(model, dat_hot.values,
-                                          y_hot.values.ravel(), printing=True)
-    rslts_knn_sps_uniform = cf.experiment(model, dat_sps.values,
-                                          y_sps.values.ravel(), printing=True)
+    rslt0_knn_ois_uniform = cf.experiment(model, X_ois, y_ois.values.ravel(), printing=True)
+    rslt0_knn_zps_uniform = cf.experiment(model, X_zps, y_zps.values.ravel(), printing=True)
+    rslt0_knn_hot_uniform = cf.experiment(model, X_hot, y_hot.values.ravel(), printing=True)
+    rslt0_knn_sps_uniform = cf.experiment(model, X_sps, y_sps.values.ravel(), printing=True)
+
+    mod = rslt0_knn_ois_uniform['model']
+    preds = mod.predict(X_test_ois)
+    cf.metrics.classification_report(test_ois.IS_REAL.values.ravel(), preds)
+
+    rslts_knn_ois_uniform = cf.experiment(model, dat_ois.values, y_ois.values.ravel(), printing=True)
+    rslts_knn_zps_uniform = cf.experiment(model, dat_zps.values, y_zps.values.ravel(), printing=True)
+    rslts_knn_hot_uniform = cf.experiment(model, dat_hot.values, y_hot.values.ravel(), printing=True)
+    rslts_knn_sps_uniform = cf.experiment(model, dat_sps.values, y_sps.values.ravel(), printing=True)
+
+
 
     del(dat_ois)
     del(dat_zps)
@@ -560,7 +592,10 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     rslt0_zps_rforest = cf.experiment(model, d_zps.values, y_zps.values.ravel(), printing=True)
     rslt0_sps_rforest = cf.experiment(model, d_sps.values, y_sps.values.ravel(), printing=True)
 
-
+    del(dat_ois)
+    del(dat_zps)
+    del(dat_sps)
+    del(dat_hot)
 
 # =============================================================================
 # Support Vector Machines
