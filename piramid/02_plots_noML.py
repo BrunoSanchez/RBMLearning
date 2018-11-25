@@ -265,7 +265,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
 # Como quedan los diagramas de error de magnitud vs magnitud simulada
 # =============================================================================
-    dm = 0.9
+    dm = 1.5
     plt.figure(figsize=(8,4))
     bins = np.arange(6.5, 26.5, .5)
     #~ ff = subset_hot_lo.FLAGS<=0
