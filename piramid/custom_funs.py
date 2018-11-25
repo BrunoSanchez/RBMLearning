@@ -196,6 +196,7 @@ def custom_histogram(vector, bins=None, cumulative=False, errors=False):
 
 
 def experiment(clf, x, y, nfolds=10, printing=False, probs=True):
+    import ipdb; ipdb.set_trace()
     skf = StratifiedKFold(n_splits=nfolds)
     probabilities = None # np.array([])
     predictions = np.array([])

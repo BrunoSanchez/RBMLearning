@@ -61,7 +61,7 @@ from rfpimp import *
 import custom_funs as cf
 
 
-storefile = '/mnt/clemente/bos0109/table_store.h5'
+storefile = '/mnt/clemente/bos0109/table_store2.h5'
 
 store = pd.HDFStore(storefile)
 store.open()
@@ -323,7 +323,6 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     rslts_knn_zps_uniform = cf.experiment(model, dat_zps.values, y_zps.values.ravel(), printing=True)
     rslts_knn_hot_uniform = cf.experiment(model, dat_hot.values, y_hot.values.ravel(), printing=True)
     rslts_knn_sps_uniform = cf.experiment(model, dat_sps.values, y_sps.values.ravel(), printing=True)
-
 
 
     del(dat_ois)
