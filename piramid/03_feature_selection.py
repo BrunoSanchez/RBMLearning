@@ -553,6 +553,8 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     selected = spikes > thresh
 
+    signif = (m - m.loc['Random'])/s
+
     m2 = m.copy()
     for i in range(4):
         m2[i] = m2[i] - m2[i]['Random']
