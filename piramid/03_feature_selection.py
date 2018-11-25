@@ -183,13 +183,13 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
                                            stratify=dt_sps.IS_REAL)
 
     #n_samples = 50000
-    train_ois, test_ois = train_test_split(train_ois, test_size=0.65,
+    train_ois, test_ois = train_test_split(train_ois, test_size=0.75,
                                             stratify=train_ois.IS_REAL)
-    train_zps, test_zps = train_test_split(train_zps, test_size=0.65,
+    train_zps, test_zps = train_test_split(train_zps, test_size=0.75,
                                             stratify=train_zps.IS_REAL)
-    train_hot, test_hot = train_test_split(train_hot, test_size=0.65,
+    train_hot, test_hot = train_test_split(train_hot, test_size=0.75,
                                             stratify=train_hot.IS_REAL)
-    train_sps, test_sps = train_test_split(train_sps, test_size=0.65,
+    train_sps, test_sps = train_test_split(train_sps, test_size=0.75,
                                             stratify=train_sps.IS_REAL)
 
     d_ois = train_ois.dropna()  #.sample(n_samples).dropna()
@@ -646,7 +646,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--m1_diam", help="diameter to filter",
                         default=None)
-    parser.add_argument("path", help="path to plot files")
+    parser.add_argument("path", help="path to plot files", default='./plots')
     args = parser.parse_args()
 
     import sys
