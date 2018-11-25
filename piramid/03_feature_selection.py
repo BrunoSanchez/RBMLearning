@@ -140,6 +140,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     ids = selected['image_id_hot'].drop_duplicates().values
     dt_hot = dt_hot.loc[dt_hot['image_id'].isin(ids)].drop_duplicates()
+    store.close()
 
 # =============================================================================
 # Columnas usables
@@ -311,13 +312,25 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     model = neighbors.KNeighborsClassifier(n_neighbors=7, weights='uniform', n_jobs=-1)
 
     rslt0_knn_ois_uniform = cf.experiment(model, X_ois, y_ois.values.ravel(), printing=True)
-    rslt0_knn_zps_uniform = cf.experiment(model, X_zps, y_zps.values.ravel(), printing=True)
-    rslt0_knn_hot_uniform = cf.experiment(model, X_hot, y_hot.values.ravel(), printing=True)
-    rslt0_knn_sps_uniform = cf.experiment(model, X_sps, y_sps.values.ravel(), printing=True)
+    rslt0_knn_ois_uniform['test_preds'] = rslt0_knn_ois_uniform['model'].predict(X_test_ois)
+    print(cf.metrics.classification_report(test_ois.IS_REAL.values.ravel(), preds))
+    rslt0_knn_ois_uniform['test_bacc'] = cf.metrics.balanced_accuracy_score(test_ois.IS_REAL.values.ravel(), preds)
 
-    mod = rslt0_knn_ois_uniform['model']
-    preds = mod.predict(X_test_ois)
-    cf.metrics.classification_report(test_ois.IS_REAL.values.ravel(), preds)
+    rslt0_knn_zps_uniform = cf.experiment(model, X_zps, y_zps.values.ravel(), printing=True)
+    rslt0_knn_zps_uniform['test_preds'] = rslt0_knn_zps_uniform['model'].predict(X_test_zps)
+    print(cf.metrics.classification_report(test_zps.IS_REAL.values.ravel(), preds))
+    rslt0_knn_zps_uniform['test_bacc'] = cf.metrics.balanced_accuracy_score(test_zps.IS_REAL.values.ravel(), preds)
+
+    rslt0_knn_hot_uniform = cf.experiment(model, X_hot, y_hot.values.ravel(), printing=True)
+    rslt0_knn_hot_uniform['test_preds'] = rslt0_knn_hot_uniform['model'].predict(X_test_hot)
+    print(cf.metrics.classification_report(test_hot.IS_REAL.values.ravel(), preds))
+    rslt0_knn_hot_uniform['test_bacc'] = cf.metrics.balanced_accuracy_score(test_hot.IS_REAL.values.ravel(), preds)
+
+    rslt0_knn_sps_uniform = cf.experiment(model, X_sps, y_sps.values.ravel(), printing=True)
+    rslt0_knn_sps_uniform['test_preds'] = rslt0_knn_sps_uniform['model'].predict(X_test_sps)
+    print(cf.metrics.classification_report(test_sps.IS_REAL.values.ravel(), preds))
+    rslt0_knn_sps_uniform['test_bacc'] = cf.metrics.balanced_accuracy_score(test_sps.IS_REAL.values.ravel(), preds)
+
 
     rslts_knn_ois_uniform = cf.experiment(model, dat_ois.values, y_ois.values.ravel(), printing=True)
     rslts_knn_zps_uniform = cf.experiment(model, dat_zps.values, y_zps.values.ravel(), printing=True)
