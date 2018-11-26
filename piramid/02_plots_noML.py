@@ -1019,10 +1019,10 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
 # vetamos por mean goyet
 # =============================================================================
-    subset_zps_hi = subset_zps[subset_zps.mean_goyet>=0.01]
-    subset_hot_hi = subset_hot[subset_hot.mean_goyet>=0.01]
-    subset_sps_hi = subset_sps[subset_sps.mean_goyet>=0.01]
-    subset_ois_hi = subset_ois[subset_ois.mean_goyet>=0.01]
+    subset_zps_hi = subset_zps[subset_zps.mean_goyet>=0.05]
+    subset_hot_hi = subset_hot[subset_hot.mean_goyet>=0.05]
+    subset_sps_hi = subset_sps[subset_sps.mean_goyet>=0.05]
+    subset_ois_hi = subset_ois[subset_ois.mean_goyet>=0.05]
 
 # =============================================================================
 # Como quedan las distros de goyet individuales
