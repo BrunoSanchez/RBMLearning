@@ -1143,8 +1143,8 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.title('Simulated Data', fontsize=14)
     plt.legend(loc='best', fontsize=14)
 
-    plt.xlim(10, 22.5)
-    plt.ylim(-3, 3)
+    plt.xlim(8, 22.5)
+    plt.ylim(-2, 3)
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_lo_goyet.svg'),
                 format='svg', dpi=480)
