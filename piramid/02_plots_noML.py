@@ -266,7 +266,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # Como quedan los diagramas de error de magnitud vs magnitud simulada
 # =============================================================================
 # =============================================================================
-# 300 segundos
+# inliers
 # =============================================================================
     dm = 0
     plt.figure(figsize=(8,4))
