@@ -288,7 +288,8 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
         selected = signif>2.5
         dat_ois = d_ois[selected[selected].index]
 
-        model = RandomForestClassifier(n_estimators=800, min_samples_leaf=20, n_jobs=-1)
+        model = RandomForestClassifier(n_estimators=800, max_features=7,
+                                       min_samples_leaf=20, n_jobs=-1)
         rslts_ois_rforest = cf.experiment(model, dat_ois.values, y_ois.values.ravel(), printing=True)
         model.fit(dat_ois.values, y_ois.values.ravel())
         preds = model.predict(pd.DataFrame(X_test_ois, columns=newcols_ois)[selected[selected].index].values)
@@ -344,6 +345,11 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
         vals = [acc_knn0, acc_knn, acc_rforest0, acc_rforest, acc_svc, acc_svc0]
         rows.append(list(pars)+vals)
+
+    ml_cols = ['m1_diam', 'exp_time', 'new_fwhm', 'acc_knn0', 'acc_knn',
+               'acc_rforest0', 'acc_rforest', 'acc_svc', 'acc_svc0']
+    ml_results = pd.DataFrame(rows, columns=ml_cols)
+    # TOTALLY WORKS!!
 
 # =============================================================================
 #
