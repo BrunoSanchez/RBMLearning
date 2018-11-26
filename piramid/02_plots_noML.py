@@ -1084,8 +1084,8 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.title('Simulated Data', fontsize=14)
     plt.legend(loc='best', fontsize=14)
 
-    plt.xlim(10, 22.5)
-    plt.ylim(-3, 3)
+    plt.xlim(8, 22.5)
+    plt.ylim(-2, 3)
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_hi_goyet.svg'),
                 format='svg', dpi=480)
@@ -1151,26 +1151,26 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     dm = 0.0
     plt.figure(figsize=(8,4))
     bins = np.arange(6.5, 26.5, .5)
-    #~ ff = subset_hot_lo.FLAGS<=0
-    ff = (subset_hot_lo.mag > subset_hot_lo.p05+dm) & (subset_hot_lo.mag < subset_hot_lo.p95)
+    ff = subset_hot_lo.FLAGS<=0
+    ff = ff & (subset_hot_lo.mag > subset_hot_lo.p05+dm) & (subset_hot_lo.mag < subset_hot_lo.p95)
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo[ff],
                                                          bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
 
-    #ff = subset_sps_hi.FLAGS<=1
-    ff = (subset_sps_lo.mag > subset_sps_lo.p05+dm) & (subset_sps_lo.mag < subset_sps_lo.p95)
+    ff = subset_sps_hi.FLAGS<=0
+    ff = ff & (subset_sps_lo.mag > subset_sps_lo.p05+dm) & (subset_sps_lo.mag < subset_sps_lo.p95)
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_lo[ff],
                                                          bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
 
-    #~ ff = subset_zps_lo.FLAGS<=0
-    ff = (subset_zps_lo.mag > subset_zps_lo.p05+dm) & (subset_zps_lo.mag < subset_zps_lo.p95)
+    ff = subset_zps_lo.FLAGS<=0
+    ff = ff & (subset_zps_lo.mag > subset_zps_lo.p05+dm) & (subset_zps_lo.mag < subset_zps_lo.p95)
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_lo[ff],
                                                          bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
 
-    #~ ff = subset_ois_lo.FLAGS<=0
-    ff = (subset_ois_lo.mag > subset_ois_lo.p05+dm) & (subset_ois_lo.mag < subset_ois_lo.p95)
+    ff = subset_ois_lo.FLAGS<=0
+    ff = ff & (subset_ois_lo.mag > subset_ois_lo.p05+dm) & (subset_ois_lo.mag < subset_ois_lo.p95)
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_lo[ff],
                                                          bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
