@@ -1157,7 +1157,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                                                          bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
 
-    ff = subset_sps_hi.FLAGS<=0
+    ff = subset_sps_lo.FLAGS<=0
     ff = ff & (subset_sps_lo.mag > subset_sps_lo.p05+dm) & (subset_sps_lo.mag < subset_sps_lo.p95)
     mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_lo[ff],
                                                          bins=bins)
