@@ -195,7 +195,8 @@ def custom_histogram(vector, bins=None, cumulative=False, errors=False):
         return x_bins, hh[0]
 
 
-def experiment(clf, x, y, nfolds=10, printing=False, probs=True):
+def experiment(clf, x, y, nfolds=10, printing=False, probs=True,
+               train_final=False):
     # import ipdb; ipdb.set_trace()
     skf = StratifiedKFold(n_splits=nfolds)
     probabilities = None # np.array([])
@@ -225,7 +226,8 @@ def experiment(clf, x, y, nfolds=10, printing=False, probs=True):
     fpr, tpr, thresholds = metrics.roc_curve(y_testing, 1.-probabilities[:, 0])
     prec_rec_curve = metrics.precision_recall_curve(y_testing, 1.- probabilities[:, 0])
     roc_auc = metrics.auc(fpr, tpr)
-    clf.fit(x, y)
+    if train_final:
+        clf.fit(x, y)
     return {'fpr': fpr,
             'tpr': tpr,
             'thresh': thresholds,

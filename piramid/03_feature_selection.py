@@ -54,6 +54,7 @@ from sklearn.feature_selection import SelectPercentile
 from sklearn.feature_selection import f_classif
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.feature_selection import chi2
+from sklearn.feature_selection import VarianceThreshold
 
 
 from rfpimp import *
@@ -174,15 +175,179 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
 # Para que entre en memoria hacemos un sampling de esto
 # =============================================================================
-    train_ois, ftest_ois = train_test_split(dt_ois[cols+target], test_size=0.8,
-                                           stratify=dt_ois.IS_REAL)
-    train_zps, ftest_zps = train_test_split(dt_zps[cols+target], test_size=0.8,
-                                           stratify=dt_zps.IS_REAL)
-    train_hot, ftest_hot = train_test_split(dt_hot[cols+target], test_size=0.8,
-                                           stratify=dt_hot.IS_REAL)
-    train_sps, ftest_sps = train_test_split(dt_sps[scols+target], test_size=0.8,
-                                           stratify=dt_sps.IS_REAL)
+    train_ois, ftest_ois = train_test_split(dt_ois, test_size=0.7, stratify=dt_ois.IS_REAL)
+    train_zps, ftest_zps = train_test_split(dt_zps, test_size=0.7, stratify=dt_zps.IS_REAL)
+    train_hot, ftest_hot = train_test_split(dt_hot, test_size=0.7, stratify=dt_hot.IS_REAL)
+    train_sps, ftest_sps = train_test_split(dt_sps, test_size=0.7, stratify=dt_sps.IS_REAL)
 
+# =============================================================================
+# Aca separo en grupos... Agrupo por distintas cosas
+# =============================================================================
+    rows = []
+    for pars, data in train_ois.groupby(['m1_diam', 'exp_time', 'new_fwhm']):
+        train, test = train_test_split(data[cols+target].dropna(), test_size=0.25,
+                                       stratify=data[cols+target].dropna().IS_REAL)
+        d_ois = train[cols]
+        y_ois = train[target]
+
+        scaler = preprocessing.StandardScaler().fit(d_ois)
+        X_ois = scaler.transform(d_ois)
+        X_test_ois = scaler.transform(test[cols])
+
+        # =============================================================================
+        # univariate
+        # =============================================================================
+        thresh = 0.1
+        sel = VarianceThreshold(threshold=thresh)
+        X_ois = sel.fit_transform(X_ois)
+        X_test_ois = sel.transform(X_test_ois)
+        newcols_ois = d_ois.columns[sel.get_support()]
+        print('Dropped columns = {}'.format(d_ois.columns[~sel.get_support()]))
+        d_ois = pd.DataFrame(X_ois, columns=newcols_ois)
+
+        percentile = 30.
+        scores, selector, selected_cols = cf.select(X_ois, y_ois, percentile)
+        scoring_ois = pd.DataFrame(scores, index=newcols_ois, columns=['ois'])
+        selection_ois = scoring_ois.loc[newcols_ois.values[selected_cols][0]]
+        dat_ois = pd.DataFrame(X_ois, columns=newcols_ois)[selection_ois.index]
+
+        # =============================================================================
+        # KNN
+        # =============================================================================
+        model = neighbors.KNeighborsClassifier(n_neighbors=7, weights='uniform', n_jobs=-1)
+
+        rslt0_knn_ois_uniform = cf.experiment(model, X_ois, y_ois.values.ravel(), printing=True)
+        model.fit(X_ois, y_ois.values.ravel())
+        preds = model.predict(X_test_ois)
+        rslt0_knn_ois_uniform['test_preds'] = preds
+        print(cf.metrics.classification_report(test.IS_REAL.values.ravel(), preds))
+        acc_knn0 = cf.metrics.accuracy_score(test.IS_REAL.values.ravel(), preds)
+        rslt0_knn_ois_uniform['test_bacc'] = acc_knn0
+
+        rslts_knn_ois_uniform = cf.experiment(model, dat_ois.values, y_ois.values.ravel(), printing=True)
+        model.fit(dat_ois.values, y_ois.values.ravel())
+        preds = model.predict(selector.transform(X_test_ois))
+        rslts_knn_ois_uniform['test_preds'] = preds
+        print(cf.metrics.classification_report(test.IS_REAL.values.ravel(), preds))
+        acc_knn = cf.metrics.accuracy_score(test.IS_REAL.values.ravel(), preds)
+        rslt0_knn_ois_uniform['test_bacc'] = acc_knn
+
+        # =============================================================================
+        # randomforest
+        # =============================================================================
+        corr = d_ois.corr()
+        # Generate a mask for the upper triangle
+        mask = np.zeros_like(corr, dtype=np.bool)
+        mask[np.triu_indices_from(mask)] = True
+
+        #~ # Set up the matplotlib figure
+        #~ fig, ax = plt.subplots(figsize=(10, 8))
+        #~ # Draw the heatmap with the mask and correct aspect ratio
+        #~ corr_plot = sns.heatmap(corr, mask=mask, cmap='RdBu', center=0,
+                        #~ square=True, linewidths=.2, cbar_kws={"shrink": .5})
+        #~ plt.tight_layout()
+        #~ plt.savefig(os.path.join(plots_path, 'corr_ois.png'))
+        #~ plt.clf()
+
+        # remove corr columns
+        correlated_features = set()
+        for i in range(len(corr.columns)):
+            for j in range(i):
+                if abs(corr.iloc[i, j]) > 0.8:
+                    colname = corr.columns[i]
+                    correlated_features.add(colname)
+
+        decorr_ois = d_ois.drop(correlated_features, axis=1)
+        corr = decorr_ois.corr()
+            # Generate a mask for the upper triangle
+        mask = np.zeros_like(corr, dtype=np.bool)
+        mask[np.triu_indices_from(mask)] = True
+
+        #~ # Set up the matplotlib figure
+        #~ fig, ax = plt.subplots(figsize=(10, 8))
+        #~ # Draw the heatmap with the mask and correct aspect ratio
+        #~ corr_plot = sns.heatmap(corr, mask=mask, cmap='RdBu', center=0,
+                        #~ square=True, linewidths=.2, cbar_kws={"shrink": .5})
+        #~ plt.tight_layout()
+        #~ plt.savefig(os.path.join(plots_path, 'decorr_ois.png'))
+        #~ plt.clf()
+
+        model = RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1)
+        ois_importance = cf.importance_perm_kfold(decorr_ois.values, y_ois.values.ravel(),
+            model, cols=decorr_ois.columns, method='Bramich')
+
+        res_ois = pd.concat(ois_importance, axis=1)
+        full_cols = list(decorr_ois.index).extend(['Random'])
+        m = res_ois.mean(axis=1).reindex(full_cols)
+        s = res_ois.std(axis=1).reindex(full_cols)
+
+        thresh = m.loc['Random'] + 3*s.loc['Random']
+        spikes = m - 3*s
+        selected = spikes > thresh
+        signif = (m - m.loc['Random'])/s
+        selected = signif>2.5
+        dat_ois = d_ois[selected[selected].index]
+
+        model = RandomForestClassifier(n_estimators=800, min_samples_leaf=20, n_jobs=-1)
+        rslts_ois_rforest = cf.experiment(model, dat_ois.values, y_ois.values.ravel(), printing=True)
+        model.fit(dat_ois.values, y_ois.values.ravel())
+        preds = model.predict(pd.DataFrame(X_test_ois, columns=newcols_ois)[selected[selected].index].values)
+        rslts_ois_rforest['test_preds'] = preds
+        print(cf.metrics.classification_report(test.IS_REAL.values.ravel(), preds))
+        acc_rforest = cf.metrics.accuracy_score(test.IS_REAL.values.ravel(), preds)
+        rslts_ois_rforest['test_bacc'] = acc_rforest
+
+        rslt0_ois_rforest = cf.experiment(model, d_ois.values, y_ois.values.ravel(), printing=True)
+        model.fit(d_ois.values, y_ois.values.ravel())
+        preds = model.predict(X_test_ois)
+        rslt0_ois_rforest['test_preds'] = preds
+        print(cf.metrics.classification_report(test.IS_REAL.values.ravel(), preds))
+        acc_rforest0 = cf.metrics.accuracy_score(test.IS_REAL.values.ravel(), preds)
+        rslt0_ois_rforest['test_bacc'] = acc_rforest0
+
+# =============================================================================
+# SVC
+# =============================================================================
+        svc = SVC(kernel='linear',
+                  cache_size=2048,
+                  class_weight='balanced',
+                  probability=True)
+
+        #svc = svm.LinearSVC(dual=False, tol=1e-5)
+
+        rfecv = feature_selection.RFECV(estimator=svc, step=1, cv=StratifiedKFold(6),
+                      scoring='accuracy', n_jobs=-1)
+
+        rfecv.fit(np.ascontiguousarray(X_ois), y_ois.values.ravel())
+        print("Optimal number of features : %d" % rfecv.n_features_)
+        sel_cols_ois = newcols_ois[rfecv.support_]
+        print(sel_cols_ois)
+        dat_ois = d_ois[sel_cols_ois]
+
+        model = svc
+        rslts_ois_svc = cf.experiment(model, dat_ois.values, y_ois.values.ravel(), printing=True, probs=False)
+        model.fit(dat_ois.values, y_ois.values.ravel())
+        preds = model.predict(pd.DataFrame(X_test_ois, columns=newcols_ois)[sel_cols_ois].values)
+        rslts_ois_svc['test_preds'] = preds
+        print(cf.metrics.classification_report(test.IS_REAL.values.ravel(), preds))
+        acc_svc = cf.metrics.accuracy_score(test.IS_REAL.values.ravel(), preds)
+        rslts_ois_svc['test_bacc'] = acc_svc
+
+        rslt0_ois_svc = cf.experiment(model, d_ois.values, y_ois.values.ravel(), printing=True)
+        model.fit(d_ois.values, y_ois.values.ravel())
+        preds = model.predict(X_test_ois)
+        rslt0_ois_svc['test_preds'] = preds
+        print(cf.metrics.classification_report(test.IS_REAL.values.ravel(), preds))
+        acc_svc0 = cf.metrics.accuracy_score(test.IS_REAL.values.ravel(), preds)
+        rslt0_ois_svc['test_bacc'] = acc_svc0
+
+
+        vals = [acc_knn0, acc_knn, acc_rforest0, acc_rforest, acc_svc, acc_svc0]
+        rows.append(list(pars)+vals)
+
+# =============================================================================
+#
+# =============================================================================
     #n_samples = 50000
     train_ois, test_ois = train_test_split(train_ois, test_size=0.75,
                                             stratify=train_ois.IS_REAL)
@@ -229,10 +394,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
 # Analisis univariado
 # =============================================================================
-
 # %%%%%  Variance threshold
-    from sklearn.feature_selection import VarianceThreshold
-
     thresh = 0.1
     sel = VarianceThreshold(threshold=thresh)
 
@@ -265,7 +427,6 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # KNN Neighbors
 # =============================================================================
 # %%%%%  Univariate f_mutual_info_classif
-
     percentile = 30.
 
     scores, selector, selected_cols = cf.select(X_ois, y_ois, percentile)
@@ -309,30 +470,41 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dat_hot = pd.DataFrame(X_hot, columns=newcols_hot)[selection_hot.index]
     dat_sps = pd.DataFrame(X_sps, columns=newcols_sps)[newcols_sps.values[selected_cols][0]]
 
+
     model = neighbors.KNeighborsClassifier(n_neighbors=7, weights='uniform', n_jobs=-1)
 
     rslt0_knn_ois_uniform = cf.experiment(model, X_ois, y_ois.values.ravel(), printing=True)
-    rslt0_knn_ois_uniform['test_preds'] = rslt0_knn_ois_uniform['model'].predict(X_test_ois)
+    model.train(X_ois, y_ois.values.ravel())
+    rslt0_knn_ois_uniform['test_preds'] = model.predict(X_test_ois)
     print(cf.metrics.classification_report(test_ois.IS_REAL.values.ravel(), preds))
     rslt0_knn_ois_uniform['test_bacc'] = cf.metrics.balanced_accuracy_score(test_ois.IS_REAL.values.ravel(), preds)
 
     rslt0_knn_zps_uniform = cf.experiment(model, X_zps, y_zps.values.ravel(), printing=True)
-    rslt0_knn_zps_uniform['test_preds'] = rslt0_knn_zps_uniform['model'].predict(X_test_zps)
+    model.train(X_zps, y_zps.values.ravel())
+    rslt0_knn_zps_uniform['test_preds'] = model.predict(X_test_zps)
     print(cf.metrics.classification_report(test_zps.IS_REAL.values.ravel(), preds))
     rslt0_knn_zps_uniform['test_bacc'] = cf.metrics.balanced_accuracy_score(test_zps.IS_REAL.values.ravel(), preds)
 
     rslt0_knn_hot_uniform = cf.experiment(model, X_hot, y_hot.values.ravel(), printing=True)
-    rslt0_knn_hot_uniform['test_preds'] = rslt0_knn_hot_uniform['model'].predict(X_test_hot)
+    model.train(X_hot, y_hot.values.ravel())
+    rslt0_knn_hot_uniform['test_preds'] = model.predict(X_test_hot)
     print(cf.metrics.classification_report(test_hot.IS_REAL.values.ravel(), preds))
     rslt0_knn_hot_uniform['test_bacc'] = cf.metrics.balanced_accuracy_score(test_hot.IS_REAL.values.ravel(), preds)
 
     rslt0_knn_sps_uniform = cf.experiment(model, X_sps, y_sps.values.ravel(), printing=True)
-    rslt0_knn_sps_uniform['test_preds'] = rslt0_knn_sps_uniform['model'].predict(X_test_sps)
+    model.train(X_sps, y_sps.values.ravel())
+    rslt0_knn_sps_uniform['test_preds'] = model.predict(X_test_sps)
     print(cf.metrics.classification_report(test_sps.IS_REAL.values.ravel(), preds))
     rslt0_knn_sps_uniform['test_bacc'] = cf.metrics.balanced_accuracy_score(test_sps.IS_REAL.values.ravel(), preds)
 
 
     rslts_knn_ois_uniform = cf.experiment(model, dat_ois.values, y_ois.values.ravel(), printing=True)
+    model.train(dat_ois.values, y_ois.values.ravel())
+    rslts_knn_ois_uniform['test_preds'] = model.predict(X_test_ois)
+    print(cf.metrics.classification_report(test_ois.IS_REAL.values.ravel(), preds))
+    rslt0_knn_ois_uniform['test_bacc'] = cf.metrics.balanced_accuracy_score(test_ois.IS_REAL.values.ravel(), preds)
+
+
     rslts_knn_zps_uniform = cf.experiment(model, dat_zps.values, y_zps.values.ravel(), printing=True)
     rslts_knn_hot_uniform = cf.experiment(model, dat_hot.values, y_hot.values.ravel(), printing=True)
     rslts_knn_sps_uniform = cf.experiment(model, dat_sps.values, y_sps.values.ravel(), printing=True)
