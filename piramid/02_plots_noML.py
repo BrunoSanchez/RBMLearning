@@ -298,7 +298,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.legend(loc='best', fontsize=14)
 
     plt.xlim(10, 22.5)
-    plt.ylim(-2, 12)
+    plt.ylim(-2, 3)
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_inliers.svg'),
                 format='svg', dpi=480)
@@ -336,7 +336,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.legend(loc='best', fontsize=14)
 
     plt.xlim(10, 22.5)
-    plt.ylim(-2, 12)
+    plt.ylim(-2, 3)
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_inliers_300s.svg'),
                 format='svg', dpi=480)
@@ -374,7 +374,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.legend(loc='best', fontsize=14)
 
     plt.xlim(10, 22.5)
-    plt.ylim(-2, 12)
+    plt.ylim(-2, 3)
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_inliers_120s.svg'),
                 format='svg', dpi=480)
@@ -413,7 +413,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.legend(loc='best', fontsize=14)
 
     plt.xlim(10, 22.5)
-    plt.ylim(-2, 12)
+    plt.ylim(-2, 3)
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_inliers_60s.svg'),
                 format='svg', dpi=480)
