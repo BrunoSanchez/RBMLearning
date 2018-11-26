@@ -240,14 +240,6 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
         mask = np.zeros_like(corr, dtype=np.bool)
         mask[np.triu_indices_from(mask)] = True
 
-        #~ # Set up the matplotlib figure
-        #~ fig, ax = plt.subplots(figsize=(10, 8))
-        #~ # Draw the heatmap with the mask and correct aspect ratio
-        #~ corr_plot = sns.heatmap(corr, mask=mask, cmap='RdBu', center=0,
-                        #~ square=True, linewidths=.2, cbar_kws={"shrink": .5})
-        #~ plt.tight_layout()
-        #~ plt.savefig(os.path.join(plots_path, 'corr_ois.png'))
-        #~ plt.clf()
 
         # remove corr columns
         correlated_features = set()
@@ -262,15 +254,6 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
             # Generate a mask for the upper triangle
         mask = np.zeros_like(corr, dtype=np.bool)
         mask[np.triu_indices_from(mask)] = True
-
-        #~ # Set up the matplotlib figure
-        #~ fig, ax = plt.subplots(figsize=(10, 8))
-        #~ # Draw the heatmap with the mask and correct aspect ratio
-        #~ corr_plot = sns.heatmap(corr, mask=mask, cmap='RdBu', center=0,
-                        #~ square=True, linewidths=.2, cbar_kws={"shrink": .5})
-        #~ plt.tight_layout()
-        #~ plt.savefig(os.path.join(plots_path, 'decorr_ois.png'))
-        #~ plt.clf()
 
         model = RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1)
         ois_importance = cf.importance_perm_kfold(decorr_ois.values, y_ois.values.ravel(),
