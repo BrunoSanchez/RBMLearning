@@ -4,7 +4,20 @@ import pandas as pd
 
 from astropy.stats import sigma_clipped_stats
 
+
+from sklearn import preprocessing
+from sklearn import decomposition
+from sklearn import feature_selection
+from sklearn import svm
 from sklearn import metrics
+from sklearn import neighbors
+from sklearn.svm import SVC
+
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.externals import joblib
+
 from sklearn.model_selection import KFold
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import train_test_split
@@ -13,6 +26,10 @@ from sklearn.feature_selection import SelectPercentile
 from sklearn.feature_selection import f_classif
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.feature_selection import chi2
+from sklearn.feature_selection import VarianceThreshold
+
+
+from rfpimp import *
 
 # We're going to be calculating memory usage a lot,
 # so we'll create a function to save us some time!
