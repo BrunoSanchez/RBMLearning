@@ -342,6 +342,48 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                 format='svg', dpi=480)
 
 # =============================================================================
+# 300 segundos
+# =============================================================================
+    dm = 0
+    means = []
+    plt.figure(figsize=(8,4))
+    bins = np.arange(6.5, 26.5, .5)
+    #~ ff = subset_hot_lo.FLAGS<=0
+    ff = (dt_hot.mag > dt_hot.p05+dm) & (dt_hot.mag < dt_hot.p95) & (dt_hot.exp_time==300)
+    means.append(cf.binning_res(dt_hot.loc[ff], bins=bins))
+
+    #ff = subset_sps_hi.FLAGS<=1
+    ff = (dt_sps.mag > dt_sps.p05+dm) & (dt_sps.mag < dt_sps.p95) & (dt_sps.exp_time==300)
+    means.append(cf.binning_res(dt_sps.loc[ff], bins=bins))
+
+    #~ ff = subset_zps_lo.FLAGS<=0
+    ff = (dt_zps.mag > dt_zps.p05+dm) & (dt_zps.mag < dt_zps.p95) & (dt_zps.exp_time==300)
+    means.append(cf.binning_res(dt_zps.loc[ff], bins=bins))
+
+    #~ ff = subset_ois_lo.FLAGS<=0
+    ff = (dt_ois.mag > dt_ois.p05+dm) & (dt_ois.mag < dt_ois.p95) & (dt_ois.exp_time==300)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(dt_ois.loc[ff], bins=bins)
+
+    mm = np.ma.masked_invalid(means)
+    bin_centers = mm.max(axis=0)[3]
+    mean = np.sum(mm[:, 0, :]*mm[:, 2, :]**2, axis=0)/np.sum(mm[:, 2, :]**2, axis=0)
+    stds = np.sqrt(np.sum((mm[:, 1, :]**2)/(mm[:, 2, :]**2), axis=0))
+    plt.errorbar(bin_centers, mean, yerr=stds, fmt='--', label='mean')
+
+    plt.tick_params(labelsize=16)
+    plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
+    plt.xlabel('Sim Mag', fontsize=16)
+    plt.title('Simulated Data', fontsize=14)
+    plt.legend(loc='best', fontsize=14)
+
+    plt.xlim(10, 22.5)
+    plt.ylim(-2, 3)
+    plt.tight_layout()
+    plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_inliers_300s_averaged.svg'),
+                format='svg', dpi=480)
+
+
+# =============================================================================
 # 120 segundos
 # =============================================================================
     dm = 0
@@ -379,6 +421,46 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_inliers_120s.svg'),
                 format='svg', dpi=480)
 
+# =============================================================================
+# 120 segundos
+# =============================================================================
+    dm = 0
+    means = []
+    plt.figure(figsize=(8,4))
+    bins = np.arange(6.5, 26.5, .5)
+    #~ ff = subset_hot_lo.FLAGS<=0
+    ff = (dt_hot.mag > dt_hot.p05+dm) & (dt_hot.mag < dt_hot.p95) & (dt_hot.exp_time==120)
+    means.append(cf.binning_res(dt_hot.loc[ff], bins=bins))
+
+    #ff = subset_sps_hi.FLAGS<=1
+    ff = (dt_sps.mag > dt_sps.p05+dm) & (dt_sps.mag < dt_sps.p95) & (dt_sps.exp_time==120)
+    means.append(cf.binning_res(dt_sps.loc[ff], bins=bins))
+
+    #~ ff = subset_zps_lo.FLAGS<=0
+    ff = (dt_zps.mag > dt_zps.p05+dm) & (dt_zps.mag < dt_zps.p95) & (dt_zps.exp_time==120)
+    means.append(cf.binning_res(dt_zps.loc[ff], bins=bins))
+
+    #~ ff = subset_ois_lo.FLAGS<=0
+    ff = (dt_ois.mag > dt_ois.p05+dm) & (dt_ois.mag < dt_ois.p95) & (dt_ois.exp_time==120)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(dt_ois.loc[ff], bins=bins)
+
+    mm = np.ma.masked_invalid(means)
+    bin_centers = mm.max(axis=0)[3]
+    mean = np.sum(mm[:, 0, :]*mm[:, 2, :]**2, axis=0)/np.sum(mm[:, 2, :]**2, axis=0)
+    stds = np.sqrt(np.sum((mm[:, 1, :]**2)/(mm[:, 2, :]**2), axis=0))
+    plt.errorbar(bin_centers, mean, yerr=stds, fmt='--', label='mean')
+
+    plt.tick_params(labelsize=16)
+    plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
+    plt.xlabel('Sim Mag', fontsize=16)
+    plt.title('Simulated Data', fontsize=14)
+    plt.legend(loc='best', fontsize=14)
+
+    plt.xlim(10, 22.5)
+    plt.ylim(-2, 3)
+    plt.tight_layout()
+    plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_inliers_120s_averaged.svg'),
+                format='svg', dpi=480)
 
 # =============================================================================
 # 60 segundos
