@@ -87,7 +87,7 @@ def binning_res(data, bins, return_center_bins=False):
     for i_bin, low in enumerate(bins[:-1]):
         high = bins[i_bin+1]
         f1data = data[data['mag']<90]
-        fdata = f1data[(f1data['sim_mag'] < high) * (f1data['sim_mag'] >= low)]
+        fdata = f1data[(f1data['sim_mag'] < high) & (f1data['sim_mag'] >= low)]
         fdata_mag = fdata['mag'] - fdata['sim_mag']
         if len(fdata) is 0:
             sqrtn[i_bin] = 0
@@ -114,7 +114,7 @@ def binning_robust(data, bins, return_center_bins=False):
         high = bins[i_bin+1]
         mean_sim_mag[i_bin] = (high+low)/2.
         f1data = data[data['mag']<90]
-        fdata = f1data[(f1data['sim_mag'] < high) * (f1data['sim_mag'] >= low)]
+        fdata = f1data[(f1data['sim_mag'] < high) & (f1data['sim_mag'] >= low)]
         #print len(fdata)
         if len(fdata) is 0:
             sqrtn[i_bin] = 0
@@ -139,7 +139,7 @@ def binning_res(data, bins, return_center_bins=False):
     for i_bin, low in enumerate(bins[:-1]):
         high = bins[i_bin+1]
         f1data = data[data['mag']<90]
-        fdata = f1data[(f1data['sim_mag'] < high) * (f1data['sim_mag'] >= low)]
+        fdata = f1data[(f1data['sim_mag'] < high) & (f1data['sim_mag'] >= low)]
         fdata_mag = fdata['mag'] - fdata['sim_mag']
         if len(fdata) is 0:
             sqrtn[i_bin] = 0
@@ -164,7 +164,7 @@ def binning_res_robust(data, bins, return_center_bins=False):
     for i_bin, low in enumerate(bins[:-1]):
         high = bins[i_bin+1]
         f1data = data[data['mag']<90]
-        fdata = f1data[(f1data['sim_mag'] < high) * (f1data['sim_mag'] >= low)]
+        fdata = f1data[(f1data['sim_mag'] < high) & (f1data['sim_mag'] >= low)]
         fdata_mag = fdata['mag'] - fdata['sim_mag']
         if len(fdata) is 0:
             sqrtn[i_bin] = 0

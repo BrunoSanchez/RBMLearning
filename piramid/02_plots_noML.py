@@ -1187,6 +1187,54 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_lo_goyet.svg'),
                 format='svg', dpi=480)
 
+
+# =============================================================================
+# Como quedan los diagramas de error de magnitud vs magnitud simulada
+# =============================================================================
+    dm = 0.0
+    means = []
+    plt.figure(figsize=(8,4))
+    bins = np.arange(6.5, 26.5, .5)
+
+    ff = subset_hot_lo.FLAGS<=0
+    ff = ff & (subset_hot_lo.mag > subset_hot_lo.p05+dm) & (subset_hot_lo.mag < subset_hot_lo.p95)
+    #mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo[ff], bins=bins)
+    means.append(cf.binning_res(subset_hot_lo[ff], bins=bins))
+
+    ff = ff & (subset_sps_lo.mag > subset_sps_lo.p05+dm) & (subset_sps_lo.mag < subset_sps_lo.p95)
+    #mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_lo[ff], bins=bins)
+    means.append(cf.binning_res(subset_sps_lo[ff], bins=bins))
+
+    ff = subset_zps_lo.FLAGS<=0
+    ff = ff & (subset_zps_lo.mag > subset_zps_lo.p05+dm) & (subset_zps_lo.mag < subset_zps_lo.p95)
+    #mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_lo[ff], bins=bins)
+    means.append(cf.binning_res(subset_zps_lo[ff], bins=bins))
+
+    ff = subset_ois_lo.FLAGS<=0
+    ff = ff & (subset_ois_lo.mag > subset_ois_lo.p05+dm) & (subset_ois_lo.mag < subset_ois_lo.p95)
+    #mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_lo[ff], bins=bins)
+    means.append(cf.binning_res(subset_ois_lo[ff], bins=bins))
+    mm = np.ma.masked_invalid(means)
+
+    bin_centers = mm.max(axis=0)[3]
+    mean = np.sum(mm[:, 0, :]*mm[:, 2, :]**2, axis=0)/np.sum(mm[:, 2, :]**2, axis=0)
+    stds = np.sqrt(np.sum((mm[:, 1, :]**2)/(mm[:, 2, :]**2), axis=0))
+
+
+    plt.errorbar(mean, bin_centers, yerr=stds, fmt='--', label='mean')
+
+    plt.tick_params(labelsize=16)
+    plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
+    plt.xlabel('Sim Mag', fontsize=16)
+    plt.title('Simulated Data', fontsize=14)
+    plt.legend(loc='best', fontsize=14)
+
+    plt.xlim(8, 22.5)
+    plt.ylim(-2, 3)
+    plt.tight_layout()
+    plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_averaged.svg'),
+                format='svg', dpi=480)
+
 # =============================================================================
 #  Queremos los image id con buen goyet y ver quienes son
 # =============================================================================
