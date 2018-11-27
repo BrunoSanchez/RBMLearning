@@ -1060,8 +1060,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # Seleccionamos los mean_goyet
 # =============================================================================
     pars = ['mean_goyet', 'image_id', 'id_simulation', 'mag', 'sim_mag',
-            'goyet', 'goyet_iso', 'mean_goyet_iso', 'IS_REAL', 'p05', 'p95'
-            ]
+            'goyet', 'goyet_iso', 'mean_goyet_iso', 'IS_REAL', 'p05', 'p95']
     subset_zps = dt_zps[pars+['FLAGS']]
     subset_ois = dt_ois[pars+['FLAGS']]
     subset_sps = dt_sps[pars]
@@ -1351,8 +1350,8 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.title('Simulated Data', fontsize=14)
     plt.legend(loc='best', fontsize=14)
 
-    #plt.xlim(8, 22.5)
-    #plt.ylim(-2, 3)
+    plt.xlim(8, 22.5)
+    plt.ylim(-2, 3)
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_averaged.svg'),
                 format='svg', dpi=480)
