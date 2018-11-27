@@ -1187,14 +1187,13 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_lo_goyet.svg'),
                 format='svg', dpi=480)
 
-
 # =============================================================================
 # Como quedan los diagramas de error de magnitud vs magnitud simulada
 # =============================================================================
     dm = 0.0
     means = []
     plt.figure(figsize=(8,4))
-    bins = np.arange(6.5, 26.5, .5)
+    bins = np.arange(7., 24.5, .5)
 
     ff = subset_hot_lo.FLAGS<=0
     ff = ff & (subset_hot_lo.mag > subset_hot_lo.p05+dm) & (subset_hot_lo.mag < subset_hot_lo.p95)
@@ -1219,8 +1218,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     bin_centers = mm.max(axis=0)[3]
     mean = np.sum(mm[:, 0, :]*mm[:, 2, :]**2, axis=0)/np.sum(mm[:, 2, :]**2, axis=0)
     stds = np.sqrt(np.sum((mm[:, 1, :]**2)/(mm[:, 2, :]**2), axis=0))
-
-
+    import ipdb; ipdb.set_trace()
     plt.errorbar(mean, bin_centers, yerr=stds, fmt='--', label='mean')
 
     plt.tick_params(labelsize=16)
