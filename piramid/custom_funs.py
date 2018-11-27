@@ -203,6 +203,7 @@ def experiment(clf, x, y, nfolds=10, printing=False, probs=True,
     predictions = np.array([])
     y_testing = np.array([])
 
+    results = {}
     for train, test in skf.split(x, y):
 
         x_train = x[train]
@@ -212,33 +213,41 @@ def experiment(clf, x, y, nfolds=10, printing=False, probs=True,
         x_test = x[test]
         y_test = y[test]
         pr = clf.predict(x_test)
+        if probs:
+            probs = clf.predict_proba(x_test)  #[:, 0]
 
-        probs = clf.predict_proba(x_test)  #[:, 0]
-
-        probabilities = (
-            probs if probabilities is None else
-            np.vstack([probabilities, probs]))
+            probabilities = (
+                probs if probabilities is None else
+                np.vstack([probabilities, probs]))
         predictions = np.hstack([predictions, pr])
         y_testing = np.hstack([y_testing, y_test])
 
+    results['y_test'] = y_testing
+    results['predictions'] = predictions
+    if probs:
+        results['probabilities'] = probabilities
+
     if printing:
         print(metrics.classification_report(y_testing, predictions))
-    fpr, tpr, thresholds = metrics.roc_curve(y_testing, 1.-probabilities[:, 0])
-    prec_rec_curve = metrics.precision_recall_curve(y_testing, 1.- probabilities[:, 0])
-    roc_auc = metrics.auc(fpr, tpr)
+
+    if probs:
+        fpr, tpr, thresholds = metrics.roc_curve(y_testing, 1.-probabilities[:, 0])
+        prec_rec_curve = metrics.precision_recall_curve(y_testing, 1.- probabilities[:, 0])
+        roc_auc = metrics.auc(fpr, tpr)
+
+        results['fpr'] = fpr
+        results['tpr'] = tpr
+        results['thresh'] = thresholds
+        results['roc_auc'] = roc_auc
+        results['prec_rec_curve'] = prec_rec_curve
+
     if train_final:
         clf.fit(x, y)
-    return {'fpr': fpr,
-            'tpr': tpr,
-            'thresh': thresholds,
-            'roc_auc': roc_auc,
-            'prec_rec_curve': prec_rec_curve,
-            'y_test': y_testing,
-            'predictions': predictions,
-            'probabilities': probabilities,
-            'confusion_matrix': metrics.confusion_matrix(y_testing, predictions),
-            'model' : clf
-            }
+
+    results['model'] = clf
+    results['confusion_matrix'] = metrics.confusion_matrix(y_testing, predictions)
+
+    return results
 
 
 from sklearn.linear_model import RANSACRegressor
@@ -448,6 +457,159 @@ def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
         forest.fit(X_train, y_train)
         imp.append(importances(forest, X_test, y_test)) # permutation
     return imp
+
+# =============================================================================
+# funcion para ml
+# =============================================================================
+def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
+             target=['IS_REAL'], cols=['mag'], var_thresh=0.1, percentile=30.,
+             method='Bramich'):
+    rows = []
+    for pars, data in train_data.groupby(group_cols):
+        train, test = train_test_split(data[cols+target].dropna(), test_size=0.25,
+                                       stratify=data[cols+target].dropna().IS_REAL)
+        d_ois = train[cols]
+        y_ois = train[target]
+
+        scaler = preprocessing.StandardScaler().fit(d_ois)
+        X_ois = scaler.transform(d_ois)
+        X_test_ois = scaler.transform(test[cols])
+
+        # =============================================================================
+        # univariate
+        # =============================================================================
+        thresh = var_thresh
+        sel = VarianceThreshold(threshold=thresh)
+        X_ois = sel.fit_transform(X_ois)
+        X_test_ois = sel.transform(X_test_ois)
+        newcols_ois = d_ois.columns[sel.get_support()]
+        print('Dropped columns = {}'.format(d_ois.columns[~sel.get_support()]))
+        d_ois = pd.DataFrame(X_ois, columns=newcols_ois)
+
+        percentile = percentile
+        scores, selector, selected_cols = select(X_ois, y_ois, percentile)
+        scoring_ois = pd.DataFrame(scores, index=newcols_ois, columns=['ois'])
+        selection_ois = scoring_ois.loc[newcols_ois.values[selected_cols][0]]
+        dat_ois = pd.DataFrame(X_ois, columns=newcols_ois)[selection_ois.index]
+
+        # =============================================================================
+        # KNN
+        # =============================================================================
+        model = neighbors.KNeighborsClassifier(n_neighbors=7, weights='uniform', n_jobs=-1)
+
+        rslt0_knn_ois_uniform = experiment(model, X_ois, y_ois.values.ravel(), printing=True)
+        model.fit(X_ois, y_ois.values.ravel())
+        preds = model.predict(X_test_ois)
+        rslt0_knn_ois_uniform['test_preds'] = preds
+        print(metrics.classification_report(test.IS_REAL.values.ravel(), preds))
+        acc_knn0 = metrics.accuracy_score(test.IS_REAL.values.ravel(), preds)
+        rslt0_knn_ois_uniform['test_bacc'] = acc_knn0
+
+        rslts_knn_ois_uniform = experiment(model, dat_ois.values, y_ois.values.ravel(), printing=True)
+        model.fit(dat_ois.values, y_ois.values.ravel())
+        preds = model.predict(selector.transform(X_test_ois))
+        rslts_knn_ois_uniform['test_preds'] = preds
+        print(metrics.classification_report(test.IS_REAL.values.ravel(), preds))
+        acc_knn = metrics.accuracy_score(test.IS_REAL.values.ravel(), preds)
+        rslt0_knn_ois_uniform['test_bacc'] = acc_knn
+
+        # =============================================================================
+        # randomforest
+        # =============================================================================
+        corr = d_ois.corr()
+        # Generate a mask for the upper triangle
+        mask = np.zeros_like(corr, dtype=np.bool)
+        mask[np.triu_indices_from(mask)] = True
+        # remove corr columns
+        correlated_features = set()
+        for i in range(len(corr.columns)):
+            for j in range(i):
+                if abs(corr.iloc[i, j]) > 0.8:
+                    colname = corr.columns[i]
+                    correlated_features.add(colname)
+        decorr_ois = d_ois.drop(correlated_features, axis=1)
+        corr = decorr_ois.corr()
+
+        model = RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1)
+        ois_importance = importance_perm_kfold(decorr_ois.values, y_ois.values.ravel(),
+            model, cols=decorr_ois.columns, method=method)
+
+        res_ois = pd.concat(ois_importance, axis=1)
+        full_cols = list(decorr_ois.index).extend(['Random'])
+        m = res_ois.mean(axis=1).reindex(full_cols)
+        s = res_ois.std(axis=1).reindex(full_cols)
+
+        thresh = m.loc['Random'] + 3*s.loc['Random']
+        spikes = m - 3*s
+        selected = spikes > thresh
+        signif = (m - m.loc['Random'])/s
+        selected = signif>2.5
+        dat_ois = d_ois[selected[selected].index]
+
+        n_fts = np.min([len(dat_ois.columns), 7])
+        model = RandomForestClassifier(n_estimators=800, max_features=n_fts,
+                                       min_samples_leaf=20, n_jobs=-1)
+        rslts_ois_rforest = experiment(model, dat_ois.values, y_ois.values.ravel(), printing=True)
+        model.fit(dat_ois.values, y_ois.values.ravel())
+        d_test = pd.DataFrame(X_test_ois, columns=newcols_ois)[selected[selected].index]
+        preds = model.predict(d_test.values)
+        #rslts_ois_rforest['test_preds'] = preds
+        print(metrics.classification_report(test.IS_REAL.values.ravel(), preds))
+        acc_rforest = cf.metrics.accuracy_score(test.IS_REAL.values.ravel(), preds)
+        #rslts_ois_rforest['test_bacc'] = acc_rforest
+
+        rslt0_ois_rforest = experiment(model, d_ois.values, y_ois.values.ravel(), printing=True)
+        model.fit(d_ois.values, y_ois.values.ravel())
+        preds = model.predict(X_test_ois)
+        # rslt0_ois_rforest['test_preds'] = preds
+        print(metrics.classification_report(test.IS_REAL.values.ravel(), preds))
+        acc_rforest0 = metrics.accuracy_score(test.IS_REAL.values.ravel(), preds)
+        # rslt0_ois_rforest['test_bacc'] = acc_rforest0
+
+# =============================================================================
+# SVC
+# =============================================================================
+        #svc = SVC(kernel='linear',
+        #          cache_size=2048,
+        #          class_weight='balanced',
+        #          probability=True)
+        #svc = svm.LinearSVC(dual=False, tol=1e-5)
+        rfecv = feature_selection.RFECV(estimator=svc, step=1, cv=StratifiedKFold(6),
+                      scoring='accuracy', n_jobs=-1)
+
+        rfecv.fit(np.ascontiguousarray(X_ois), y_ois.values.ravel())
+        print("Optimal number of features : {}" .format(rfecv.n_features_))
+        sel_cols_ois = newcols_ois[rfecv.support_]
+        print(sel_cols_ois)
+        dat_ois = d_ois[sel_cols_ois]
+
+        model = svc
+        rslts_ois_svc = cf.experiment(model, dat_ois.values, y_ois.values.ravel(), printing=True, probs=False)
+        model.fit(dat_ois.values, y_ois.values.ravel())
+        preds = model.predict(pd.DataFrame(X_test_ois, columns=newcols_ois)[sel_cols_ois].values)
+        #rslts_ois_svc['test_preds'] = preds
+        print(cf.metrics.classification_report(test.IS_REAL.values.ravel(), preds))
+        acc_svc = cf.metrics.accuracy_score(test.IS_REAL.values.ravel(), preds)
+        #rslts_ois_svc['test_bacc'] = acc_svc
+
+        rslt0_ois_svc = cf.experiment(model, d_ois.values, y_ois.values.ravel(), printing=True)
+        model.fit(d_ois.values, y_ois.values.ravel())
+        preds = model.predict(X_test_ois)
+        #rslt0_ois_svc['test_preds'] = preds
+        print(cf.metrics.classification_report(test.IS_REAL.values.ravel(), preds))
+        acc_svc0 = cf.metrics.accuracy_score(test.IS_REAL.values.ravel(), preds)
+        #rslt0_ois_svc['test_bacc'] = acc_svc0
+
+
+        vals = [acc_knn0, acc_knn, acc_rforest0, acc_rforest, acc_svc, acc_svc0]
+        rows.append(list(pars)+vals)
+
+    ml_cols = ['m1_diam', 'exp_time', 'new_fwhm', 'acc_knn0', 'acc_knn',
+               'acc_rforest0', 'acc_rforest', 'acc_svc', 'acc_svc0']
+    ml_results = pd.DataFrame(rows, columns=ml_cols)
+    return ml_results
+
+
 
 transl = {u'thresh': u'THRESHOLD',
           u'peak': u'FLUX_MAX',

@@ -183,6 +183,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
 # Aca separo en grupos... Agrupo por distintas cosas
 # =============================================================================
+
     rows = []
     for pars, data in train_ois.groupby(['m1_diam', 'exp_time', 'new_fwhm']):
         train, test = train_test_split(data[cols+target].dropna(), test_size=0.25,
@@ -270,8 +271,8 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
         signif = (m - m.loc['Random'])/s
         selected = signif>2.5
         dat_ois = d_ois[selected[selected].index]
-
-        model = RandomForestClassifier(n_estimators=800, max_features=7,
+        n_fts = np.min([len(dat_ois.columns), 7])
+        model = RandomForestClassifier(n_estimators=800, max_features=n_fts,
                                        min_samples_leaf=20, n_jobs=-1)
         rslts_ois_rforest = cf.experiment(model, dat_ois.values, y_ois.values.ravel(), printing=True)
         model.fit(dat_ois.values, y_ois.values.ravel())
