@@ -502,6 +502,15 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         X = scaler.transform(d)
         X_test = scaler.transform(test[cols])
         y_test = test.IS_REAL.values.ravel()
+
+        # =====================================================================
+        # building the rows of this gigantic table
+        # =====================================================================
+        # separate them in three groups
+        row_knn = []
+        row_rfo = []
+        row_svc = []
+
         # =============================================================================
         # univariate cuts
         # =============================================================================
@@ -526,14 +535,28 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         # experiment befor fslection
         rslt0_knn = experiment(model, X, y, printing=False, nfolds=5)
+        row_knn.append(rslt0_knn['confusion_matrix'].flatten())
+        row_knn.append(rslt0_knn['bacc'])
+        row_knn.append(rslt0_knn['acc'])
+        row_knn.append(rslt0_knn['aprec'])
+        row_knn.append(rslt0_knn['prec'])
+        row_knn.append(rslt0_knn['reca'])
+        row_knn.append(rslt0_knn['f1'])
+
         # experiment after fselection
         rslts_knn = experiment(model, dat.values, y, printing=False, nfolds=5)
+        row_knn.append(rslt_knn['confusion_matrix'].flatten())
+        row_knn.append(rslt_knn['bacc'])
+        row_knn.append(rslt_knn['acc'])
+        row_knn.append(rslt_knn['aprec'])
+        row_knn.append(rslt_knn['prec'])
+        row_knn.append(rslt_knn['reca'])
+        row_knn.append(rslt_knn['f1'])
 
         # test on the testset
         #  before fselection
         model.fit(X, y)
         preds = model.predict(X_test)
-        test_acc_knn0 = metrics.accuracy_score(y_test, preds)
         test_cm_knn0 = metrics.confusion_matrix(y_test, preds)
         test_bacc_knn0 = metrics.balanced_accuracy_score(y_test, preds)
         test_acc_knn0 = metrics.accuracy_score(y_test, preds)
@@ -542,10 +565,13 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_knn0 = metrics.recall_score(y_test, preds)
         test_f1_knn0 = metrics.f1_score(y_test, preds)
 
+        row_knn += [test_cm_knn0.flatten(), test_bacc_knn0, test_acc_knn0,
+                    test_aprec_knn0, test_prec_knn0, test_reca_knn0,
+                    test_f1_knn0]
+
         #  after fselection
         model.fit(dat.values, y)
         preds = model.predict(selector.transform(X_test))
-        test_acc_knn = metrics.accuracy_score(y_test, preds)
         test_cm_knn = metrics.confusion_matrix(y_test, preds)
         test_bacc_knn = metrics.balanced_accuracy_score(y_test, preds)
         test_acc_knn = metrics.accuracy_score(y_test, preds)
@@ -554,6 +580,8 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_knn = metrics.recall_score(y_test, preds)
         test_f1_knn = metrics.f1_score(y_test, preds)
 
+        row_knn += [test_cm_knn.flatten(), test_bacc_knn, test_acc_knn,
+                    test_aprec_knn, test_prec_knn, test_reca_knn, test_f1_knn]
         # =============================================================================
         # randomforest
         # =============================================================================
@@ -589,9 +617,24 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                                        min_samples_leaf=20, n_jobs=-1)
 
         # experiment before fselection
-        rslt0_ois_rforest = experiment(model, X, y, printing=True, nfolds=5)
+        rslt0_rforest = experiment(model, X, y, printing=True, nfolds=5)
+        row_rfo.append(rslt0_rforest['confusion_matrix'].flatten())
+        row_rfo.append(rslt0_rforest['bacc'])
+        row_rfo.append(rslt0_rforest['acc'])
+        row_rfo.append(rslt0_rforest['aprec'])
+        row_rfo.append(rslt0_rforest['prec'])
+        row_rfo.append(rslt0_rforest['reca'])
+        row_rfo.append(rslt0_rforest['f1'])
+
         # experiment after fselection
         rslts_rforest = experiment(model, dat.values, y, printing=True, nfolds=5)
+        row_rfo.append(rslt_rforest['confusion_matrix'].flatten())
+        row_rfo.append(rslt_rforest['bacc'])
+        row_rfo.append(rslt_rforest['acc'])
+        row_rfo.append(rslt_rforest['aprec'])
+        row_rfo.append(rslt_rforest['prec'])
+        row_rfo.append(rslt_rforest['reca'])
+        row_rfo.append(rslt_rforest['f1'])
 
         d_test = pd.DataFrame(X_test, columns=newcols)[selected[selected].index]
 
@@ -602,7 +645,6 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         #  before fselection
         model.fit(X, y)
         preds = model.predict(d_test.values)
-        test_acc_rforest0 = metrics.accuracy_score(y_test, preds)
         test_cm_rforest0 = metrics.confusion_matrix(y_test, preds)
         test_bacc_rforest0 = metrics.balanced_accuracy_score(y_test, preds)
         test_acc_rforest0 = metrics.accuracy_score(y_test, preds)
@@ -611,10 +653,13 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_rforest0 = metrics.recall_score(y_test, preds)
         test_f1_rforest0 = metrics.f1_score(y_test, preds)
 
+        row_rfo += [test_cm_rforest0.flatten(), test_bacc_rforest0,
+                    test_acc_rforest0, test_aprec_rforest0, test_prec_rforest0,
+                    test_reca_rforest0, test_f1_rforest0]
+
         #  after fselection
         model.fit(dat.values, y)
         preds = model.predict(d_test.values)
-        test_acc_rforest = metrics.accuracy_score(y_test, preds)
         test_cm_rforest = metrics.confusion_matrix(y_test, preds)
         test_bacc_rforest = metrics.balanced_accuracy_score(y_test, preds)
         test_acc_rforest = metrics.accuracy_score(y_test, preds)
@@ -622,6 +667,11 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_prec_rforest = metrics.precision_score(y_test, preds)
         test_reca_rforest = metrics.recall_score(y_test, preds)
         test_f1_rforest = metrics.f1_score(y_test, preds)
+
+        row_rfo += [test_cm_rforest.flatten(), test_bacc_rforest,
+                    test_acc_rforest, test_aprec_rforest, test_prec_rforest,
+                    test_reca_rforest, test_f1_rforest]
+
 
         # =============================================================================
         # SVC
@@ -673,9 +723,9 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_svc = metrics.recall_score(y_test, preds)
         test_f1_svc = metrics.f1_score(y_test, preds)
 
-        # =============================================================================
-        # building the rows of this gigantic table
-        # =============================================================================
+
+
+
         vals = [acc_knn0, acc_knn, acc_rforest0, acc_rforest, acc_svc, acc_svc0]
         rows.append(list(pars)+vals)
 
