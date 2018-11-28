@@ -1395,7 +1395,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.xlabel('Sim Mag', fontsize=16)
     plt.title('Simulated Data', fontsize=14)
     plt.legend(loc='best', fontsize=14)
-
+    plt.grid()
     plt.xlim(9, 22.5)
     plt.ylim(-2, 3)
     plt.tight_layout()
