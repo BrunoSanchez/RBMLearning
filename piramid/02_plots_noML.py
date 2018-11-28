@@ -568,7 +568,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     bin_centers = mm.max(axis=0)[3]
     mean = np.sum(mm[:, 0, :]*mm[:, 2, :]**2, axis=0)/np.sum(mm[:, 2, :]**2, axis=0)
     stds = np.sqrt(np.sum((mm[:, 1, :]**2)/(mm[:, 2, :]**2), axis=0))
-#    plt.errorbar(bin_centers, mean, yerr=stds, fmt='--', label='mean')
+    plt.errorbar(bin_centers, mean, yerr=stds, fmt='--', label='mean')
     plt.fill_between(bin_centers, mean+stds, mean-stds, alpha=0.5, label='mean')
 
     plt.tick_params(labelsize=16)
@@ -1385,7 +1385,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     stds = np.sqrt(np.sum((mm[:, 1, :]**2)/(mm[:, 2, :]**2), axis=0))
 
     plt.fill_between(bin_centers, mean-stds, mean+stds, alpha=0.5)
-    #plt.errorbar(bin_centers, mean, yerr=stds, fmt='--', label='mean')
+    plt.errorbar(bin_centers, mean, yerr=stds, fmt='--', label='mean')
 
     plt.tick_params(labelsize=16)
     plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
