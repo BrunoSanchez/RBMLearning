@@ -568,7 +568,9 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     bin_centers = mm.max(axis=0)[3]
     mean = np.sum(mm[:, 0, :]*mm[:, 2, :]**2, axis=0)/np.sum(mm[:, 2, :]**2, axis=0)
     stds = np.sqrt(np.sum((mm[:, 1, :]**2)/(mm[:, 2, :]**2), axis=0))
-    plt.errorbar(bin_centers, mean, yerr=stds, fmt='--', label='mean')
+
+    #plt.errorbar(bin_centers, mean, yerr=stds, fmt='--', label='mean')
+    plt.plot(bin_centers, mean, '--', label='mean')
     plt.fill_between(bin_centers, mean+stds, mean-stds, alpha=0.5, label='mean')
 
     plt.tick_params(labelsize=16)
@@ -576,8 +578,8 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.xlabel('Sim Mag', fontsize=16)
     plt.title('Simulated Data', fontsize=14)
     plt.legend(loc='best', fontsize=14)
-
-    plt.xlim(10, 22.5)
+    plt.grid()
+    plt.xlim(9, 22.5)
     plt.ylim(-2, 3)
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_inliers_60s_averaged_filled.svg'),
@@ -1384,8 +1386,9 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     mean = np.sum(mm[:, 0, :]*mm[:, 2, :]**2, axis=0)/np.sum(mm[:, 2, :]**2, axis=0)
     stds = np.sqrt(np.sum((mm[:, 1, :]**2)/(mm[:, 2, :]**2), axis=0))
 
+    plt.plot(bin_centers, mean, '--', label='mean')
     plt.fill_between(bin_centers, mean-stds, mean+stds, alpha=0.5)
-    plt.errorbar(bin_centers, mean, yerr=stds, fmt='--', label='mean')
+    #plt.errorbar(bin_centers, mean, yerr=stds, fmt='--', label='mean')
 
     plt.tick_params(labelsize=16)
     plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
@@ -1393,7 +1396,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.title('Simulated Data', fontsize=14)
     plt.legend(loc='best', fontsize=14)
 
-    plt.xlim(8, 22.5)
+    plt.xlim(9, 22.5)
     plt.ylim(-2, 3)
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_averaged_filled.svg'),
@@ -1439,7 +1442,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.title('Simulated Data', fontsize=14)
     plt.legend(loc='best', fontsize=14)
 
-    plt.xlim(8, 22.5)
+    plt.xlim(9, 22.5)
     plt.ylim(-2, 3)
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_averaged.svg'),
