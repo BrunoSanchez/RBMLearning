@@ -569,7 +569,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     mean = np.sum(mm[:, 0, :]*mm[:, 2, :]**2, axis=0)/np.sum(mm[:, 2, :]**2, axis=0)
     stds = np.sqrt(np.sum((mm[:, 1, :]**2)/(mm[:, 2, :]**2), axis=0))
 #    plt.errorbar(bin_centers, mean, yerr=stds, fmt='--', label='mean')
-    plt.filled(bin_centers, mean+stds, mean-stds, alpha=0.5, label='mean')
+    plt.fill_between(bin_centers, mean+stds, mean-stds, alpha=0.5, label='mean')
 
     plt.tick_params(labelsize=16)
     plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
@@ -580,7 +580,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.xlim(10, 22.5)
     plt.ylim(-2, 3)
     plt.tight_layout()
-    plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_inliers_60s_averaged.svg'),
+    plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_inliers_60s_averaged_filled.svg'),
                 format='svg', dpi=480)
 
 
