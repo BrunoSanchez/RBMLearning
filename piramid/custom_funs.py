@@ -617,7 +617,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                                        min_samples_leaf=20, n_jobs=-1)
 
         # experiment before fselection
-        rslt0_rforest = experiment(model, X, y, printing=True, nfolds=5)
+        rslt0_rforest = experiment(model, X, y, printing=False, nfolds=5)
         row_rfo.append(rslt0_rforest['confusion_matrix'].flatten())
         row_rfo.append(rslt0_rforest['bacc'])
         row_rfo.append(rslt0_rforest['acc'])
@@ -627,7 +627,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_rfo.append(rslt0_rforest['f1'])
 
         # experiment after fselection
-        rslt_rforest = experiment(model, dat.values, y, printing=True, nfolds=5)
+        rslt_rforest = experiment(model, dat.values, y, printing=False, nfolds=5)
         row_rfo.append(rslt_rforest['confusion_matrix'].flatten())
         row_rfo.append(rslt_rforest['bacc'])
         row_rfo.append(rslt_rforest['acc'])
@@ -676,7 +676,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         #          cache_size=2048,
         #          class_weight='balanced',
         #          probability=True)
-        #svc = svm.LinearSVC(dual=False, tol=1e-5)
+        svc = svm.LinearSVC(dual=False, tol=1e-5)
         rfecv = feature_selection.RFECV(estimator=svc, step=1, cv=StratifiedKFold(6),
                       scoring='accuracy', n_jobs=-1)
 
@@ -698,7 +698,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_svc.append(rslt0_svc['f1'])
 
         # experiment after fselection
-        rslt_svc = cf.experiment(model, dat.values, y, printing=False, probs=False, nfolds=5)
+        rslt_svc = cf.experiment(model, dat.values, y, printing=False, nfolds=5)
         row_svc.append(rslt_svc['confusion_matrix'].flatten())
         row_svc.append(rslt_svc['bacc'])
         row_svc.append(rslt_svc['acc'])
