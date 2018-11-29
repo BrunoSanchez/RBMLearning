@@ -677,7 +677,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         #          cache_size=2048,
         #          class_weight='balanced',
         #          probability=True)
-        svc = svm.LinearSVC(dual=False, tol=1e-5)
+        svc = svm.LinearSVC(dual=False, tol=1e-5, max_iter=10000)
         rfecv = feature_selection.RFECV(estimator=svc, step=1, cv=StratifiedKFold(6),
                       scoring='accuracy', n_jobs=-1)
 
