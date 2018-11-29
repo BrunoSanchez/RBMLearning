@@ -1701,6 +1701,104 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     #plt.show()
     plt.ylim(1, 1e8)
     plt.tight_layout()
+    plt.savefig(os.path.join(plot_dir, 'combined_luminosities_functions_simu.pdf'),
+                format='pdf', dpi=720)
+    plt.close()
+
+# =============================================================================
+# Funciones de luminosidad combinadas
+# =============================================================================
+    plt.figure(figsize=(12,4))
+    plt.title('Luminosity function', fontsize=14)
+    cumulative=True
+    #magnitude bins
+    bins = np.arange(7, 26.5, 0.5)
+    plt.rcParams['text.usetex'] = False
+
+    plt.subplot(131)
+    x_bins, vals = cf.custom_histogram(simus.app_mag.values, bins=bins,
+                                    cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'black', label='Injected')
+
+    x_bins, vals = cf.custom_histogram(subset_ois[subset_ois.IS_REAL==True].mag.values,
+                                    bins=bins, cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'ro-', label='Bramich')
+
+    x_bins, vals = cf.custom_histogram(subset_zps[subset_zps.IS_REAL==True].mag.values,
+                                    bins=bins, cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'b.-', label='Zackay')
+
+    x_bins, vals = cf.custom_histogram(subset_sps[subset_sps.IS_REAL==True].mag.values,
+                                    bins=bins, cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'm:', label='$S_{corr}$')
+
+    x_bins, vals = cf.custom_histogram(subset_hot[subset_hot.IS_REAL==True].mag.values,
+                                    bins=bins, cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'g--', label='A-Lupton')
+
+    if cumulative:
+        plt.ylabel(r'$N(>r)$', fontsize=16)
+    else:
+        plt.ylabel(r'$N(m)dm$', fontsize=16)
+    plt.ylim(1, 1e8)
+    plt.xlim(7., 23.5)
+    plt.title('Real', fontsize=16)
+    #plt.ylabel(r'$N(m)dm$', fontsize=16)
+    plt.legend(loc='best', fontsize=16)
+    plt.xlabel(r'$r \ [mag]$', fontsize=16)
+    #plt.ylim(50, 280000)
+    plt.tick_params(labelsize=16)
+
+    plt.subplot(132)
+    x_bins, vals = cf.custom_histogram(simus.app_mag.values, bins=bins,
+                                    cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'black', label='Injected')
+    x_bins, vals = cf.custom_histogram(subset_ois[subset_ois.IS_REAL==False].mag.values,
+                                    bins=bins, cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'ro-', label='Bramich')
+    x_bins, vals = cf.custom_histogram(subset_zps[subset_zps.IS_REAL==False].mag.values,
+                                    bins=bins, cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'b.-', label='Zackay')
+    x_bins, vals = cf.custom_histogram(subset_sps[subset_sps.IS_REAL==False].mag.values,
+                                    bins=bins, cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'm:', label='$S_{corr}$')
+    x_bins, vals = cf.custom_histogram(subset_hot[subset_hot.IS_REAL==False].mag.values,
+                                    bins=bins, cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'g--', label='A-Lupton')
+    plt.xlim(7., 25.5)
+    plt.ylim(1, 1e8)
+    #plt.ylabel(r'$N(m)dm$', fontsize=16)
+    #plt.legend(loc='best', fontsize=16)
+    plt.xlabel(r'$r \ [mag]$', fontsize=16)
+    plt.title('Bogus', fontsize=16)
+    #plt.ylim(50, 280000)
+    plt.tick_params(labelsize=16)
+
+    plt.subplot(133)
+    plt.title('False Negatives', fontsize=16)
+    x_bins, vals = cf.custom_histogram(simus.app_mag.values, bins=bins,
+                                    cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'black', label='Injected')
+    x_bins, vals = cf.custom_histogram(und_o.app_mag.values, bins=bins,
+                                    cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'ro-', label='Bramich')
+    x_bins, vals = cf.custom_histogram(und_z.app_mag.values, bins=bins,
+                                    cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'b.-', label='Zackay')
+    x_bins, vals = cf.custom_histogram(und_s.app_mag.values, bins=bins,
+                                    cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'm:', label='$S_{corr}$')
+    x_bins, vals = cf.custom_histogram(und_h.app_mag.values, bins=bins,
+                                    cumulative=cumulative)
+    plt.semilogy(x_bins, vals, 'g--', label='A-Lupton')
+    #plt.legend(loc='lower right', fontsize=16)
+    plt.xlabel(r'$r \ [mag]$', fontsize=16)
+    #plt.title('Cummulative Luminosity Function of False Negatives', fontsize=14)
+    plt.tick_params(labelsize=16)
+    plt.xlim(7., 25.5)
+    #plt.show()
+    plt.ylim(1, 1e8)
+    plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'combined_luminosities_functions.svg'),
                 format='svg', dpi=720)
     plt.close()
