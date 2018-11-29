@@ -743,7 +743,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                     test_aprec_svc, test_prec_svc, test_reca_svc,
                     test_f1_svc]
 
-        import ipdb; ipdb.set_trace()
+        #import ipdb; ipdb.set_trace()
         vals = pars + row_knn + row_rfo + row_svc
         rows.append(np.array(vals).flatten())
         print('{} groups processed'.format(i_group))
