@@ -672,7 +672,6 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                     test_acc_rforest, test_aprec_rforest, test_prec_rforest,
                     test_reca_rforest, test_f1_rforest]
 
-
         # =============================================================================
         # SVC
         # =============================================================================
@@ -693,8 +692,23 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         model = svc
         # experiment before fselection
         rslt0_svc = cf.experiment(model, X, y, printing=False, nfolds=5)
+        row_svc.append(rslt0_svc['confusion_matrix'].flatten())
+        row_svc.append(rslt0_svc['bacc'])
+        row_svc.append(rslt0_svc['acc'])
+        row_svc.append(rslt0_svc['aprec'])
+        row_svc.append(rslt0_svc['prec'])
+        row_svc.append(rslt0_svc['reca'])
+        row_svc.append(rslt0_svc['f1'])
+
         # experiment after fselection
         rslts_svc = cf.experiment(model, dat.values, y, printing=False, probs=False, nfolds=5)
+        row_svc.append(rslt_svc['confusion_matrix'].flatten())
+        row_svc.append(rslt_svc['bacc'])
+        row_svc.append(rslt_svc['acc'])
+        row_svc.append(rslt_svc['aprec'])
+        row_svc.append(rslt_svc['prec'])
+        row_svc.append(rslt_svc['reca'])
+        row_svc.append(rslt_svc['f1'])
 
         d_test = pd.DataFrame(X_test, columns=newcols)[sel_cols].values
 
@@ -711,6 +725,10 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_svc0 = metrics.recall_score(y_test, preds)
         test_f1_svc0 = metrics.f1_score(y_test, preds)
 
+        row_svc += [test_cm_svc0.flatten(), test_bacc_svc0, test_acc_svc0,
+                    test_aprec_svc0, test_prec_svc0, test_reca_svc0,
+                    test_f1_svc0]
+
         #  after fselection
         model.fit(dat.values, y)
         preds = model.predict(d_test.values)
@@ -723,14 +741,18 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_svc = metrics.recall_score(y_test, preds)
         test_f1_svc = metrics.f1_score(y_test, preds)
 
+        row_svc += [test_cm_svc.flatten(), test_bacc_svc, test_acc_svc,
+                    test_aprec_svc, test_prec_svc, test_reca_svc,
+                    test_f1_svc]
 
 
+        vals = pars + row_knn + row_rfo + row_svc
+        rows.append(vals)
 
-        vals = [acc_knn0, acc_knn, acc_rforest0, acc_rforest, acc_svc, acc_svc0]
-        rows.append(list(pars)+vals)
-
-    ml_cols = ['m1_diam', 'exp_time', 'new_fwhm', 'acc_knn0', 'acc_knn',
-               'acc_rforest0', 'acc_rforest', 'acc_svc', 'acc_svc0']
+    knn_cols = []
+    rfo_cols = []
+    svc_cols = []
+    ml_cols = group_cols + knn_cols + rfo_cols + svc_cols
     ml_results = pd.DataFrame(rows, columns=ml_cols)
     return ml_results
 
