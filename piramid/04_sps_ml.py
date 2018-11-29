@@ -75,9 +75,8 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dt_ois = dt_zps
     del(dt_zps)
 
-    dt_ois['MU'] = dt_ois.mag/(dt_ois.A_IMAGE*dt_ois.B_IMAGE)
-    dt_ois['SN'] = dt_ois.FLUX_APER/dt_ois.FLUXERR_APER
-
+    dt_ois['SN'] = dt_sps.cflux/np.sqrt(dt_sps.cflux)
+    dt_ois['MU'] = dt_sps.mag/(dt_sps.a*dt_sps.b)
     merged = store['merged']
     selected = merged[merged.selected==True]
 
