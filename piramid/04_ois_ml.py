@@ -68,7 +68,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     # =============================================================================
     # tables
     # =============================================================================
-    dt_zps = store['dt_zps']
+    dt_zps = store['dt_ois']
     if m1_diam is not None:
         dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
     dt_zps = cf.optimize_df(dt_zps)

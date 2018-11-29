@@ -750,42 +750,42 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
     knn_cols = ['knn_exp0_c00', 'knn_exp0_c01', 'knn_exp0_c10', 'knn_exp0_c11',
                 'knn_exp0_bacc', 'knn_exp0_acc', 'knn_exp0_prec',
-                'knn_exp0_reca', 'knn_exp0_f1',
+                'knn_exp0_aprec', 'knn_exp0_reca', 'knn_exp0_f1',
                 'knn_exp_c00', 'knn_exp_c01', 'knn_exp_c10', 'knn_exp_c11',
-                'knn_exp_bacc', 'knn_exp_acc', 'knn_exp_prec',
+                'knn_exp_bacc', 'knn_exp_acc', 'knn_exp_prec', 'knn_exp_aprec',
                 'knn_exp_reca', 'knn_exp_f1',
                 'knn_test0_c00', 'knn_test0_c01', 'knn_test0_c10', 'knn_test0_c11',
                 'knn_test0_bacc', 'knn_test0_acc', 'knn_test0_prec',
-                'knn_test0_reca', 'knn_test0_f1',
+                'knn_test0_aprec', 'knn_test0_reca', 'knn_test0_f1',
                 'knn_test_c00', 'knn_test_c01', 'knn_test_c10', 'knn_test_c11',
                 'knn_test_bacc', 'knn_test_acc', 'knn_test_prec',
-                'knn_test_reca', 'knn_test_f1']
+                'knn_test_aprec', 'knn_test_reca', 'knn_test_f1']
 
     rfo_cols = ['rfo_exp0_c00', 'rfo_exp0_c01', 'rfo_exp0_c10', 'rfo_exp0_c11',
                 'rfo_exp0_bacc', 'rfo_exp0_acc', 'rfo_exp0_prec',
-                'rfo_exp0_reca', 'rfo_exp0_f1',
+                'rfo_exp0_aprec', 'rfo_exp0_reca', 'rfo_exp0_f1',
                 'rfo_exp_c00', 'rfo_exp_c01', 'rfo_exp_c10', 'rfo_exp_c11',
-                'rfo_exp_bacc', 'rfo_exp_acc', 'rfo_exp_prec',
+                'rfo_exp_bacc', 'rfo_exp_acc', 'rfo_exp_prec', 'rfo_exp_aprec',
                 'rfo_exp_reca', 'rfo_exp_f1',
                 'rfo_test0_c00', 'rfo_test0_c01', 'rfo_test0_c10', 'rfo_test0_c11',
                 'rfo_test0_bacc', 'rfo_test0_acc', 'rfo_test0_prec',
-                'rfo_test0_reca', 'rfo_test0_f1',
+                'rfo_test0_aprec', 'rfo_test0_reca', 'rfo_test0_f1',
                 'rfo_test_c00', 'rfo_test_c01', 'rfo_test_c10', 'rfo_test_c11',
                 'rfo_test_bacc', 'rfo_test_acc', 'rfo_test_prec',
-                'rfo_test_reca', 'rfo_test_f1']
+                'rfo_test_aprec', 'rfo_test_reca', 'rfo_test_f1']
 
     svc_cols = ['svc_exp0_c00', 'svc_exp0_c01', 'svc_exp0_c10', 'svc_exp0_c11',
                 'svc_exp0_bacc', 'svc_exp0_acc', 'svc_exp0_prec',
-                'svc_exp0_reca', 'svc_exp0_f1',
+                'svc_exp0_aprec', 'svc_exp0_reca', 'svc_exp0_f1',
                 'svc_exp_c00', 'svc_exp_c01', 'svc_exp_c10', 'svc_exp_c11',
-                'svc_exp_bacc', 'svc_exp_acc', 'svc_exp_prec',
+                'svc_exp_bacc', 'svc_exp_acc', 'svc_exp_prec', 'svc_exp_aprec',
                 'svc_exp_reca', 'svc_exp_f1',
                 'svc_test0_c00', 'svc_test0_c01', 'svc_test0_c10', 'svc_test0_c11',
                 'svc_test0_bacc', 'svc_test0_acc', 'svc_test0_prec',
-                'svc_test0_reca', 'svc_test0_f1',
+                'svc_test0_aprec', 'svc_test0_reca', 'svc_test0_f1',
                 'svc_test_c00', 'svc_test_c01', 'svc_test_c10', 'svc_test_c11',
                 'svc_test_bacc', 'svc_test_acc', 'svc_test_prec',
-                'svc_test_reca', 'svc_test_f1']
+                'svc_test_aprec', 'svc_test_reca', 'svc_test_f1']
     ml_cols = group_cols + knn_cols + rfo_cols + svc_cols
     ml_results = pd.DataFrame(rows, columns=ml_cols)
     return ml_results
