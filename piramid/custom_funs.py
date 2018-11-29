@@ -688,7 +688,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         model = svc
         # experiment before fselection
-        rslt0_svc = cf.experiment(model, X, y, printing=False, nfolds=5)
+        rslt0_svc = experiment(model, X, y, printing=False, nfolds=5)
         row_svc.append(rslt0_svc['confusion_matrix'].flatten())
         row_svc.append(rslt0_svc['bacc'])
         row_svc.append(rslt0_svc['acc'])
@@ -698,7 +698,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_svc.append(rslt0_svc['f1'])
 
         # experiment after fselection
-        rslt_svc = cf.experiment(model, dat.values, y, printing=False, nfolds=5)
+        rslt_svc = experiment(model, dat.values, y, printing=False, nfolds=5)
         row_svc.append(rslt_svc['confusion_matrix'].flatten())
         row_svc.append(rslt_svc['bacc'])
         row_svc.append(rslt_svc['acc'])
