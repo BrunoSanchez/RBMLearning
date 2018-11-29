@@ -422,7 +422,7 @@ def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
 # =============================================================================
 # Experiment
 # =============================================================================
-def experiment(clf, x, y, nfolds=10, printing=False, probs=True,
+def experiment(clf, x, y, nfolds=10, printing=False, probas=False,
                train_final=False):
     # import ipdb; ipdb.set_trace()
     skf = StratifiedKFold(n_splits=nfolds)
@@ -441,11 +441,11 @@ def experiment(clf, x, y, nfolds=10, printing=False, probs=True,
         y_test = y[test]
         pr = clf.predict(x_test)
         if probs:
-            probs = clf.predict_proba(x_test)  #[:, 0]
+            probas = clf.predict_proba(x_test)  #[:, 0]
 
             probabilities = (
-                probs if probabilities is None else
-                np.vstack([probabilities, probs]))
+                probas if probabilities is None else
+                np.vstack([probabilities, probas]))
         predictions = np.hstack([predictions, pr])
         y_testing = np.hstack([y_testing, y_test])
 
