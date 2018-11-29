@@ -638,13 +638,10 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         d_test = pd.DataFrame(X_test, columns=newcols)[selected[selected].index]
 
-        model.fit(d.values, y)
-        preds = model.predict(X_test)
-
         # test on the testset
         #  before fselection
         model.fit(X, y)
-        preds = model.predict(d_test.values)
+        preds = model.predict(X_test)
         test_cm_rforest0 = metrics.confusion_matrix(y_test, preds)
         test_bacc_rforest0 = metrics.balanced_accuracy_score(y_test, preds)
         test_acc_rforest0 = metrics.accuracy_score(y_test, preds)
@@ -715,7 +712,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         # test on the testset
         #  before fselection
         model.fit(X, y)
-        preds = model.predict(d_test.values)
+        preds = model.predict(X_test.values)
         test_acc_svc0 = metrics.accuracy_score(y_test, preds)
         test_cm_svc0 = metrics.confusion_matrix(y_test, preds)
         test_bacc_svc0 = metrics.balanced_accuracy_score(y_test, preds)
