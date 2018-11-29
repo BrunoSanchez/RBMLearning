@@ -544,7 +544,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_knn.append(rslt0_knn['f1'])
 
         # experiment after fselection
-        rslts_knn = experiment(model, dat.values, y, printing=False, nfolds=5)
+        rslt_knn = experiment(model, dat.values, y, printing=False, nfolds=5)
         row_knn.append(rslt_knn['confusion_matrix'].flatten())
         row_knn.append(rslt_knn['bacc'])
         row_knn.append(rslt_knn['acc'])
@@ -627,7 +627,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_rfo.append(rslt0_rforest['f1'])
 
         # experiment after fselection
-        rslts_rforest = experiment(model, dat.values, y, printing=True, nfolds=5)
+        rslt_rforest = experiment(model, dat.values, y, printing=True, nfolds=5)
         row_rfo.append(rslt_rforest['confusion_matrix'].flatten())
         row_rfo.append(rslt_rforest['bacc'])
         row_rfo.append(rslt_rforest['acc'])
@@ -701,7 +701,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_svc.append(rslt0_svc['f1'])
 
         # experiment after fselection
-        rslts_svc = cf.experiment(model, dat.values, y, printing=False, probs=False, nfolds=5)
+        rslt_svc = cf.experiment(model, dat.values, y, printing=False, probs=False, nfolds=5)
         row_svc.append(rslt_svc['confusion_matrix'].flatten())
         row_svc.append(rslt_svc['bacc'])
         row_svc.append(rslt_svc['acc'])
