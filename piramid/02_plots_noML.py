@@ -1650,7 +1650,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.xlabel(r'$r \ [mag]$', fontsize=16)
     #plt.ylim(50, 280000)
     plt.tick_params(labelsize=16)
-
+    plt.grid()
     plt.subplot(132)
     x_bins, vals = cf.custom_histogram(simus.app_mag.values, bins=bins,
                                     cumulative=cumulative)
@@ -1675,7 +1675,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.title('Bogus', fontsize=16)
     #plt.ylim(50, 280000)
     plt.tick_params(labelsize=16)
-
+    plt.grid()
     plt.subplot(133)
     plt.title('False Negatives', fontsize=16)
     x_bins, vals = cf.custom_histogram(simus.app_mag.values, bins=bins,
@@ -1700,6 +1700,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.xlim(7., 25.5)
     #plt.show()
     plt.ylim(1, 1e8)
+    plt.grid()
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'combined_luminosities_functions_simu.pdf'),
                 format='pdf', dpi=720)
