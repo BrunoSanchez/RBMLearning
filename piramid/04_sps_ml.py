@@ -114,7 +114,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
     ois_grouping = cf.group_ml(train_ois, cols=cols, method='Scorr')
 
-    ois_grouping.to_csv(os.path.join(plots_path, 'sps_grouping_table.csv')
+    ois_grouping.to_csv(os.path.join(plots_path, 'sps_grouping_table.csv'))
     return
 
 
