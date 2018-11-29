@@ -739,7 +739,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_svc = metrics.recall_score(y_test, preds)
         test_f1_svc = metrics.f1_score(y_test, preds)
 
-        row_svc += list(test_cm_svc.flatten()) + test_bacc_svc, test_acc_svc,
+        row_svc += list(test_cm_svc.flatten()) + [test_bacc_svc, test_acc_svc,
                     test_aprec_svc, test_prec_svc, test_reca_svc,
                     test_f1_svc]
 
