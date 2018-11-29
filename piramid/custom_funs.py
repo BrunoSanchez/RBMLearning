@@ -536,7 +536,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         # experiment befor fslection
         rslt0_knn = experiment(model, X, y, printing=False, nfolds=5)
-        row_knn.append(rslt0_knn['confusion_matrix'].flatten())
+        row_knn += list(rslt0_knn['confusion_matrix'].flatten())
         row_knn.append(rslt0_knn['bacc'])
         row_knn.append(rslt0_knn['acc'])
         row_knn.append(rslt0_knn['aprec'])
@@ -546,7 +546,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         # experiment after fselection
         rslt_knn = experiment(model, dat.values, y, printing=False, nfolds=5)
-        row_knn.append(rslt_knn['confusion_matrix'].flatten())
+        row_knn += list(rslt_knn['confusion_matrix'].flatten())
         row_knn.append(rslt_knn['bacc'])
         row_knn.append(rslt_knn['acc'])
         row_knn.append(rslt_knn['aprec'])
@@ -566,7 +566,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_knn0 = metrics.recall_score(y_test, preds)
         test_f1_knn0 = metrics.f1_score(y_test, preds)
 
-        row_knn += [test_cm_knn0.flatten(), test_bacc_knn0, test_acc_knn0,
+        row_knn += list(test_cm_knn0.flatten()) + [test_bacc_knn0, test_acc_knn0,
                     test_aprec_knn0, test_prec_knn0, test_reca_knn0,
                     test_f1_knn0]
 
@@ -581,7 +581,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_knn = metrics.recall_score(y_test, preds)
         test_f1_knn = metrics.f1_score(y_test, preds)
 
-        row_knn += [test_cm_knn.flatten(), test_bacc_knn, test_acc_knn,
+        row_knn += list(test_cm_knn.flatten()) + [test_bacc_knn, test_acc_knn,
                     test_aprec_knn, test_prec_knn, test_reca_knn, test_f1_knn]
         # =============================================================================
         # randomforest
@@ -619,7 +619,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         # experiment before fselection
         rslt0_rforest = experiment(model, X, y, printing=False, nfolds=5)
-        row_rfo.append(rslt0_rforest['confusion_matrix'].flatten())
+        row_rfo += list(rslt0_rforest['confusion_matrix'].flatten())
         row_rfo.append(rslt0_rforest['bacc'])
         row_rfo.append(rslt0_rforest['acc'])
         row_rfo.append(rslt0_rforest['aprec'])
@@ -629,7 +629,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         # experiment after fselection
         rslt_rforest = experiment(model, dat.values, y, printing=False, nfolds=5)
-        row_rfo.append(rslt_rforest['confusion_matrix'].flatten())
+        row_rfo += list(rslt_rforest['confusion_matrix'].flatten())
         row_rfo.append(rslt_rforest['bacc'])
         row_rfo.append(rslt_rforest['acc'])
         row_rfo.append(rslt_rforest['aprec'])
@@ -651,7 +651,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_rforest0 = metrics.recall_score(y_test, preds)
         test_f1_rforest0 = metrics.f1_score(y_test, preds)
 
-        row_rfo += [test_cm_rforest0.flatten(), test_bacc_rforest0,
+        row_rfo += list(test_cm_rforest0.flatten()) + [test_bacc_rforest0,
                     test_acc_rforest0, test_aprec_rforest0, test_prec_rforest0,
                     test_reca_rforest0, test_f1_rforest0]
 
@@ -666,7 +666,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_rforest = metrics.recall_score(y_test, preds)
         test_f1_rforest = metrics.f1_score(y_test, preds)
 
-        row_rfo += [test_cm_rforest.flatten(), test_bacc_rforest,
+        row_rfo += list(test_cm_rforest.flatten()) + [test_bacc_rforest,
                     test_acc_rforest, test_aprec_rforest, test_prec_rforest,
                     test_reca_rforest, test_f1_rforest]
 
@@ -690,7 +690,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         model = svc
         # experiment before fselection
         rslt0_svc = experiment(model, X, y, printing=False, nfolds=5)
-        row_svc.append(rslt0_svc['confusion_matrix'].flatten())
+        row_svc += list(rslt0_svc['confusion_matrix'].flatten())
         row_svc.append(rslt0_svc['bacc'])
         row_svc.append(rslt0_svc['acc'])
         row_svc.append(rslt0_svc['aprec'])
@@ -700,7 +700,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         # experiment after fselection
         rslt_svc = experiment(model, dat.values, y, printing=False, nfolds=5)
-        row_svc.append(rslt_svc['confusion_matrix'].flatten())
+        row_svc += list(rslt_svc['confusion_matrix'].flatten())
         row_svc.append(rslt_svc['bacc'])
         row_svc.append(rslt_svc['acc'])
         row_svc.append(rslt_svc['aprec'])
@@ -723,7 +723,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_svc0 = metrics.recall_score(y_test, preds)
         test_f1_svc0 = metrics.f1_score(y_test, preds)
 
-        row_svc += [test_cm_svc0.flatten(), test_bacc_svc0, test_acc_svc0,
+        row_svc += list(test_cm_svc0.flatten()) + [test_bacc_svc0, test_acc_svc0,
                     test_aprec_svc0, test_prec_svc0, test_reca_svc0,
                     test_f1_svc0]
 
@@ -739,7 +739,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_svc = metrics.recall_score(y_test, preds)
         test_f1_svc = metrics.f1_score(y_test, preds)
 
-        row_svc += [test_cm_svc.flatten(), test_bacc_svc, test_acc_svc,
+        row_svc += list(test_cm_svc.flatten()) + test_bacc_svc, test_acc_svc,
                     test_aprec_svc, test_prec_svc, test_reca_svc,
                     test_f1_svc]
 
