@@ -729,7 +729,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         #  after fselection
         model.fit(dat.values, y)
-        preds = model.predict(d_test.values)
+        preds = model.predict(d_test)
         test_acc_svc = metrics.accuracy_score(y_test, preds)
         test_cm_svc = metrics.confusion_matrix(y_test, preds)
         test_bacc_svc = metrics.balanced_accuracy_score(y_test, preds)
