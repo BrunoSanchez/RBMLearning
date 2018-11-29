@@ -490,8 +490,9 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
              target=['IS_REAL'], cols=['mag'], var_thresh=0.1, percentile=30.,
              method='Bramich'):
     rows = []
+    i_group = 0
     for pars, data in train_data.groupby(group_cols):
-
+        i_group += 1
         ## spliting the data into train and final test
         train, test = train_test_split(data[cols+target].dropna(), test_size=0.25,
                                        stratify=data[cols+target].dropna().IS_REAL)
@@ -745,6 +746,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         vals = pars + row_knn + row_rfo + row_svc
         rows.append(np.array(vals).flatten())
+        print('{} groups processed'.format(i_group))
 
     knn_cols = ['knn_exp0_c00', 'knn_exp0_c01', 'knn_exp0_c10', 'knn_exp0_c11',
                 'knn_exp0_bacc', 'knn_exp0_acc', 'knn_exp0_prec',
