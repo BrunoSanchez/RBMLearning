@@ -183,7 +183,10 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
 # Aca separo en grupos... Agrupo por distintas cosas
 # =============================================================================
-    ois_grouping = cf.group_ml(train_ois, cols=cols, method='Bramich')
+    #~ ois_grouping = cf.group_ml(train_ois, cols=cols, method='Bramich')
+    #~ hot_grouping = cf.group_ml(train_hot, cols=cols, method='Alard')
+    #~ zps_grouping = cf.group_ml(train_zps, cols=cols, method='Zackay')
+    #~ sps_grouping = cf.group_ml(train_sps, cols=scols, method='SCorr')
 # =============================================================================
 #
 # =============================================================================
