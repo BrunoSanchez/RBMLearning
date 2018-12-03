@@ -494,7 +494,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
     for pars, data in train_data.groupby(group_cols):
         i_group += 1
         ## spliting the data into train and final test
-        train, test = train_test_split(data[cols+target].dropna(), test_size=0.25,
+        train, test = train_test_split(data[cols+target].dropna(), test_size=0.75,
                                        stratify=data[cols+target].dropna().IS_REAL)
         d = train[cols]
         y = train[target].values.ravel()
@@ -511,6 +511,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_knn = []
         row_rfo = []
         row_svc = []
+        rforest_sigs = []
 
         # =============================================================================
         # univariate cuts
@@ -613,6 +614,9 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         selected = signif>2.5
         dat = d[selected[selected].index]
 
+        # store the feature importance matrices...
+        rforest_sigs.append(signif)
+        
         n_fts = np.min([len(dat.columns), 7])
         model = RandomForestClassifier(n_estimators=800, max_features=n_fts,
                                        min_samples_leaf=20, n_jobs=-1)
@@ -788,8 +792,166 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                 'svc_test_aprec', 'svc_test_reca', 'svc_test_f1']
     ml_cols = group_cols + knn_cols + rfo_cols + svc_cols
     ml_results = pd.DataFrame(rows, columns=ml_cols)
-    return ml_results
+    return [ml_results, rforest_sigs]
 
+# =============================================================================
+# funcion para ml
+# =============================================================================
+def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
+             target=['IS_REAL'], cols=['mag'], var_thresh=0.1, percentile=30.,
+             method='Bramich'):
+    rows = []
+    i_group = 0
+    for pars, data in train_data.groupby(group_cols):
+        i_group += 1
+        ## spliting the data into train and final test
+        train, test = train_test_split(data[cols+target].dropna(), test_size=0.75,
+                                       stratify=data[cols+target].dropna().IS_REAL)
+        d = train[cols]
+        y = train[target].values.ravel()
+
+        scaler = preprocessing.StandardScaler().fit(d)
+        X = scaler.transform(d)
+        X_test = scaler.transform(test[cols])
+        y_test = test.IS_REAL.values.ravel()
+
+        # =====================================================================
+        # building the rows of this gigantic table
+        # =====================================================================
+        # separate them in three groups
+        row_rfo = []
+        rforest_sigs = []
+
+        # =============================================================================
+        # univariate cuts
+        # =============================================================================
+        thresh = var_thresh
+        sel = VarianceThreshold(threshold=thresh)
+        X = sel.fit_transform(X)
+        X_test = sel.transform(X_test)
+        newcols = d.columns[sel.get_support()]
+        print('Dropped columns = {}'.format(d.columns[~sel.get_support()]))
+        d = pd.DataFrame(X, columns=newcols)
+
+        percentile = percentile
+        scores, selector, selected_cols = select(X, y, percentile)
+        scoring = pd.DataFrame(scores, index=newcols, columns=[method])
+        selection = scoring.loc[newcols.values[selected_cols][0]]
+        dat = pd.DataFrame(X, columns=newcols)[selection.index]
+
+        # =============================================================================
+        # randomforest
+        # =============================================================================
+        corr = d.corr()
+        # remove corr columns
+        correlated_features = set()
+        for i in range(len(corr.columns)):
+            for j in range(i):
+                if abs(corr.iloc[i, j]) > 0.8:
+                    colname = corr.columns[i]
+                    correlated_features.add(colname)
+        decorr = d.drop(correlated_features, axis=1)
+        corr = decorr.corr()
+
+        model = RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1)
+        importance = importance_perm_kfold(decorr.values, y, model,
+                                           cols=decorr.columns, method=method)
+
+        res = pd.concat(importance, axis=1)
+        full_cols = list(decorr.index).extend(['Random'])
+        m = res.mean(axis=1).reindex(full_cols)
+        s = res.std(axis=1).reindex(full_cols)
+
+        thresh = m.loc['Random'] + 3*s.loc['Random']
+        spikes = m - 3*s
+        selected = spikes > thresh
+        signif = (m - m.loc['Random'])/s
+        selected = signif>2.5
+        dat = d[selected[selected].index]
+
+        # store the feature importance matrices...
+        rforest_sigs.append(signif)
+        
+        n_fts = np.min([len(dat.columns), 7])
+        model = RandomForestClassifier(n_estimators=800, max_features=n_fts,
+                                       min_samples_leaf=20, n_jobs=-1)
+
+        # experiment before fselection
+        rslt0_rforest = experiment(model, X, y, printing=False, nfolds=5)
+        row_rfo += list(rslt0_rforest['confusion_matrix'].flatten())
+        row_rfo.append(rslt0_rforest['bacc'])
+        row_rfo.append(rslt0_rforest['acc'])
+        row_rfo.append(rslt0_rforest['aprec'])
+        row_rfo.append(rslt0_rforest['prec'])
+        row_rfo.append(rslt0_rforest['reca'])
+        row_rfo.append(rslt0_rforest['f1'])
+
+        # experiment after fselection
+        rslt_rforest = experiment(model, dat.values, y, printing=False, nfolds=5)
+        row_rfo += list(rslt_rforest['confusion_matrix'].flatten())
+        row_rfo.append(rslt_rforest['bacc'])
+        row_rfo.append(rslt_rforest['acc'])
+        row_rfo.append(rslt_rforest['aprec'])
+        row_rfo.append(rslt_rforest['prec'])
+        row_rfo.append(rslt_rforest['reca'])
+        row_rfo.append(rslt_rforest['f1'])
+
+        d_test = pd.DataFrame(X_test, columns=newcols)[selected[selected].index]
+
+        # test on the testset
+        #  before fselection
+        model.fit(X, y)
+        preds = model.predict(X_test)
+        test_cm_rforest0 = metrics.confusion_matrix(y_test, preds)
+        test_bacc_rforest0 = metrics.balanced_accuracy_score(y_test, preds)
+        test_acc_rforest0 = metrics.accuracy_score(y_test, preds)
+        test_aprec_rforest0 = metrics.average_precision_score(y_test, preds)
+        test_prec_rforest0 = metrics.precision_score(y_test, preds)
+        test_reca_rforest0 = metrics.recall_score(y_test, preds)
+        test_f1_rforest0 = metrics.f1_score(y_test, preds)
+
+        row_rfo += list(test_cm_rforest0.flatten()) + [test_bacc_rforest0,
+                    test_acc_rforest0, test_aprec_rforest0, test_prec_rforest0,
+                    test_reca_rforest0, test_f1_rforest0]
+
+        #  after fselection
+        model.fit(dat.values, y)
+        preds = model.predict(d_test.values)
+        test_cm_rforest = metrics.confusion_matrix(y_test, preds)
+        test_bacc_rforest = metrics.balanced_accuracy_score(y_test, preds)
+        test_acc_rforest = metrics.accuracy_score(y_test, preds)
+        test_aprec_rforest = metrics.average_precision_score(y_test, preds)
+        test_prec_rforest = metrics.precision_score(y_test, preds)
+        test_reca_rforest = metrics.recall_score(y_test, preds)
+        test_f1_rforest = metrics.f1_score(y_test, preds)
+
+        row_rfo += list(test_cm_rforest.flatten()) + [test_bacc_rforest,
+                    test_acc_rforest, test_aprec_rforest, test_prec_rforest,
+                    test_reca_rforest, test_f1_rforest]
+
+
+        #import ipdb; ipdb.set_trace()
+        vals = list(pars) + row_rfo
+        rows.append(np.array(vals).flatten())
+        print('{} groups processed'.format(i_group))
+
+
+    rfo_cols = ['rfo_exp0_c00', 'rfo_exp0_c01', 'rfo_exp0_c10', 'rfo_exp0_c11',
+                'rfo_exp0_bacc', 'rfo_exp0_acc', 'rfo_exp0_prec',
+                'rfo_exp0_aprec', 'rfo_exp0_reca', 'rfo_exp0_f1',
+                'rfo_exp_c00', 'rfo_exp_c01', 'rfo_exp_c10', 'rfo_exp_c11',
+                'rfo_exp_bacc', 'rfo_exp_acc', 'rfo_exp_prec', 'rfo_exp_aprec',
+                'rfo_exp_reca', 'rfo_exp_f1',
+                'rfo_test0_c00', 'rfo_test0_c01', 'rfo_test0_c10', 'rfo_test0_c11',
+                'rfo_test0_bacc', 'rfo_test0_acc', 'rfo_test0_prec',
+                'rfo_test0_aprec', 'rfo_test0_reca', 'rfo_test0_f1',
+                'rfo_test_c00', 'rfo_test_c01', 'rfo_test_c10', 'rfo_test_c11',
+                'rfo_test_bacc', 'rfo_test_acc', 'rfo_test_prec',
+                'rfo_test_aprec', 'rfo_test_reca', 'rfo_test_f1']
+
+    ml_cols = group_cols + rfo_cols
+    ml_results = pd.DataFrame(rows, columns=ml_cols)
+    return [ml_results, rforest_sigs]
 
 
 transl = {u'thresh': u'THRESHOLD',

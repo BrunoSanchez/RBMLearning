@@ -106,14 +106,19 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
 # Para que entre en memoria hacemos un sampling de esto
 # =============================================================================
-    train_ois, ftest_ois = train_test_split(dt_ois, test_size=0.7, stratify=dt_ois.IS_REAL)
+    #train_ois, ftest_ois = train_test_split(dt_ois, test_size=0.7, stratify=dt_ois.IS_REAL)
 
 # =============================================================================
 # Aca separo en grupos... Agrupo por distintas cosas
 # =============================================================================
-    ois_grouping = cf.group_ml(train_ois, cols=cols, method='Scorr')
+    #ois_grouping = cf.group_ml(train_ois, cols=cols, method='Scorr')
+    ois_grouping, rforest_sigs = cf.group_ml_rfo(dt_ois, cols=cols, method='Scorr')
 
-    ois_grouping.to_csv(os.path.join(plots_path, 'sps_grouping_table.csv'))
+    ois_grouping.to_csv(os.path.join(plots_path, 'sps_grouping_table_rfo.csv'))
+    
+    from joblib import dump, load
+    dump(rforest_sigs, os.path.join(plots_path, 'rforest_sigs.joblib'))
+    
     return
 
 

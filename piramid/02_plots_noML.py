@@ -1804,6 +1804,23 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                 format='svg', dpi=720)
     plt.close()
     store.close()
+# =============================================================================
+# Tabla de recoveries
+# =============================================================================
+    
+    ois = [np.sum(subset_ois.IS_REAL), len(und_o), len(subset_ois.IS_REAL)-np.sum(subset_ois.IS_REAL)]
+    zps = [np.sum(subset_zps.IS_REAL), len(und_z), len(subset_zps.IS_REAL)-np.sum(subset_zps.IS_REAL)]
+    hot = [np.sum(subset_hot.IS_REAL), len(und_h), len(subset_hot.IS_REAL)-np.sum(subset_hot.IS_REAL)] 
+    sps = [np.sum(subset_sps.IS_REAL), len(und_s), len(subset_sps.IS_REAL)-np.sum(subset_sps.IS_REAL)]
+    #scr = [np.sum(dt_scr.IS_REAL), len(und_sc), len(dt_scr.IS_REAL)-np.sum(dt_scr.IS_REAL)]
+    
+    df2 = pd.DataFrame([zps, ois, hot, sps], #, scr], 
+                   columns=['Real', 'False Neg', 'Bogus'])
+    df2['TruePos'] = df2['Real']/(df2['Real']+df2['False Neg'])
+    df2['FalseNeg'] = df2['False Neg']/(df2['Real']+df2['False Neg'])
+    df2['FalsePos'] = df2['Bogus']/(df2['Real']+df2['False Neg'])
+    with open(os.path.join(plot_dir, 'table_of_dets.txt'), 'w') as f:
+        f.write(df2.to_latex())
     return
 
 
