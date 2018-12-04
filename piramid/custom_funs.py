@@ -932,7 +932,7 @@ def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         fpr, tpr, thresh = metrics.roc_curve(y_test, probas, drop_intermediate=True)
         prec_rec_curve = metrics.precision_recall_curve(y_test, probas)
         roc_auc = metrics.auc(fpr, tpr)
-        curve += [fpr, tpr, prec_rec_curve, roc_acu]
+        curve += [fpr, tpr, prec_rec_curve, roc_auc]
 
         #  after fselection
         model.fit(dat.values, y)
@@ -953,7 +953,7 @@ def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         fpr, tpr, thresh = metrics.roc_curve(y_test, probas, drop_intermediate=True)
         prec_rec_curve = metrics.precision_recall_curve(y_test, probas)
         roc_auc = metrics.auc(fpr, tpr)
-        curve += [fpr, tpr, prec_rec_curve, roc_acu]
+        curve += [fpr, tpr, prec_rec_curve, roc_auc]
 
         #import ipdb; ipdb.set_trace()
         vals = list(pars) + row_rfo
