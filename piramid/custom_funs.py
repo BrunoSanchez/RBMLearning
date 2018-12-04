@@ -458,8 +458,10 @@ def experiment(clf, x, y, nfolds=10, printing=False, probs=False,
         print(metrics.classification_report(y_testing, predictions))
 
     if probs:
-        fpr, tpr, thresholds = metrics.roc_curve(y_testing, 1.-probabilities[:, 0])
-        prec_rec_curve = metrics.precision_recall_curve(y_testing, 1.- probabilities[:, 0])
+        fpr, tpr, thresholds = metrics.roc_curve(
+            y_testing, 1.-probabilities[:, 0], drop_intermediate=True)
+        prec_rec_curve = metrics.precision_recall_curve(
+            y_testing, 1.- probabilities[:, 0])
         roc_auc = metrics.auc(fpr, tpr)
 
         results['fpr'] = fpr
@@ -511,8 +513,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_knn = []
         row_rfo = []
         row_svc = []
-        rforest_sigs = []
-
+        #rforest_sigs = []
         # =============================================================================
         # univariate cuts
         # =============================================================================
@@ -615,8 +616,8 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         dat = d[selected[selected].index]
 
         # store the feature importance matrices...
-        rforest_sigs.append(signif)
-        
+        #rforest_sigs.append(signif)
+
         n_fts = np.min([len(dat.columns), 7])
         model = RandomForestClassifier(n_estimators=800, max_features=n_fts,
                                        min_samples_leaf=20, n_jobs=-1)
@@ -792,7 +793,8 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                 'svc_test_aprec', 'svc_test_reca', 'svc_test_f1']
     ml_cols = group_cols + knn_cols + rfo_cols + svc_cols
     ml_results = pd.DataFrame(rows, columns=ml_cols)
-    return [ml_results, rforest_sigs]
+    #return [ml_results, rforest_sigs]
+    return ml_results
 
 # =============================================================================
 # funcion para ml
@@ -801,6 +803,8 @@ def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
              target=['IS_REAL'], cols=['mag'], var_thresh=0.1, percentile=30.,
              method='Bramich'):
     rows = []
+    curves = []
+    sigs = []
     i_group = 0
     for pars, data in train_data.groupby(group_cols):
         i_group += 1
@@ -821,7 +825,7 @@ def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         # separate them in three groups
         row_rfo = []
         rforest_sigs = []
-
+        curve = []
         # =============================================================================
         # univariate cuts
         # =============================================================================
@@ -871,13 +875,13 @@ def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         # store the feature importance matrices...
         rforest_sigs.append(signif)
-        
+
         n_fts = np.min([len(dat.columns), 7])
         model = RandomForestClassifier(n_estimators=800, max_features=n_fts,
                                        min_samples_leaf=20, n_jobs=-1)
 
         # experiment before fselection
-        rslt0_rforest = experiment(model, X, y, printing=False, nfolds=5)
+        rslt0_rforest = experiment(model, X, y, printing=False, nfolds=5, probs=True)
         row_rfo += list(rslt0_rforest['confusion_matrix'].flatten())
         row_rfo.append(rslt0_rforest['bacc'])
         row_rfo.append(rslt0_rforest['acc'])
@@ -885,9 +889,14 @@ def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_rfo.append(rslt0_rforest['prec'])
         row_rfo.append(rslt0_rforest['reca'])
         row_rfo.append(rslt0_rforest['f1'])
+        row_rfo.append(rslt0_rforest['roc_auc'])
+        curve.append(rslt0_rforest['fpr'])
+        curve.append(rslt0_rforest['tpr'])
+        curve.append(rslt0_rforest['thresh'])
+        curve.append(rslt0_rforest['prec_rec_curve'])
 
         # experiment after fselection
-        rslt_rforest = experiment(model, dat.values, y, printing=False, nfolds=5)
+        rslt_rforest = experiment(model, dat.values, y, printing=False, nfolds=5, probs=True)
         row_rfo += list(rslt_rforest['confusion_matrix'].flatten())
         row_rfo.append(rslt_rforest['bacc'])
         row_rfo.append(rslt_rforest['acc'])
@@ -895,6 +904,11 @@ def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_rfo.append(rslt_rforest['prec'])
         row_rfo.append(rslt_rforest['reca'])
         row_rfo.append(rslt_rforest['f1'])
+        row_rfo.append(rslt_rforest['roc_auc'])
+        curve.append(rslt_rforest['fpr'])
+        curve.append(rslt_rforest['tpr'])
+        curve.append(rslt_rforest['thresh'])
+        curve.append(rslt_rforest['prec_rec_curve'])
 
         d_test = pd.DataFrame(X_test, columns=newcols)[selected[selected].index]
 
@@ -914,6 +928,12 @@ def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                     test_acc_rforest0, test_aprec_rforest0, test_prec_rforest0,
                     test_reca_rforest0, test_f1_rforest0]
 
+        probas = model.predict_proba(X_test)
+        fpr, tpr, thresh = metrics.roc_curve(y_test, probas, drop_intermediate=True)
+        prec_rec_curve = metrics.precision_recall_curve(y_testing, probas)
+        roc_auc = metrics.auc(fpr, tpr)
+        curve += [fpr, tpr, prec_rec_curve, roc_acu]
+
         #  after fselection
         model.fit(dat.values, y)
         preds = model.predict(d_test.values)
@@ -929,10 +949,17 @@ def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                     test_acc_rforest, test_aprec_rforest, test_prec_rforest,
                     test_reca_rforest, test_f1_rforest]
 
+        probas = model.predict_proba(d_test.values)
+        fpr, tpr, thresh = metrics.roc_curve(y_test, probas, drop_intermediate=True)
+        prec_rec_curve = metrics.precision_recall_curve(y_testing, probas)
+        roc_auc = metrics.auc(fpr, tpr)
+        curve += [fpr, tpr, prec_rec_curve, roc_acu]
 
         #import ipdb; ipdb.set_trace()
         vals = list(pars) + row_rfo
         rows.append(np.array(vals).flatten())
+        sigs.append(list(pars) + rforest_sigs)
+        curves.append(list(pars) + curve)
         print('{} groups processed'.format(i_group))
 
 
@@ -951,7 +978,7 @@ def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
     ml_cols = group_cols + rfo_cols
     ml_results = pd.DataFrame(rows, columns=ml_cols)
-    return [ml_results, rforest_sigs]
+    return [ml_results, sigs, curves]
 
 
 transl = {u'thresh': u'THRESHOLD',

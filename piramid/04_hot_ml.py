@@ -117,13 +117,14 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # Aca separo en grupos... Agrupo por distintas cosas
 # =============================================================================
     #ois_grouping = cf.group_ml(train_ois, cols=cols, method='Alard')
-    ois_grouping, rforest_sigs = cf.group_ml_rfo(dt_ois, cols=cols, method='Alard')
+    ois_grouping, rforest_sigs, curves = cf.group_ml_rfo(dt_ois, cols=cols, method='Alard')
 
     ois_grouping.to_csv(os.path.join(plots_path, 'hot_grouping_table_rfo.csv'))
-    
+
     from joblib import dump, load
-    dump(rforest_sigs, os.path.join(plots_path, 'rforest_sigs.joblib'))
-    
+    dump(rforest_sigs, os.path.join(plots_path, 'rforest_sigs_hot.joblib'))
+    dump(curves, os.path.join(plots_path, 'curves_hot.joblib'))
+
     return
 
 

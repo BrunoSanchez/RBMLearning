@@ -85,32 +85,63 @@ bins = np.arange(0.8, 1., 0.025)
 plt.figure(figsize=(12, 4))
 plt.subplot(131)
 plt.title('KNN')
-plt.hist(hot['knn_exp0_bacc'],  alpha=0.5, label='exp0',  bins=bins, histtype='bar')
-plt.hist(hot['knn_exp_bacc'],   alpha=0.5, label='exp',   bins=bins, histtype='bar')
-plt.hist(hot['knn_test0_bacc'], alpha=0.5, label='test0', bins=bins, histtype='bar')
-plt.hist(hot['knn_test_bacc'],  alpha=0.5, label='test',  bins=bins, histtype='bar')
+plt.hist([hot['knn_exp0_bacc'],hot['knn_exp_bacc'],
+          hot['knn_test0_bacc'], hot['knn_test_bacc']],
+          alpha=0.5, label=labels, bins=bins, color=colors)
 plt.xlabel('Bal. Accuracy metric')
 plt.legend(loc='best')
 
 plt.subplot(132)
 plt.title('SVM')
-plt.hist(hot['svc_exp0_bacc'],  alpha=0.5, label='exp0',  bins=bins)
-plt.hist(hot['svc_exp_bacc'],   alpha=0.5, label='exp',   bins=bins)
-plt.hist(hot['svc_test0_bacc'], alpha=0.5, label='test0', bins=bins)
-plt.hist(hot['svc_test_bacc'],  alpha=0.5, label='test',  bins=bins)
+plt.hist([hot['svc_exp0_bacc'],hot['svc_exp_bacc'],
+          hot['svc_test0_bacc'], hot['svc_test_bacc']],
+          alpha=0.5, label=labels, bins=bins, color=colors)
 plt.xlabel('Bal. Accuracy metric')
 plt.legend(loc='best')
 
 plt.subplot(133)
 plt.title('Random Forest')
-plt.hist(hot['rfo_exp0_bacc'],  alpha=0.5, label='exp0',  bins=bins)
-plt.hist(hot['rfo_exp_bacc'],   alpha=0.5, label='exp',   bins=bins)
-plt.hist(hot['rfo_test0_bacc'], alpha=0.5, label='test0', bins=bins)
-plt.hist(hot['rfo_test_bacc'],  alpha=0.5, label='test',  bins=bins)
+plt.hist([hot['rfo_exp0_bacc'],hot['rfo_exp_bacc'],
+          hot['rfo_test0_bacc'], hot['rfo_test_bacc']],
+          alpha=0.5, label=labels, bins=bins, color=colors)
 plt.xlabel('Bal. Accuracy metric')
 plt.legend(loc='best')
 plt.tight_layout()
 plt.show()
+
+
+# =============================================================================
+#
+# =============================================================================
+bins = np.arange(0.88, 1., 0.015)
+plt.figure(figsize=(12, 4))
+plt.subplot(131)
+plt.title('KNN')
+plt.hist([hot['knn_exp0_acc'],hot['knn_exp_acc'],
+          hot['knn_test0_acc'], hot['knn_test_acc']],
+          alpha=0.5, label=labels, bins=bins, color=colors)
+plt.xlabel('Accuracy metric')
+plt.legend(loc='best')
+
+plt.subplot(132)
+plt.title('SVM')
+plt.hist([hot['svc_exp0_acc'],hot['svc_exp_acc'],
+          hot['svc_test0_acc'], hot['svc_test_acc']],
+          alpha=0.5, label=labels, bins=bins, color=colors)
+plt.xlabel('Accuracy metric')
+plt.legend(loc='best')
+
+plt.subplot(133)
+plt.title('Random Forest')
+plt.hist([hot['rfo_exp0_acc'],hot['rfo_exp_acc'],
+          hot['rfo_test0_acc'], hot['rfo_test_acc']],
+          alpha=0.5, label=labels, bins=bins, color=colors)
+plt.xlabel('Accuracy metric')
+plt.legend(loc='best')
+plt.tight_layout()
+plt.show()
+
+
 
 
 delta0_f1 = hot['knn_exp0_f1'] - hot['knn_test0_f1']
