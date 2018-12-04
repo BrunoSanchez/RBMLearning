@@ -928,7 +928,7 @@ def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                     test_acc_rforest0, test_aprec_rforest0, test_prec_rforest0,
                     test_reca_rforest0, test_f1_rforest0]
 
-        probas = model.predict_proba(X_test)[:,0]
+        probas = model.predict_proba(X_test)[:,1]
         fpr, tpr, thresh = metrics.roc_curve(y_test, probas, drop_intermediate=True)
         prec_rec_curve = metrics.precision_recall_curve(y_testing, probas)
         roc_auc = metrics.auc(fpr, tpr)
@@ -936,7 +936,7 @@ def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         #  after fselection
         model.fit(dat.values, y)
-        preds = model.predict(d_test.values)[:,0]
+        preds = model.predict(d_test.values)
         test_cm_rforest = metrics.confusion_matrix(y_test, preds)
         test_bacc_rforest = metrics.balanced_accuracy_score(y_test, preds)
         test_acc_rforest = metrics.accuracy_score(y_test, preds)
@@ -949,7 +949,7 @@ def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                     test_acc_rforest, test_aprec_rforest, test_prec_rforest,
                     test_reca_rforest, test_f1_rforest]
 
-        probas = model.predict_proba(d_test.values)
+        probas = model.predict_proba(d_test.values)[:,1]
         fpr, tpr, thresh = metrics.roc_curve(y_test, probas, drop_intermediate=True)
         prec_rec_curve = metrics.precision_recall_curve(y_testing, probas)
         roc_auc = metrics.auc(fpr, tpr)
