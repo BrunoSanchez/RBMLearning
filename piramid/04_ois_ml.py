@@ -81,12 +81,17 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     merged = store['merged']
     selected = merged[merged.selected==True]
 
+    und = store['und_b']
 # =============================================================================
 # Usar los seleccionados desde la tabla merged
 # =============================================================================
     ids = selected['image_id_ois'].drop_duplicates().values
     dt_ois = dt_ois.loc[dt_ois['image_id'].isin(ids)].drop_duplicates()
+    und = und.loc[und['image_id'].isin(ids)].drop_duplicates()
 
+    und = pd.merge(left=und, 
+             right=dt_ois[['image_id', 'm1_diam', 'exp_time', 'new_fwhm']].drop_duplicates(),
+             on='image_id')
     store.close()
 
 # =============================================================================
@@ -117,7 +122,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # Aca separo en grupos... Agrupo por distintas cosas
 # =============================================================================
     #ois_grouping = cf.group_ml(train_ois, cols=cols, method='Bramich')
-    ois_grouping, rforest_sigs, curves = cf.group_ml_rfo(dt_ois, cols=cols, method='Bramich')
+    ois_grouping, rforest_sigs, curves = cf.group_ml_rfo(dt_ois, und, cols=cols, method='Bramich')
 
     ois_grouping.to_csv(os.path.join(plots_path, 'ois_grouping_table_rfo.csv'))
     from joblib import dump, load

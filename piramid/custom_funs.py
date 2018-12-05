@@ -157,7 +157,7 @@ def binning_res(data, bins, return_center_bins=False):
 
 def binning_res_robust(data, bins, return_center_bins=False):
     mean = np.zeros_like(bins[:-1])
-    stdv = np.zeros_like(bins[:-1])
+    stdv = np.zeros_like(mean)
     sqrtn= np.zeros_like(mean)
     mean_sim_mag = np.zeros_like(mean)
     for i_bin, low in enumerate(bins[:-1]):
@@ -399,7 +399,7 @@ def importance_perm(X, y, forest=None, cols=None, method=None):
     return imp
 
 
-def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
+def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=5):
     skf = StratifiedKFold(n_splits=nfolds)
     imp = []
 
@@ -488,15 +488,21 @@ def experiment(clf, x, y, nfolds=10, printing=False, probs=False,
 # =============================================================================
 # funcion para ml
 # =============================================================================
-def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
+def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
              target=['IS_REAL'], cols=['mag'], var_thresh=0.1, percentile=30.,
              method='Bramich'):
     rows = []
     i_group = 0
     for pars, data in train_data.groupby(group_cols):
         i_group += 1
+             
+        undetected = und.loc[und[group_cols[0]]==pars[0]]
+        undetected = undetected.loc[und[group_cols[1]]==pars[1]]
+        undetected = undetected.loc[und[group_cols[2]]==pars[2]]
+        undetected = [len(undetected.sim_id.drop_duplicates())]
+        
         ## spliting the data into train and final test
-        train, test = train_test_split(data[cols+target].dropna(), test_size=0.75,
+        train, test = train_test_split(data[cols+target].dropna(), test_size=0.85,
                                        stratify=data[cols+target].dropna().IS_REAL)
         d = train[cols]
         y = train[target].values.ravel()
@@ -799,7 +805,7 @@ def group_ml(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 # =============================================================================
 # funcion para ml
 # =============================================================================
-def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
+def group_ml_rfo(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
              target=['IS_REAL'], cols=['mag'], var_thresh=0.1, percentile=30.,
              method='Bramich'):
     rows = []
@@ -808,6 +814,12 @@ def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
     i_group = 0
     for pars, data in train_data.groupby(group_cols):
         i_group += 1
+        
+        undetected = und.loc[und['m1_diam']==pars[0]]
+        undetected = undetected.loc[und['exp_time']==pars[1]]
+        undetected = undetected.loc[und['new_fwhm']==pars[2]]
+        undetected = [len(undetected.simulated_id.drop_duplicates())]
+
         ## spliting the data into train and final test
         train, test = train_test_split(data[cols+target].dropna(), test_size=0.75,
                                        stratify=data[cols+target].dropna().IS_REAL)
@@ -956,7 +968,7 @@ def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         curve += [fpr, tpr, prec_rec_curve, roc_auc]
 
         #import ipdb; ipdb.set_trace()
-        vals = list(pars) + row_rfo
+        vals = list(pars) + row_rfo + undetected
         rows.append(np.array(vals).flatten())
         sigs.append(list(pars) + rforest_sigs)
         curves.append(list(pars) + curve)
@@ -974,7 +986,7 @@ def group_ml_rfo(train_data, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                 'rfo_test0_aprec', 'rfo_test0_reca', 'rfo_test0_f1',
                 'rfo_test_c00', 'rfo_test_c01', 'rfo_test_c10', 'rfo_test_c11',
                 'rfo_test_bacc', 'rfo_test_acc', 'rfo_test_prec',
-                'rfo_test_aprec', 'rfo_test_reca', 'rfo_test_f1']
+                'rfo_test_aprec', 'rfo_test_reca', 'rfo_test_f1', 'fn_und']
 
     ml_cols = group_cols + rfo_cols
     ml_results = pd.DataFrame(rows, columns=ml_cols)

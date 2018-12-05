@@ -1216,6 +1216,22 @@ images_hot = pd.read_sql_query("""SELECT * FROM "ImagesHOT" """, engine)
 images_zps = pd.read_sql_query("""SELECT * FROM "Images" """, engine)
 images_ois = pd.read_sql_query("""SELECT * FROM "ImagesOIS" """, engine)
 images_sps = pd.read_sql_query("""SELECT * FROM "SImages" """, engine)
+
+hot_ids = []
+for id_row, hotrow in images_hot.iterrows():
+    z_id = images_zps.loc[images_zps.id == hotrow[0]].simulation_id.values
+    s_id = images_sps.loc[images_sps.id == hotrow[0]].simulation_id.values
+    o_id = images_ois.loc[images_ois.id == hotrow[0]].simulation_id.values
+    if (z_id==s_id and s_id==o_id and z_id==o_id):
+        hot_ids.append(z_id[0])
+    else:
+        hot_ids.append(np.nan)
+
+images_hot['simulation_id_imputed'] = hot_ids
+mask = images_hot.simulation_id.isna()
+mask = mask & ~images_hot.simulation_id_imputed.isna()
+images_hot.loc[mask,'simulation_id'] = images_hot.loc[mask,'simulation_id_imputed'].values
+
 simulations = pd.read_sql_query(""" SELECT * FROM "Simulation" """, engine)
 simulated = pd.read_sql_query(""" SELECT * FROM "Simulated" """, engine)
 simulated = simulated[['simulation_id', 'image_id', 'simage_id', 'scorrimage_id',
@@ -1298,10 +1314,13 @@ print(np.sum(merge.simulation_id_h!=merge.simulation_id_s))
 print(np.sum(merge.simulation_id!=merge.simulation_id_h))
 print(merge[merge.simulation_id!=merge.simulation_id_h]['simulation_id_h'])
 
-merge.simulation_id_h = merge.simulation_id
+merge.loc[merge.simulation_id!=merge.simulation_id_h, 'simulation_id_h'] = merge.loc[merge.simulation_id!=merge.simulation_id_h, 'simulation_id']
 
 #ahora merge tiene la tabla de ids correctamente alineadas!!
 
+ids0 = simus.simulation_id.drop_duplicates().values
+
+dt_zps = dt_zps.loc[dt_zps['']]
 
 
 
