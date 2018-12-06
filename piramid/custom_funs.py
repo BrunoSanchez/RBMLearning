@@ -507,7 +507,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
     i_group = 0
     for pars, data in train_data.groupby(group_cols):
         i_group += 1
-        import ipdb; ipdb.set_trace()
+
         undetected = und.loc[und[group_cols[0]]==pars[0]]
         undetected = undetected.loc[undetected[group_cols[1]]==pars[1]]
         undetected = undetected.loc[undetected[group_cols[2]]==pars[2]]
