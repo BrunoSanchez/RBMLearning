@@ -83,6 +83,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     und = store['c_und_z']
     subset_ois = store['c_subset_zps']
+    import ipdb; ipdb.set_trace()
     store.close()
 
 # =============================================================================
