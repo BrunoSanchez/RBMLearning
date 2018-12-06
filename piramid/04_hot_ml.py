@@ -129,12 +129,16 @@ def main(m1_diam=None, plots_path='./plots/.'):
 # =============================================================================
     #ois_grouping = cf.group_ml(train_ois, cols=cols, method='Alard')
     #ois_grouping, rforest_sigs, curves = cf.group_ml_rfo(dt_ois, und, cols=cols, method='Alard')
+
+    dt_ois = dt_ois.sample(frac=0.25)
+    und = und.sample(frac.0.25)
     ml_results = cf.group_ml(dt_ois, und, cols=cols, method='Alard')
 
     ois_grouping = ml_results[0]
     knn_fsel = ml_results[1]
     rforest_sigs = ml_results[2]
     svm_fsel = ml_results[3]
+    svm_fsel_ranking = ml_results[3]
 
     ois_grouping.to_csv(os.path.join(plots_path, 'hot_grouping_table_rfo.csv'))
 
@@ -142,6 +146,7 @@ def main(m1_diam=None, plots_path='./plots/.'):
     dump(knn_fsel, os.path.join(plots_path, 'knn_fsel_hot.joblib'))
     dump(rforest_sigs, os.path.join(plots_path, 'rforest_sigs_hot.joblib'))
     dump(svm_fsel, os.path.join(plots_path, 'svm_fsel_hot.joblib'))
+    dump(svm_fsel_ranking, os.path.join(plots_path, 'svm_fsel_ranking_hot.joblib'))
     #dump(curves, os.path.join(plots_path, 'curves_hot.joblib'))
 
     return
