@@ -131,14 +131,15 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     #ois_grouping = cf.group_ml(train_ois, cols=cols, method='Zackay')
     #ois_grouping, rforest_sigs, curves = cf.group_ml_rfo(dt_ois, und, cols=cols, method='Zackay')
 
-    dt_ois = dt_ois.sample(frac=0.30)
-    und = und.sample(frac=0.3)
+    dt_ois = dt_ois.sample(frac=0.25)
+    und = und.sample(frac=0.25)
     ml_results = cf.group_ml(dt_ois, und, cols=cols, method='Zackay')
 
     ois_grouping = ml_results[0]
     knn_fsel = ml_results[1]
     rforest_sigs = ml_results[2]
     svm_fsel = ml_results[3]
+    svm_fsel_ranking = ml_results[4]
 
     ois_grouping.to_csv(os.path.join(plots_path, 'zps_grouping_table_rfo.csv'))
 
@@ -146,6 +147,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dump(knn_fsel, os.path.join(plots_path, 'knn_fsel_zps.joblib'))
     dump(rforest_sigs, os.path.join(plots_path, 'rforest_sigs_zps.joblib'))
     dump(svm_fsel, os.path.join(plots_path, 'svm_fsel_zps.joblib'))
+    dump(svm_fsel_ranking, os.path.join(plots_path, 'svm_fsel_ranking_zps.joblib'))
     #dump(curves, os.path.join(plots_path, 'curves_hot.joblib'))
 
     return

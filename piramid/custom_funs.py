@@ -534,6 +534,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         knn_fsel = []
         rforest_sigs = []
         svm_fsel = []
+        svm_fsel_ranking = []
         # =============================================================================
         # univariate cuts
         # =============================================================================
@@ -763,13 +764,14 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         # =============================================================================
         svc = svm.LinearSVC(dual=False, tol=1e-5, max_iter=10000)
         rfecv = feature_selection.RFECV(estimator=svc, step=1, cv=StratifiedKFold(6),
-                      scoring='accuracy', n_jobs=-1)
+                      scoring='f1', n_jobs=-1)
 
         rfecv.fit(np.ascontiguousarray(X), y)
         print("Optimal number of features : {}" .format(rfecv.n_features_))
         sel_cols = newcols[rfecv.support_]
         print(sel_cols)
         svm_fsel.append(list(sel_cols))
+        svm_fsel_ranking.append([newcols, rfecv.ranking_])
         dat = d[sel_cols]
 
         model = svc
@@ -924,7 +926,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
     ml_cols = group_cols + knn_cols + rfo_cols + svc_cols
     ml_results = pd.DataFrame(rows, columns=ml_cols)
-    return [ml_results, knn_fsel, rforest_sigs, svm_fsel]
+    return [ml_results, knn_fsel, rforest_sigs, svm_fsel, svm_fsel_ranking]
     #return ml_results
 
 # =============================================================================
