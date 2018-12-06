@@ -130,7 +130,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     #ois_grouping = cf.group_ml(train_ois, cols=cols, method='Bramich')
     #ois_grouping, rforest_sigs, curves = cf.group_ml_rfo(dt_ois, und, cols=cols, method='Bramich')
 
-    ml_results = cf.group_ml(dt_ois, und, cols=cols, method='Alard')
+    ml_results = cf.group_ml(dt_ois, und, cols=cols, method='Bramich')
 
     ois_grouping = ml_results[0]
     knn_fsel = ml_results[1]
