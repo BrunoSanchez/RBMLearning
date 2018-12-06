@@ -568,7 +568,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         final_cm0 = rslt0_knn['confusion_matrix']
         # check that they are the correct figures
-        print(len(X)==np.sum(np.sum(final_cm0)))
+        print(len(d)==np.sum(np.sum(final_cm0)))
 
         # experiment after fselection
         rslt_knn = experiment(model, dat.values, y, printing=False, nfolds=5)
@@ -579,6 +579,10 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_knn.append(rslt_knn['prec'])
         row_knn.append(rslt_knn['reca'])
         row_knn.append(rslt_knn['f1'])
+
+        final_cm = rslt_knn['confusion_matrix']
+        # check that they are the correct figures
+        print(len(dat)==np.sum(np.sum(final_cm)))
 
         # test on the testset
         #  before fselection
@@ -592,9 +596,21 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_knn0 = metrics.recall_score(y_test, preds)
         test_f1_knn0 = metrics.f1_score(y_test, preds)
 
+        final_cm0 += test_cm_knn0
+        print(len(d)+len(X_test)==np.sum(np.sum(final_cm0)))
+
+        TP0 = final_cm0[1, 1]
+        FP0 = final_cm0[0, 1]
+        FN0 = final_cm0[1, 0] + undetected[0]
+
+        P0 = TP0 / (TP0 + FP0)
+        R0 = TP0 / (TP0 + FN0)
+        F10 = 2*TP0 / (2*TP0 + FN0 + FP0)
+
         row_knn += list(test_cm_knn0.flatten()) + [test_bacc_knn0, test_acc_knn0,
                     test_aprec_knn0, test_prec_knn0, test_reca_knn0,
                     test_f1_knn0]
+        row_knn += list(final_cm0.flatten()) + [TP0, FP0, FN0, P0, R0, F10]
 
         #  after fselection
         model.fit(dat.values, y)
@@ -607,8 +623,20 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_knn = metrics.recall_score(y_test, preds)
         test_f1_knn = metrics.f1_score(y_test, preds)
 
+        final_cm += test_cm_knn
+        print(len(d)+len(X_test)==np.sum(np.sum(final_cm)))
+
+        TP = final_cm[1, 1]
+        FP = final_cm[0, 1]
+        FN = final_cm[1, 0] + undetected[0]
+
+        P = TP / (TP + FP)
+        R = TP / (TP + FN)
+        F1 = 2*TP / (2*TP + FN + FP)
+
         row_knn += list(test_cm_knn.flatten()) + [test_bacc_knn, test_acc_knn,
                     test_aprec_knn, test_prec_knn, test_reca_knn, test_f1_knn]
+        row_knn += list(final_cm.flatten()) + [TP, FP, FN, P, R, F1]
         # =============================================================================
         # randomforest
         # =============================================================================
@@ -640,7 +668,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         dat = d[selected[selected].index]
 
         # store the feature importance matrices...
-        #rforest_sigs.append(signif)
+        rforest_sigs.append(signif)
 
         n_fts = np.min([len(dat.columns), 7])
         model = RandomForestClassifier(n_estimators=800, max_features=n_fts,
@@ -656,6 +684,10 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_rfo.append(rslt0_rforest['reca'])
         row_rfo.append(rslt0_rforest['f1'])
 
+        final_cm0 = rslt0_rforest['confusion_matrix']
+        # check that they are the correct figures
+        print(len(d)==np.sum(np.sum(final_cm0)))
+
         # experiment after fselection
         rslt_rforest = experiment(model, dat.values, y, printing=False, nfolds=5)
         row_rfo += list(rslt_rforest['confusion_matrix'].flatten())
@@ -665,6 +697,10 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_rfo.append(rslt_rforest['prec'])
         row_rfo.append(rslt_rforest['reca'])
         row_rfo.append(rslt_rforest['f1'])
+
+        final_cm = rslt_rforest['confusion_matrix']
+        # check that they are the correct figures
+        print(len(dat)==np.sum(np.sum(final_cm)))
 
         d_test = pd.DataFrame(X_test, columns=newcols)[selected[selected].index]
 
@@ -680,9 +716,21 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_rforest0 = metrics.recall_score(y_test, preds)
         test_f1_rforest0 = metrics.f1_score(y_test, preds)
 
+        final_cm0 += test_cm_rforest0
+        print(len(d)+len(X_test)==np.sum(np.sum(final_cm0)))
+
+        TP0 = final_cm0[1, 1]
+        FP0 = final_cm0[0, 1]
+        FN0 = final_cm0[1, 0] + undetected[0]
+
+        P0 = TP0 / (TP0 + FP0)
+        R0 = TP0 / (TP0 + FN0)
+        F10 = 2*TP0 / (2*TP0 + FN0 + FP0)
+
         row_rfo += list(test_cm_rforest0.flatten()) + [test_bacc_rforest0,
                     test_acc_rforest0, test_aprec_rforest0, test_prec_rforest0,
                     test_reca_rforest0, test_f1_rforest0]
+        row_rfo += list(final_cm0.flatten()) + [TP0, FP0, FN0, P0, R0, F10]
 
         #  after fselection
         model.fit(dat.values, y)
@@ -695,10 +743,21 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_rforest = metrics.recall_score(y_test, preds)
         test_f1_rforest = metrics.f1_score(y_test, preds)
 
+        final_cm += test_cm_rforest
+        print(len(d)+len(d_test)==np.sum(np.sum(final_cm)))
+
+        TP = final_cm[1, 1]
+        FP = final_cm[0, 1]
+        FN = final_cm[1, 0] + undetected[0]
+
+        P = TP / (TP + FP)
+        R = TP / (TP + FN)
+        F1 = 2*TP / (2*TP + FN + FP)
+
         row_rfo += list(test_cm_rforest.flatten()) + [test_bacc_rforest,
                     test_acc_rforest, test_aprec_rforest, test_prec_rforest,
                     test_reca_rforest, test_f1_rforest]
-
+        row_rfo += list(final_cm.flatten()) + [TP, FP, FN, P, R, F1]
         # =============================================================================
         # SVC
         # =============================================================================
@@ -714,6 +773,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         print("Optimal number of features : {}" .format(rfecv.n_features_))
         sel_cols = newcols[rfecv.support_]
         print(sel_cols)
+        svm_fsel.append(list(sel_cols))
         dat = d[sel_cols]
 
         model = svc
@@ -727,6 +787,10 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_svc.append(rslt0_svc['reca'])
         row_svc.append(rslt0_svc['f1'])
 
+        final_cm0 = rslt0_svc['confusion_matrix']
+        # check that they are the correct figures
+        print(len(d)==np.sum(np.sum(final_cm0)))
+
         # experiment after fselection
         rslt_svc = experiment(model, dat.values, y, printing=False, nfolds=5)
         row_svc += list(rslt_svc['confusion_matrix'].flatten())
@@ -736,6 +800,10 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_svc.append(rslt_svc['prec'])
         row_svc.append(rslt_svc['reca'])
         row_svc.append(rslt_svc['f1'])
+
+        final_cm = rslt_svc['confusion_matrix']
+        # check that they are the correct figures
+        print(len(dat)==np.sum(np.sum(final_cm)))
 
         d_test = pd.DataFrame(X_test, columns=newcols)[sel_cols].values
 
@@ -752,9 +820,21 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_svc0 = metrics.recall_score(y_test, preds)
         test_f1_svc0 = metrics.f1_score(y_test, preds)
 
+        final_cm0 += test_cm_svc0
+        print(len(d)+len(X_test)==np.sum(np.sum(final_cm0)))
+
+        TP0 = final_cm0[1, 1]
+        FP0 = final_cm0[0, 1]
+        FN0 = final_cm0[1, 0] + undetected[0]
+
+        P0 = TP0 / (TP0 + FP0)
+        R0 = TP0 / (TP0 + FN0)
+        F10 = 2*TP0 / (2*TP0 + FN0 + FP0)
+
         row_svc += list(test_cm_svc0.flatten()) + [test_bacc_svc0, test_acc_svc0,
                     test_aprec_svc0, test_prec_svc0, test_reca_svc0,
                     test_f1_svc0]
+        row_svc += list(final_cm0.flatten()) + [TP0, FP0, FN0, P0, R0, F10]
 
         #  after fselection
         model.fit(dat.values, y)
@@ -768,9 +848,21 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         test_reca_svc = metrics.recall_score(y_test, preds)
         test_f1_svc = metrics.f1_score(y_test, preds)
 
+        final_cm += test_cm_rforest
+        print(len(d)+len(d_test)==np.sum(np.sum(final_cm)))
+
+        TP = final_cm[1, 1]
+        FP = final_cm[0, 1]
+        FN = final_cm[1, 0] + undetected[0]
+
+        P = TP / (TP + FP)
+        R = TP / (TP + FN)
+        F1 = 2*TP / (2*TP + FN + FP)
+
         row_svc += list(test_cm_svc.flatten()) + [test_bacc_svc, test_acc_svc,
                     test_aprec_svc, test_prec_svc, test_reca_svc,
                     test_f1_svc]
+        row_svc += list(final_cm.flatten()) + [TP, FP, FN, P, R, F1]
 
         #import ipdb; ipdb.set_trace()
         vals = list(pars) + row_knn + row_rfo + row_svc
@@ -786,9 +878,15 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                 'knn_test0_c00', 'knn_test0_c01', 'knn_test0_c10', 'knn_test0_c11',
                 'knn_test0_bacc', 'knn_test0_acc', 'knn_test0_prec',
                 'knn_test0_aprec', 'knn_test0_reca', 'knn_test0_f1',
+                'knn_fcm0_00', 'knn_fcm0_01', 'knn_fcm0_10', 'knn_fcm0_11',
+                'knn_fcm0_TP', 'knn_fcm0_FP', 'knn_fcm0_FN', 'knn_fcm0_P',
+                'knn_fcm0_R', 'knn_fcm0_F1',
                 'knn_test_c00', 'knn_test_c01', 'knn_test_c10', 'knn_test_c11',
                 'knn_test_bacc', 'knn_test_acc', 'knn_test_prec',
-                'knn_test_aprec', 'knn_test_reca', 'knn_test_f1']
+                'knn_test_aprec', 'knn_test_reca', 'knn_test_f1',
+                'knn_fcm_00', 'knn_fcm_01', 'knn_fcm_10', 'knn_fcm_11',
+                'knn_fcm_TP', 'knn_fcm_FP', 'knn_fcm_FN', 'knn_fcm_P',
+                'knn_fcm_R', 'knn_fcm_F1']
 
     rfo_cols = ['rfo_exp0_c00', 'rfo_exp0_c01', 'rfo_exp0_c10', 'rfo_exp0_c11',
                 'rfo_exp0_bacc', 'rfo_exp0_acc', 'rfo_exp0_prec',
@@ -799,9 +897,15 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                 'rfo_test0_c00', 'rfo_test0_c01', 'rfo_test0_c10', 'rfo_test0_c11',
                 'rfo_test0_bacc', 'rfo_test0_acc', 'rfo_test0_prec',
                 'rfo_test0_aprec', 'rfo_test0_reca', 'rfo_test0_f1',
+                'rfo_fcm0_00', 'rfo_fcm0_01', 'rfo_fcm0_10', 'rfo_fcm0_11',
+                'rfo_fcm0_TP', 'rfo_fcm0_FP', 'rfo_fcm0_FN', 'rfo_fcm0_P',
+                'rfo_fcm0_R', 'rfo_fcm0_F1',
                 'rfo_test_c00', 'rfo_test_c01', 'rfo_test_c10', 'rfo_test_c11',
                 'rfo_test_bacc', 'rfo_test_acc', 'rfo_test_prec',
-                'rfo_test_aprec', 'rfo_test_reca', 'rfo_test_f1']
+                'rfo_test_aprec', 'rfo_test_reca', 'rfo_test_f1',
+                'rfo_fcm_00', 'rfo_fcm_01', 'rfo_fcm_10', 'rfo_fcm_11',
+                'rfo_fcm_TP', 'rfo_fcm_FP', 'rfo_fcm_FN', 'rfo_fcm_P',
+                'rfo_fcm_R', 'rfo_fcm_F1']
 
     svc_cols = ['svc_exp0_c00', 'svc_exp0_c01', 'svc_exp0_c10', 'svc_exp0_c11',
                 'svc_exp0_bacc', 'svc_exp0_acc', 'svc_exp0_prec',
@@ -815,6 +919,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                 'svc_test_c00', 'svc_test_c01', 'svc_test_c10', 'svc_test_c11',
                 'svc_test_bacc', 'svc_test_acc', 'svc_test_prec',
                 'svc_test_aprec', 'svc_test_reca', 'svc_test_f1']
+
     ml_cols = group_cols + knn_cols + rfo_cols + svc_cols
     ml_results = pd.DataFrame(rows, columns=ml_cols)
     #return [ml_results, rforest_sigs]
