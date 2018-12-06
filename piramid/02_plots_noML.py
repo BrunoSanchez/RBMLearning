@@ -38,7 +38,7 @@ import matplotlib.pyplot as plt
 import custom_funs as cf
 
 
-storefile = '/mnt/clemente/bos0109/table_store3.h5'
+storefile = '/mnt/clemente/bos0109/table_store2.h5'
 
 store = pd.HDFStore(storefile, mode='r+', complevel=5)
 store.open()
@@ -54,13 +54,13 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     if not os.path.isdir(plot_dir):
         os.makedirs(plot_dir)
     # make platescale less than 1.3 (discard px_scale=1.4)
-    
+
     simulated = store['simulated']
     simulations = store['simulations']
 
     simulations = simulations[simulations.failed_to_subtract==False]
-    simulations = simulations[simulations.px_scale<1.3]
-    
+    #simulations = simulations[simulations.px_scale<1.3]
+
     if m1_diam is not None:
         simulations = simulations[simulations.m1_diam==m1_diam]
 
@@ -78,28 +78,28 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     dt_zps = store['dt_ois']
     if m1_diam is not None:
         dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
-    dt_zps = dt_zps[dt_zps.px_scale<1.3]
+    #dt_zps = dt_zps[dt_zps.px_scale<1.3]
     #dt_zps = cf.optimize_df(dt_zps)
     dt_ois = dt_zps
 
     dt_zps = store['dt_sps']
     if m1_diam is not None:
         dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
-    dt_zps = dt_zps[dt_zps.px_scale<1.3]
+    #dt_zps = dt_zps[dt_zps.px_scale<1.3]
     #dt_zps = cf.optimize_df(dt_zps)
     dt_sps = dt_zps
 
     dt_zps = store['dt_hot']
     if m1_diam is not None:
         dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
-    dt_zps = dt_zps[dt_zps.px_scale<1.3]
+    #dt_zps = dt_zps[dt_zps.px_scale<1.3]
     #dt_zps = cf.optimize_df(dt_zps)
     dt_hot = dt_zps
 
     dt_zps = store['dt_zps']
     if m1_diam is not None:
         dt_zps = dt_zps[dt_zps.m1_diam==m1_diam]
-    dt_zps = dt_zps[dt_zps.px_scale<1.3]
+    #dt_zps = dt_zps[dt_zps.px_scale<1.3]
     #dt_zps = cf.optimize_df(dt_zps)
     # import ipdb; ipdb.set_trace()
 # =============================================================================
@@ -1463,7 +1463,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     cond = cond & (ids_mix['image_id']==ids_mix['image_id_hot'])
     cond = cond & (ids_mix['image_id']==ids_mix['image_id_ois'])
     ids_mix = ids_mix.loc[cond]
-    
+
     pars = ['image_id', 'mean_goyet', 'mean_goyet_iso', 'id_simulation']
 
     sel_zps = pd.merge(left=subset_zps[pars].drop_duplicates(),
@@ -1583,8 +1583,8 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 
     ids = selected['image_id_hot'].drop_duplicates().values
     subset_hot = subset_hot.loc[subset_hot['image_id'].isin(ids)].drop_duplicates()
-    
-    
+
+
     ids = selected['image_id_zps'].drop_duplicates().values
     und_z = store['und_z']
     und_z = und_z.loc[und_z['image_id'].isin(ids)].drop_duplicates()
@@ -1818,11 +1818,11 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     print(len(simus))
     ois = ['Bramich', np.sum(subset_ois.IS_REAL), len(und_o), len(subset_ois.IS_REAL)-np.sum(subset_ois.IS_REAL)]
     zps = ['Zackay', np.sum(subset_zps.IS_REAL), len(und_z), len(subset_zps.IS_REAL)-np.sum(subset_zps.IS_REAL)]
-    hot = ['ALupton', np.sum(subset_hot.IS_REAL), len(und_h), len(subset_hot.IS_REAL)-np.sum(subset_hot.IS_REAL)] 
+    hot = ['ALupton', np.sum(subset_hot.IS_REAL), len(und_h), len(subset_hot.IS_REAL)-np.sum(subset_hot.IS_REAL)]
     sps = ['Ssep', np.sum(subset_sps.IS_REAL), len(und_s), len(subset_sps.IS_REAL)-np.sum(subset_sps.IS_REAL)]
     #scr = [np.sum(dt_scr.IS_REAL), len(und_sc), len(dt_scr.IS_REAL)-np.sum(dt_scr.IS_REAL)]
-    
-    df2 = pd.DataFrame([zps, ois, hot, sps], #, scr], 
+
+    df2 = pd.DataFrame([zps, ois, hot, sps], #, scr],
                    columns=['Method', 'Real', 'False Neg', 'Bogus'])
     df2['TruePos'] = df2['Real']/(df2['Real']+df2['False Neg'])
     df2['FalseNeg'] = df2['False Neg']/(df2['Real']+df2['False Neg'])
