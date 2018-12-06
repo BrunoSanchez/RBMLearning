@@ -38,7 +38,7 @@ import matplotlib.pyplot as plt
 import custom_funs as cf
 
 
-storefile = '/mnt/clemente/bos0109/table_store3.h5'
+storefile = '/mnt/clemente/bos0109/table_store2.h5'
 
 store = pd.HDFStore(storefile, mode='r+', complevel=5)
 store.open()
