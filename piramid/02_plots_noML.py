@@ -134,7 +134,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'delta_mags.svg'), dpi=400)
     plt.clf()
-
+    plt.close()
 #~ # =============================================================================
 #~ # plot de deltas de magnitud sobre magnitud (goyet)
 #~ # =============================================================================
@@ -268,7 +268,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'inliers_range.svg'), dpi=400)
     plt.clf()
-
+    plt.close()
 # =============================================================================
 # Como quedan los diagramas de error de magnitud vs magnitud simulada
 # =============================================================================
@@ -309,7 +309,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_inliers.svg'),
                 format='svg', dpi=480)
-
+    plt.close()
 #~ # =============================================================================
 #~ # 300 segundos
 #~ # =============================================================================
@@ -506,7 +506,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_inliers_60s.svg'),
                 format='svg', dpi=480)
-
+    plt.close()
 # =============================================================================
 # 60 segundos
 # =============================================================================
@@ -547,7 +547,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_inliers_60s_averaged.svg'),
                 format='svg', dpi=480)
-
+    plt.close()
 # =============================================================================
 # 60 segundos
 # =============================================================================
@@ -591,7 +591,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_inliers_60s_averaged_filled.svg'),
                 format='svg', dpi=480)
-
+    plt.close()
 
 # =============================================================================
 # plot de goyet factor vs pars
@@ -1263,7 +1263,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_hi_goyet.svg'),
                 format='svg', dpi=480)
-
+    plt.close()
 # =============================================================================
 # Liberamos algo de memoria
 # =============================================================================
@@ -1318,7 +1318,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'delta_over_mags_lo_goyet.svg'), dpi=400)
     plt.clf()
-
+    plt.close()
 # =============================================================================
 # Como quedan los diagramas de error de magnitud vs magnitud simulada
 # =============================================================================
@@ -1327,26 +1327,22 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     bins = np.arange(6.5, 26.5, .5)
     ff = subset_hot_lo.FLAGS<=0
     ff = ff & (subset_hot_lo.mag > subset_hot_lo.p05+dm) & (subset_hot_lo.mag < subset_hot_lo.p95)
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo[ff],
-                                                         bins=bins)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo.loc[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
 
     #ff = subset_sps_lo.FLAGS<=0
     ff = ff & (subset_sps_lo.mag > subset_sps_lo.p05+dm) & (subset_sps_lo.mag < subset_sps_lo.p95)
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_lo[ff],
-                                                         bins=bins)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_lo.loc[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
 
     ff = subset_zps_lo.FLAGS<=0
     ff = ff & (subset_zps_lo.mag > subset_zps_lo.p05+dm) & (subset_zps_lo.mag < subset_zps_lo.p95)
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_lo[ff],
-                                                         bins=bins)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_lo.loc[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
 
     ff = subset_ois_lo.FLAGS<=0
     ff = ff & (subset_ois_lo.mag > subset_ois_lo.p05+dm) & (subset_ois_lo.mag < subset_ois_lo.p95)
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_lo[ff],
-                                                         bins=bins)
+    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_lo.loc[ff], bins=bins)
     plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
 
     plt.tick_params(labelsize=16)
@@ -1360,7 +1356,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_lo_goyet.svg'),
                 format='svg', dpi=480)
-
+    plt.close()
 # =============================================================================
 # Como quedan los diagramas de error de magnitud vs magnitud simulada
 # =============================================================================
@@ -1372,21 +1368,21 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     ff = subset_hot_lo.FLAGS<=0
     ff = ff & (subset_hot_lo.mag > subset_hot_lo.p05+dm) & (subset_hot_lo.mag < subset_hot_lo.p95)
     #mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo[ff], bins=bins)
-    means.append(cf.binning_res(subset_hot_lo[ff], bins=bins))
+    means.append(cf.binning_res(subset_hot_lo.loc[ff], bins=bins))
 
     ff = ff & (subset_sps_lo.mag > subset_sps_lo.p05+dm) & (subset_sps_lo.mag < subset_sps_lo.p95)
     #mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_lo[ff], bins=bins)
-    means.append(cf.binning_res(subset_sps_lo[ff], bins=bins))
+    means.append(cf.binning_res(subset_sps_lo.loc[ff], bins=bins))
 
     ff = subset_zps_lo.FLAGS<=0
     ff = ff & (subset_zps_lo.mag > subset_zps_lo.p05+dm) & (subset_zps_lo.mag < subset_zps_lo.p95)
     #mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_lo[ff], bins=bins)
-    means.append(cf.binning_res(subset_zps_lo[ff], bins=bins))
+    means.append(cf.binning_res(subset_zps_lo.loc[ff], bins=bins))
 
     ff = subset_ois_lo.FLAGS<=0
     ff = ff & (subset_ois_lo.mag > subset_ois_lo.p05+dm) & (subset_ois_lo.mag < subset_ois_lo.p95)
     #mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_lo[ff], bins=bins)
-    means.append(cf.binning_res(subset_ois_lo[ff], bins=bins))
+    means.append(cf.binning_res(subset_ois_lo.loc[ff], bins=bins))
     mm = np.ma.masked_invalid(means)
 
     bin_centers = mm.max(axis=0)[3]
@@ -1408,6 +1404,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_averaged_filled.svg'),
                 format='svg', dpi=480)
+    plt.close()
 # =============================================================================
 # Como quedan los diagramas de error de magnitud vs magnitud simulada
 # =============================================================================
@@ -1454,7 +1451,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     plt.tight_layout()
     plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_averaged.svg'),
                 format='svg', dpi=480)
-
+    plt.close()
 # =============================================================================
 #  Queremos los image id con buen goyet y ver quienes son
 # =============================================================================
@@ -1620,6 +1617,10 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
 
     import ipdb; ipdb.set_trace()
+    simus.loc[simus['image_id'].isin(dt_zps.image_id.dropna().drop_duplicates())]
+    simus.loc[simus['simage_id'].isin(dt_sps.image_id.dropna().drop_duplicates())]
+    simus.loc[simus['image_id_hot'].isin(dt_hot.image_id.dropna().drop_duplicates())]
+    simus.loc[simus['image_id_ois'].isin(dt_ois.image_id.dropna().drop_duplicates())]
 
 # =============================================================================
 # plot de funcion de luminosidad inyectada
