@@ -1646,7 +1646,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                      np.sum(np.sum(ss!=zz)),
                      np.sum(np.sum(ss!=oo)),
                      np.sum(np.sum(zz!=oo))])
-    if np.any(jummp):
+    if np.any(jump):
         import ipdb; ipdb.set_trace()
     else:
         simus = zz.drop_duplicates()
