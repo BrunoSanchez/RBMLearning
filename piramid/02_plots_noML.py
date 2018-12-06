@@ -1601,13 +1601,15 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
 # Check that some objects are both in detected and in undetected
 # =============================================================================
+
+    import ipdb; ipdb.set_trace()
     print('length of the undetected before')
     print(len(und_z), len(und_z), len(und_z), len(und_z))
 
-    und_z = und_z.loc[~und_z['simulated_id'].isin(dt_zps.sim_id.dropna().drop_duplicates())]
-    und_s = und_s.loc[~und_s['simulated_id'].isin(dt_sps.sim_id.dropna().drop_duplicates())]
-    und_h = und_h.loc[~und_h['simulated_id'].isin(dt_hot.sim_id.dropna().drop_duplicates())]
-    und_o = und_o.loc[~und_o['simulated_id'].isin(dt_ois.sim_id.dropna().drop_duplicates())]
+    und_z = und_z.loc[~und_z['simulated_id'].isin(subset_zps.sim_id.dropna().drop_duplicates())]
+    und_s = und_s.loc[~und_s['simulated_id'].isin(subset_sps.sim_id.dropna().drop_duplicates())]
+    und_h = und_h.loc[~und_h['simulated_id'].isin(subset_hot.sim_id.dropna().drop_duplicates())]
+    und_o = und_o.loc[~und_o['simulated_id'].isin(subset_ois.sim_id.dropna().drop_duplicates())]
 
     print('length of the undetected after duplicates drops')
     print(len(und_z), len(und_z), len(und_z), len(und_z))
@@ -1616,11 +1618,10 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # Check that we have no simulations with image_ids different than in dt_'s
 # =============================================================================
 
-    import ipdb; ipdb.set_trace()
-    simus.loc[simus['image_id'].isin(dt_zps.image_id.dropna().drop_duplicates())]
-    simus.loc[simus['simage_id'].isin(dt_sps.image_id.dropna().drop_duplicates())]
-    simus.loc[simus['image_id_hot'].isin(dt_hot.image_id.dropna().drop_duplicates())]
-    simus.loc[simus['image_id_ois'].isin(dt_ois.image_id.dropna().drop_duplicates())]
+    simus.loc[simus['image_id'].isin(subset_zps.image_id.dropna().drop_duplicates())]
+    simus.loc[simus['simage_id'].isin(subset_sps.image_id.dropna().drop_duplicates())]
+    simus.loc[simus['image_id_hot'].isin(subset_hot.image_id.dropna().drop_duplicates())]
+    simus.loc[simus['image_id_ois'].isin(subset_ois.image_id.dropna().drop_duplicates())]
 
 # =============================================================================
 # plot de funcion de luminosidad inyectada
