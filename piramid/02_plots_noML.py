@@ -1725,15 +1725,30 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
 
     simus = simus.loc[~simus.id_y.isna()]
+    store['c_simus'] = simus
+    store.flush()
+
     subset_zps = subset_zps.loc[~subset_zps.id_simulation.isna()]
     subset_sps = subset_sps.loc[~subset_sps.id_simulation.isna()]
     subset_ois = subset_ois.loc[~subset_ois.id_simulation.isna()]
     subset_hot = subset_hot.loc[~subset_hot.id_simulation.isna()]
 
+    store['c_subset_zps'] = subset_zps
+    store['c_subset_sps'] = subset_sps
+    store['c_subset_ois'] = subset_ois
+    store['c_subset_hot'] = subset_hot
+    store.flush()
+
     und_z = und_z.loc[~und_z.simulated_id.isna()]
     und_s = und_s.loc[~und_s.simulated_id.isna()]
     und_o = und_o.loc[~und_o.simulated_id.isna()]
     und_h = und_h.loc[~und_h.simulated_id.isna()]
+
+    store['c_und_z'] = und_z
+    store['c_und_s'] = und_s
+    store['c_und_h'] = und_h
+    store['c_und_o'] = und_o
+    store.flush()
 
 # =============================================================================
 # plot de funcion de luminosidad inyectada
