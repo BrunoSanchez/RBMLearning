@@ -17,6 +17,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.externals import joblib
+from sklearn.linear_model import RANSACRegressor
 
 from sklearn.model_selection import KFold
 from sklearn.model_selection import StratifiedKFold
@@ -29,7 +30,12 @@ from sklearn.feature_selection import chi2
 from sklearn.feature_selection import VarianceThreshold
 
 from rfpimp import *
+from rfpimp import importances
+from rfpimp import plot_corr_heatmap
 
+# =============================================================================
+# optimizing df
+# =============================================================================
 # We're going to be calculating memory usage a lot,
 # so we'll create a function to save us some time!
 def mem_usage(pandas_obj):
@@ -77,7 +83,9 @@ def optimize_df(df):
 
     return optimized_df
 
-
+# =============================================================================
+# Histogramming
+# =============================================================================
 def binning_res(data, bins, return_center_bins=False):
     mean = np.zeros_like(bins[:-1])
     stdv = np.zeros_like(bins[:-1])
@@ -211,7 +219,9 @@ def custom_histogram(vector, bins=None, cumulative=False, errors=False):
         return x_bins, hh[0]
 
 
-from sklearn.linear_model import RANSACRegressor
+# =============================================================================
+# Mags calibration
+# =============================================================================
 
 def get_mags_iso(df):
     model = RANSACRegressor()
@@ -241,6 +251,7 @@ def cal_mags_iso(df):
     dd = pd.DataFrame(np.array([ids, offsets, slopes]).T,
                       columns=['image_id', 'mean_offset_iso', 'slope_iso'])
     return dd
+
 
 def get_mags(df):
     model = RANSACRegressor()
@@ -315,6 +326,7 @@ def importance_forest(X, y, forest=None, cols=None, method=None):
     #plt.show()
     return [(cols[indices[f]-1], importances[indices[f]]) for f in range(X.shape[1])]
 
+
 def full_importance_forest(X, y, forest=None, cols=None, method=None):
     if forest is None:
         forest = ExtraTreesClassifier(n_estimators=250,
@@ -326,6 +338,7 @@ def full_importance_forest(X, y, forest=None, cols=None, method=None):
     indices = np.argsort(importances)[::-1]
 
     return [indices, importances, cols]
+
 
 def importance_perm(X, y, forest=None, cols=None, method=None):
 
@@ -366,6 +379,7 @@ def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
     #imp = pd.concat(imp, axis=1)
     return imp
 
+
 def select(X, Y, percentile, selector_f=mutual_info_classif, log=False):
     selector = SelectPercentile(selector_f, percentile=percentile)
     selector.fit(X, Y)
@@ -378,8 +392,6 @@ def select(X, Y, percentile, selector_f=mutual_info_classif, log=False):
     selected_cols = selector.transform(X_indices)
     return scores, selector, selected_cols
 
-from rfpimp import importances
-from rfpimp import plot_corr_heatmap
 
 def importance_perm(X, y, forest=None, cols=None, method=None):
 
@@ -495,12 +507,12 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
     i_group = 0
     for pars, data in train_data.groupby(group_cols):
         i_group += 1
-             
+
         undetected = und.loc[und[group_cols[0]]==pars[0]]
         undetected = undetected.loc[und[group_cols[1]]==pars[1]]
         undetected = undetected.loc[und[group_cols[2]]==pars[2]]
         undetected = [len(undetected.sim_id.drop_duplicates())]
-        
+
         ## spliting the data into train and final test
         train, test = train_test_split(data[cols+target].dropna(), test_size=0.85,
                                        stratify=data[cols+target].dropna().IS_REAL)
@@ -519,7 +531,9 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_knn = []
         row_rfo = []
         row_svc = []
-        #rforest_sigs = []
+        knn_fsel = []
+        rforest_sigs = []
+        svm_fsel = []
         # =============================================================================
         # univariate cuts
         # =============================================================================
@@ -535,8 +549,8 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         scores, selector, selected_cols = select(X, y, percentile)
         scoring = pd.DataFrame(scores, index=newcols, columns=[method])
         selection = scoring.loc[newcols.values[selected_cols][0]]
-        dat = pd.DataFrame(X, columns=newcols)[selection.index]
-
+        dat = d[selection.index]
+        knn_fsel.append(list(dat.columns))
         # =============================================================================
         # KNN
         # =============================================================================
@@ -551,6 +565,10 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_knn.append(rslt0_knn['prec'])
         row_knn.append(rslt0_knn['reca'])
         row_knn.append(rslt0_knn['f1'])
+
+        final_cm0 = rslt0_knn['confusion_matrix']
+        # check that they are the correct figures
+        print(len(X)==np.sum(np.sum(final_cm0)))
 
         # experiment after fselection
         rslt_knn = experiment(model, dat.values, y, printing=False, nfolds=5)
@@ -814,7 +832,7 @@ def group_ml_rfo(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm']
     i_group = 0
     for pars, data in train_data.groupby(group_cols):
         i_group += 1
-        
+
         undetected = und.loc[und['m1_diam']==pars[0]]
         undetected = undetected.loc[und['exp_time']==pars[1]]
         undetected = undetected.loc[und['new_fwhm']==pars[2]]
