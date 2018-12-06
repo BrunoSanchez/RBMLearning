@@ -50,7 +50,7 @@ plt.rcParams["patch.force_edgecolor"] = True
 plt.rcParams['text.usetex'] = False
 
 
-def main(m1_diam=1.54, plots_path='./plots/.'):
+def main(m1_diam=None, plots_path='./plots/.'):
     plot_dir = os.path.abspath(plots_path)
     if not os.path.isdir(plot_dir):
         os.makedirs(plot_dir)
@@ -81,7 +81,9 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     merged = store['merged']
     selected = merged[merged.selected==True]
 
-    und = store['und_h']
+    und = store['c_und_h']
+    subset_ois = store['c_subset_hot']
+    import ipdb; ipdb.set_trace()
 # =============================================================================
 # Usar los seleccionados desde la tabla merged
 # =============================================================================
@@ -89,7 +91,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dt_ois = dt_ois.loc[dt_ois['image_id'].isin(ids)].drop_duplicates()
     und = und.loc[und['image_id'].isin(ids)].drop_duplicates()
 
-    und = pd.merge(left=und, 
+    und = pd.merge(left=und,
              right=dt_ois[['image_id', 'm1_diam', 'exp_time', 'new_fwhm']].drop_duplicates(),
              on='image_id')
     store.close()

@@ -761,10 +761,6 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         # =============================================================================
         # SVC
         # =============================================================================
-        #svc = SVC(kernel='linear',
-        #          cache_size=2048,
-        #          class_weight='balanced',
-        #          probability=True)
         svc = svm.LinearSVC(dual=False, tol=1e-5, max_iter=10000)
         rfecv = feature_selection.RFECV(estimator=svc, step=1, cv=StratifiedKFold(6),
                       scoring='accuracy', n_jobs=-1)
@@ -916,14 +912,20 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                 'svc_test0_c00', 'svc_test0_c01', 'svc_test0_c10', 'svc_test0_c11',
                 'svc_test0_bacc', 'svc_test0_acc', 'svc_test0_prec',
                 'svc_test0_aprec', 'svc_test0_reca', 'svc_test0_f1',
+                'svc_fcm0_00', 'svc_fcm0_01', 'svc_fcm0_10', 'svc_fcm0_11',
+                'svc_fcm0_TP', 'svc_fcm0_FP', 'svc_fcm0_FN', 'svc_fcm0_P',
+                'svc_fcm0_R', 'svc_fcm0_F1',
                 'svc_test_c00', 'svc_test_c01', 'svc_test_c10', 'svc_test_c11',
                 'svc_test_bacc', 'svc_test_acc', 'svc_test_prec',
-                'svc_test_aprec', 'svc_test_reca', 'svc_test_f1']
+                'svc_test_aprec', 'svc_test_reca', 'svc_test_f1',
+                'svc_fcm_00', 'svc_fcm_01', 'svc_fcm_10', 'svc_fcm_11',
+                'svc_fcm_TP', 'svc_fcm_FP', 'svc_fcm_FN', 'svc_fcm_P',
+                'svc_fcm_R', 'svc_fcm_F1']
 
     ml_cols = group_cols + knn_cols + rfo_cols + svc_cols
     ml_results = pd.DataFrame(rows, columns=ml_cols)
-    #return [ml_results, rforest_sigs]
-    return ml_results
+    return [ml_results, knn_fsel, rforest_sigs, svm_fsel]
+    #return ml_results
 
 # =============================================================================
 # funcion para ml
