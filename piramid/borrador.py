@@ -1314,7 +1314,8 @@ print(np.sum(merge.simulation_id_h!=merge.simulation_id_s))
 print(np.sum(merge.simulation_id!=merge.simulation_id_h))
 print(merge[merge.simulation_id!=merge.simulation_id_h]['simulation_id_h'])
 
-merge.loc[merge.simulation_id!=merge.simulation_id_h, 'simulation_id_h'] = merge.loc[merge.simulation_id!=merge.simulation_id_h, 'simulation_id']
+merge.loc[merge.simulation_id!=merge.simulation_id_h, 'simulation_id_h'] = \
+merge.loc[merge.simulation_id!=merge.simulation_id_h, 'simulation_id']
 
 #ahora merge tiene la tabla de ids correctamente alineadas!!
 
