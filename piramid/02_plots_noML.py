@@ -1604,7 +1604,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 
     import ipdb; ipdb.set_trace()
     print('length of the undetected before')
-    print(len(und_z), len(und_z), len(und_z), len(und_z))
+    print(len(und_z), len(und_s), len(und_h), len(und_o))
 
     und_z = und_z.loc[~und_z['simulated_id'].isin(subset_zps.sim_id.dropna().drop_duplicates())]
     und_s = und_s.loc[~und_s['simulated_id'].isin(subset_sps.sim_id.dropna().drop_duplicates())]
