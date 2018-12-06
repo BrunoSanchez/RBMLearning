@@ -511,7 +511,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         undetected = und.loc[und[group_cols[0]]==pars[0]]
         undetected = undetected.loc[und[group_cols[1]]==pars[1]]
         undetected = undetected.loc[und[group_cols[2]]==pars[2]]
-        undetected = [len(undetected.sim_id.drop_duplicates())]
+        undetected = [len(undetected.simulated_id.drop_duplicates())]
 
         ## spliting the data into train and final test
         train, test = train_test_split(data[cols+target].dropna(), test_size=0.85,
