@@ -83,6 +83,7 @@ def main(m1_diam=None, plots_path='./plots/.'):
 
     und = store['c_und_h']
     subset_ois = store['c_subset_hot']
+    store.close()
 
 # =============================================================================
 # Usar los seleccionados desde la tabla merged
@@ -98,8 +99,6 @@ def main(m1_diam=None, plots_path='./plots/.'):
     und = pd.merge(left=und,
              right=dt_ois[['image_id', 'm1_diam', 'exp_time', 'new_fwhm']].drop_duplicates(),
              on='image_id')
-
-    store.close()
 
 # =============================================================================
 # Columnas usables
