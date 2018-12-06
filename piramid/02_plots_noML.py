@@ -1606,22 +1606,134 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     print('length of the undetected before')
     print(len(und_z), len(und_s), len(und_h), len(und_o))
 
-    und_z = und_z.loc[~und_z['simulated_id'].isin(subset_zps.sim_id.dropna().drop_duplicates())]
-    und_s = und_s.loc[~und_s['simulated_id'].isin(subset_sps.sim_id.dropna().drop_duplicates())]
-    und_h = und_h.loc[~und_h['simulated_id'].isin(subset_hot.sim_id.dropna().drop_duplicates())]
-    und_o = und_o.loc[~und_o['simulated_id'].isin(subset_ois.sim_id.dropna().drop_duplicates())]
+    und_z = und_z.loc[~und_z['simulated_id'].isin(subset_zps.sim_id.dropna().drop_duplicates())].drop_duplicates()
+    und_s = und_s.loc[~und_s['simulated_id'].isin(subset_sps.sim_id.dropna().drop_duplicates())].drop_duplicates()
+    und_h = und_h.loc[~und_h['simulated_id'].isin(subset_hot.sim_id.dropna().drop_duplicates())].drop_duplicates()
+    und_o = und_o.loc[~und_o['simulated_id'].isin(subset_ois.sim_id.dropna().drop_duplicates())].drop_duplicates()
 
     print('length of the undetected after duplicates drops')
-    print(len(und_z), len(und_z), len(und_z), len(und_z))
+    print(len(und_z), len(und_s), len(und_h), len(und_o))
+
+# =============================================================================
+# Check the other way of this
+# ===================================================+==========================
+
+    print('length of the sources before')
+    print(len(subset_zps), len(subset_sps), len(subset_hot), len(subset_ois))
+    print(sum(subset_zps.IS_REAL), sum(subset_sps.IS_REAL),
+          sum(subset_hot.IS_REAL), sum(subset_ois.IS_REAL))
+
+    subset_zps = subset_zps.loc[~subset_zps['sim_id'].isin(und_z.simulated_id.dropna().drop_duplicates())].drop_duplicates()
+    subset_sps = subset_sps.loc[~subset_sps['sim_id'].isin(und_s.simulated_id.dropna().drop_duplicates())].drop_duplicates()
+    subset_hot = subset_hot.loc[~subset_hot['sim_id'].isin(und_h.simulated_id.dropna().drop_duplicates())].drop_duplicates()
+    subset_ois = subset_ois.loc[~subset_ois['sim_id'].isin(und_o.simulated_id.dropna().drop_duplicates())].drop_duplicates()
+
+    print('length of the sources after duplicates drops')
+    print(len(subset_zps), len(subset_sps), len(subset_hot), len(subset_ois))
+    print(sum(subset_zps.IS_REAL), sum(subset_sps.IS_REAL),
+          sum(subset_hot.IS_REAL), sum(subset_ois.IS_REAL))
 
 # =============================================================================
 # Check that we have no simulations with image_ids different than in dt_'s
 # =============================================================================
 
-    simus.loc[simus['image_id'].isin(subset_zps.image_id.dropna().drop_duplicates())]
-    simus.loc[simus['simage_id'].isin(subset_sps.image_id.dropna().drop_duplicates())]
-    simus.loc[simus['image_id_hot'].isin(subset_hot.image_id.dropna().drop_duplicates())]
-    simus.loc[simus['image_id_ois'].isin(subset_ois.image_id.dropna().drop_duplicates())]
+    zz = simus.loc[simus['image_id'].isin(subset_zps.image_id.dropna().drop_duplicates())]
+    ss = simus.loc[simus['simage_id'].isin(subset_sps.image_id.dropna().drop_duplicates())]
+    hh = simus.loc[simus['image_id_hot'].isin(subset_hot.image_id.dropna().drop_duplicates())]
+    oo = simus.loc[simus['image_id_ois'].isin(subset_ois.image_id.dropna().drop_duplicates())]
+
+    jump = np.array([np.sum(np.sum(ss!=hh)),
+                     np.sum(np.sum(zz!=hh)),
+                     np.sum(np.sum(oo!=hh)),
+                     np.sum(np.sum(ss!=zz)),
+                     np.sum(np.sum(ss!=oo)),
+                     np.sum(np.sum(zz!=oo))])
+    if np.any(jummp):
+        import ipdb; ipdb.set_trace()
+    else:
+        simus = zz.drop_duplicates()
+        del(zz)
+        del(ss)
+        del(hh)
+        del(oo)
+
+# =============================================================================
+# There is a discrepancy of ~1900 sources, not present at simus... Weird
+# =============================================================================
+    discreps = [np.sum(subset_zps.IS_REAL)+len(und_z) - len(simus),
+                np.sum(subset_sps.IS_REAL)+len(und_s) - len(simus),
+                np.sum(subset_hot.IS_REAL)+len(und_h) - len(simus),
+                np.sum(subset_ois.IS_REAL)+len(und_o) - len(simus)]
+
+    ids = np.unique(np.hstack([subset_zps.sim_id.dropna().drop_duplicates().values,
+                               und_z.simulated_id.dropna().drop_duplicates()]))
+    print('Are the ids of detected + und unique?')
+    print(len(ids) == sum(subset_zps.IS_REAL) + len(und_z))
+
+    newsimus = simulated.loc[simulated['id'].isin(ids)]
+    lost_z = newsimus.loc[~newsimus['id'].isin(simus.id_y)]
+
+    ids = np.unique(np.hstack([subset_sps.sim_id.dropna().drop_duplicates().values,
+                               und_s.simulated_id.dropna().drop_duplicates()]))
+    print('Are the ids of detected + und unique?')
+    print(len(ids) == sum(subset_sps.IS_REAL) + len(und_s))
+
+    newsimus = simulated.loc[simulated['id'].isin(ids)]
+    lost_s = newsimus.loc[~newsimus['id'].isin(simus.id_y)]
+
+
+    ids = np.unique(np.hstack([subset_ois.sim_id.dropna().drop_duplicates().values,
+                               und_o.simulated_id.dropna().drop_duplicates()]))
+    print('Are the ids of detected + und unique?')
+    print(len(ids) == sum(subset_ois.IS_REAL) + len(und_o))
+
+    newsimus = simulated.loc[simulated['id'].isin(ids)]
+    lost_o = newsimus.loc[~newsimus['id'].isin(simus.id_y)]
+
+    ids = np.unique(np.hstack([subset_hot.sim_id.dropna().drop_duplicates().values,
+                               und_h.simulated_id.dropna().drop_duplicates()]))
+    print('Are the ids of detected + und unique?')
+    print(len(ids) == sum(subset_hot.IS_REAL) + len(und_h))
+
+    newsimus = simulated.loc[simulated['id'].isin(ids)]
+    lost_h = newsimus.loc[~newsimus['id'].isin(simus.id_y)]
+
+    if np.any(np.array([np.sum(np.sum(lost_h.x!=lost_o.x)),
+                        np.sum(np.sum(lost_h.x!=lost_s.x)),
+                        np.sum(np.sum(lost_o.x!=lost_s.x)),
+                        np.sum(np.sum(lost_z.x!=lost_s.x)),
+                        np.sum(np.sum(lost_z.x!=lost_o.x)),
+                        np.sum(np.sum(lost_z.x!=lost_h.x))])):
+        print('differnces in lost')
+    else:
+        print('we lost the same simulated objects')
+        lost = lost_z
+        del(lost_z)
+        del(lost_h)
+        del(lost_s)
+        del(lost_o)
+
+# =============================================================================
+# Need to check the simulations on this lost objects
+# =============================================================================
+    lost = pd.merge(left=simulations, right=lost,
+                     right_on='simulation_id', left_on='id', how='inner')
+    print(lost.simulation_id.describe())
+
+# =============================================================================
+# Clean everything from nas in simulations id
+# =============================================================================
+
+    simus = simus.loc[~simus.id_y.isna()]
+    subset_zps = subset_zps.loc[~subset_zps.id_simulation.isna()]
+    subset_sps = subset_sps.loc[~subset_sps.id_simulation.isna()]
+    subset_ois = subset_ois.loc[~subset_ois.id_simulation.isna()]
+    subset_hot = subset_hot.loc[~subset_hot.id_simulation.isna()]
+
+    und_z = und_z.loc[~und_z.simulated_id.isna()]
+    und_s = und_s.loc[~und_s.simulated_id.isna()]
+    und_o = und_o.loc[~und_o.simulated_id.isna()]
+    und_h = und_h.loc[~und_h.simulated_id.isna()]
 
 # =============================================================================
 # plot de funcion de luminosidad inyectada
