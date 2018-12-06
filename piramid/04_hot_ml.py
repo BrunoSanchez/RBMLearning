@@ -83,17 +83,22 @@ def main(m1_diam=None, plots_path='./plots/.'):
 
     und = store['c_und_h']
     subset_ois = store['c_subset_hot']
-    import ipdb; ipdb.set_trace()
+
 # =============================================================================
 # Usar los seleccionados desde la tabla merged
 # =============================================================================
     ids = selected['image_id_hot'].drop_duplicates().values
     dt_ois = dt_ois.loc[dt_ois['image_id'].isin(ids)].drop_duplicates()
+
+    ids = subset_ois['id'].drop_duplicates().values
+    dt_ois = dt_ois.loc[dt_ois['id'].isin(ids)].drop_duplicates()
+
     und = und.loc[und['image_id'].isin(ids)].drop_duplicates()
 
     und = pd.merge(left=und,
              right=dt_ois[['image_id', 'm1_diam', 'exp_time', 'new_fwhm']].drop_duplicates(),
              on='image_id')
+
     store.close()
 
 # =============================================================================
@@ -124,13 +129,21 @@ def main(m1_diam=None, plots_path='./plots/.'):
 # Aca separo en grupos... Agrupo por distintas cosas
 # =============================================================================
     #ois_grouping = cf.group_ml(train_ois, cols=cols, method='Alard')
-    ois_grouping, rforest_sigs, curves = cf.group_ml_rfo(dt_ois, und, cols=cols, method='Alard')
+    #ois_grouping, rforest_sigs, curves = cf.group_ml_rfo(dt_ois, und, cols=cols, method='Alard')
+    ml_results = cf.group_ml(dt_ois, und, cols=cols, method='Alard')
+
+    ois_grouping = ml_results[0]
+    knn_fsel = ml_results[1]
+    rforest_sigs = ml_results[2]
+    svm_fsel = ml_results[3]
 
     ois_grouping.to_csv(os.path.join(plots_path, 'hot_grouping_table_rfo.csv'))
 
     from joblib import dump, load
+    dump(knn_fsel, os.path.join(plots_path, 'knn_fsel_hot.joblib'))
     dump(rforest_sigs, os.path.join(plots_path, 'rforest_sigs_hot.joblib'))
-    dump(curves, os.path.join(plots_path, 'curves_hot.joblib'))
+    dump(svm_fsel, os.path.join(plots_path, 'svm_fsel_hot.joblib'))
+    #dump(curves, os.path.join(plots_path, 'curves_hot.joblib'))
 
     return
 
