@@ -125,7 +125,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     #ois_grouping = cf.group_ml(train_ois, cols=cols, method='Scorr')
     #ois_grouping, rforest_sigs, curves = cf.group_ml_rfo(dt_ois, und, cols=cols, method='Scorr')
     dt_ois = dt_ois.sample(frac=0.30)
-    und = dt_ois.sample(frac.0.3)
+    und = und.sample(frac.0.3)
     ml_results = cf.group_ml(dt_ois, und, cols=cols, method='Scorr')
 
     ois_grouping = ml_results[0]
