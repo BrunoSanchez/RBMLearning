@@ -504,6 +504,10 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
              target=['IS_REAL'], cols=['mag'], var_thresh=0.1, percentile=30.,
              method='Bramich'):
     rows = []
+    knn_fsel = []
+    rforest_sigs = []
+    svm_fsel = []
+    svm_fsel_ranking = []
     i_group = 0
     for pars, data in train_data.groupby(group_cols):
         i_group += 1
@@ -531,10 +535,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_knn = []
         row_rfo = []
         row_svc = []
-        knn_fsel = []
-        rforest_sigs = []
-        svm_fsel = []
-        svm_fsel_ranking = []
+
         # =============================================================================
         # univariate cuts
         # =============================================================================
