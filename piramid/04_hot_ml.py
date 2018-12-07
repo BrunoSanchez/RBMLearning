@@ -130,8 +130,8 @@ def main(m1_diam=None, plots_path='./plots/.'):
     #ois_grouping = cf.group_ml(train_ois, cols=cols, method='Alard')
     #ois_grouping, rforest_sigs, curves = cf.group_ml_rfo(dt_ois, und, cols=cols, method='Alard')
 
-    dt_ois = dt_ois.sample(frac=0.25)
-    und = und.sample(frac=0.25)
+    #dt_ois = dt_ois.sample(frac=0.25)
+    #und = und.sample(frac=0.25)
     ml_results = cf.group_ml(dt_ois, und, cols=cols, method='Alard')
 
     ois_grouping = ml_results[0]
