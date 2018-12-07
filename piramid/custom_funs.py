@@ -555,7 +555,10 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         # =============================================================================
         # KNN
         # =============================================================================
-        model = neighbors.KNeighborsClassifier(n_neighbors=7, weights='uniform', n_jobs=-1)
+        print('starting with KNN')
+
+        model = neighbors.KNeighborsClassifier(n_neighbors=7,
+            weights='uniform', n_jobs=32)
 
         # experiment befor fslection
         rslt0_knn = experiment(model, X, y, printing=False, nfolds=5)
@@ -641,6 +644,8 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         # =============================================================================
         # randomforest
         # =============================================================================
+        print('starting with random forests')
+
         corr = d.corr()
         # remove corr columns
         correlated_features = set()
@@ -673,7 +678,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         n_fts = np.min([len(dat.columns), 7])
         model = RandomForestClassifier(n_estimators=800, max_features=n_fts,
-                                       min_samples_leaf=20, n_jobs=-1)
+                                       min_samples_leaf=20, n_jobs=32)
 
         # experiment before fselection
         rslt0_rforest = experiment(model, X, y, printing=False, nfolds=5)
@@ -762,9 +767,10 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         # =============================================================================
         # SVC
         # =============================================================================
+        print('starting with SVC')
         svc = svm.LinearSVC(dual=False, tol=1e-5, max_iter=10000)
         rfecv = feature_selection.RFECV(estimator=svc, step=1, cv=StratifiedKFold(6),
-                      scoring='f1', n_jobs=-1)
+                      scoring='f1', n_jobs=32)
 
         rfecv.fit(np.ascontiguousarray(X), y)
         print("Optimal number of features : {}" .format(rfecv.n_features_))
@@ -996,7 +1002,7 @@ def group_ml_rfo(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm']
         decorr = d.drop(correlated_features, axis=1)
         corr = decorr.corr()
 
-        model = RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1)
+        model = RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=32)
         importance = importance_perm_kfold(decorr.values, y, model,
                                            cols=decorr.columns, method=method)
 
