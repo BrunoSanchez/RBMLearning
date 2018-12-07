@@ -129,8 +129,8 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # =============================================================================
     #ois_grouping = cf.group_ml(train_ois, cols=cols, method='Bramich')
     #ois_grouping, rforest_sigs, curves = cf.group_ml_rfo(dt_ois, und, cols=cols, method='Bramich')
-    dt_ois = dt_ois.sample(frac=0.25)
-    und = und.sample(frac.0.25)
+    dt_ois = dt_ois.sample(frac=0.15)
+    und = und.sample(frac=0.15)
     ml_results = cf.group_ml(dt_ois, und, cols=cols, method='Bramich')
 
     ois_grouping = ml_results[0]
