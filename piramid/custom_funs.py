@@ -769,7 +769,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         # SVC
         # =============================================================================
         print('starting with SVC')
-        svc = svm.LinearSVC(dual=False, tol=1e-5, max_iter=10000, weights='balanced')
+        svc = svm.LinearSVC(dual=False, tol=1e-5, max_iter=10000, class_weight='balanced')
         rfecv = feature_selection.RFECV(estimator=svc, step=1, cv=StratifiedKFold(6),
                       scoring='f1', n_jobs=32)
 
