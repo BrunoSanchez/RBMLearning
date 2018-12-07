@@ -518,7 +518,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         undetected = [len(undetected.simulated_id.drop_duplicates())]
 
         ## spliting the data into train and final test
-        train, test = train_test_split(data[cols+target].dropna(), test_size=0.85,
+        train, test = train_test_split(data[cols+target].dropna(), test_size=0.8,
                                        stratify=data[cols+target].dropna().IS_REAL)
         d = train[cols]
         y = train[target].values.ravel()
@@ -769,7 +769,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         # SVC
         # =============================================================================
         print('starting with SVC')
-        svc = svm.LinearSVC(dual=False, tol=1e-5, max_iter=10000)
+        svc = svm.LinearSVC(dual=False, tol=1e-5, max_iter=10000, weights='balanced')
         rfecv = feature_selection.RFECV(estimator=svc, step=1, cv=StratifiedKFold(6),
                       scoring='f1', n_jobs=32)
 
