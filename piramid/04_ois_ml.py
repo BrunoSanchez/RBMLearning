@@ -94,7 +94,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     ids = subset_ois['id'].drop_duplicates().values
     dt_ois = dt_ois.loc[dt_ois['id'].isin(ids)].drop_duplicates()
 
-    und = und.loc[und['image_id'].isin(ids)].drop_duplicates()
+    und = und.loc[~und['image_id'].isin(ids)].drop_duplicates()
 
     und = pd.merge(left=und,
              right=dt_ois[['image_id', 'm1_diam', 'exp_time', 'new_fwhm']].drop_duplicates(),
