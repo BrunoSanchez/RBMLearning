@@ -558,7 +558,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         print('starting with KNN')
 
         model = neighbors.KNeighborsClassifier(n_neighbors=7,
-            weights='uniform', n_jobs=32)
+            weights='uniform', n_jobs=-1)
 
         # experiment befor fslection
         rslt0_knn = experiment(model, X, y, printing=False, nfolds=5)
@@ -678,7 +678,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         n_fts = np.min([len(dat.columns), 7])
         model = RandomForestClassifier(n_estimators=800, max_features=n_fts,
-                                       min_samples_leaf=20, n_jobs=32)
+                                       min_samples_leaf=20, n_jobs=-1)
 
         # experiment before fselection
         rslt0_rforest = experiment(model, X, y, printing=False, nfolds=5)
