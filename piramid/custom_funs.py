@@ -369,7 +369,8 @@ def importance_perm_kfold(X, y, forest=None, cols=None, method=None, nfolds=10):
         y_test = pd.DataFrame(y[test])
 
         if forest is None:
-            forest = RandomForestClassifier(n_estimators=250, random_state=33, n_jobs=-1)
+            forest = RandomForestClassifier(n_estimators=250,
+                                            random_state=33, n_jobs=-1)
 
         X_train['Random'] = np.random.random(size=len(X_train))
         X_test['Random'] = np.random.random(size=len(X_test))
