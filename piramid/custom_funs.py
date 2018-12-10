@@ -505,6 +505,10 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
              target=['IS_REAL'], cols=['mag'], var_thresh=0.1, percentile=30.,
              method='Bramich'):
     rows = []
+    knn_fsel = []
+    rforest_sigs = []
+    svm_fsel = []
+    svm_fsel_ranking = []
     i_group = 0
     for pars, data in train_data.groupby(group_cols):
         i_group += 1
@@ -515,7 +519,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         undetected = [len(undetected.simulated_id.drop_duplicates())]
 
         ## spliting the data into train and final test
-        train, test = train_test_split(data[cols+target].dropna(), test_size=0.85,
+        train, test = train_test_split(data[cols+target].dropna(), test_size=0.8,
                                        stratify=data[cols+target].dropna().IS_REAL)
         d = train[cols]
         y = train[target].values.ravel()
@@ -532,10 +536,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_knn = []
         row_rfo = []
         row_svc = []
-        knn_fsel = []
-        rforest_sigs = []
-        svm_fsel = []
-        svm_fsel_ranking = []
+
         # =============================================================================
         # univariate cuts
         # =============================================================================
@@ -556,7 +557,10 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         # =============================================================================
         # KNN
         # =============================================================================
-        model = neighbors.KNeighborsClassifier(n_neighbors=7, weights='uniform', n_jobs=-1)
+        print('starting with KNN')
+
+        model = neighbors.KNeighborsClassifier(n_neighbors=7,
+            weights='uniform', n_jobs=-1)
 
         # experiment befor fslection
         rslt0_knn = experiment(model, X, y, printing=False, nfolds=5)
@@ -642,6 +646,8 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         # =============================================================================
         # randomforest
         # =============================================================================
+        print('starting with random forests')
+
         corr = d.corr()
         # remove corr columns
         correlated_features = set()
@@ -763,9 +769,10 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         # =============================================================================
         # SVC
         # =============================================================================
-        svc = svm.LinearSVC(dual=False, tol=1e-5, max_iter=10000)
+        print('starting with SVC')
+        svc = svm.LinearSVC(dual=False, tol=1e-5, max_iter=10000, class_weight='balanced')
         rfecv = feature_selection.RFECV(estimator=svc, step=1, cv=StratifiedKFold(6),
-                      scoring='f1', n_jobs=-1)
+                      scoring='f1', n_jobs=32)
 
         rfecv.fit(np.ascontiguousarray(X), y)
         print("Optimal number of features : {}" .format(rfecv.n_features_))
@@ -997,7 +1004,7 @@ def group_ml_rfo(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm']
         decorr = d.drop(correlated_features, axis=1)
         corr = decorr.corr()
 
-        model = RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1)
+        model = RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=32)
         importance = importance_perm_kfold(decorr.values, y, model,
                                            cols=decorr.columns, method=method)
 
