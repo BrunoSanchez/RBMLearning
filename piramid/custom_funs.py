@@ -894,7 +894,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                     test_f1_svc]
         row_svc += list(final_cm.flatten()) + [TP, FP, FN, P, R, F1]
 
-        #import ipdb; ipdb.set_trace()
+        import ipdb; ipdb.set_trace()
 
         tracers.append(pd.Dataframe([ids, y, y_pred_knn0, y_pred_knn, y_pred_rfo0, y_pred_rfo,
                       y_pred_svc0, y_pred_svc], columns=['id', 'y', 'y_pred_knn0',
@@ -968,6 +968,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                 'svc_fcm_TP', 'svc_fcm_FP', 'svc_fcm_FN', 'svc_fcm_P',
                 'svc_fcm_R', 'svc_fcm_F1']
 
+    record = pd.concat(tracers)
     ml_cols = group_cols + knn_cols + rfo_cols + svc_cols
     ml_results = pd.DataFrame(rows, columns=ml_cols)
     return [ml_results, knn_fsel, rforest_sigs, svm_fsel, svm_fsel_ranking]
