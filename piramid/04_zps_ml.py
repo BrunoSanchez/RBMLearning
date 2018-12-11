@@ -140,6 +140,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     rforest_sigs = ml_results[2]
     svm_fsel = ml_results[3]
     svm_fsel_ranking = ml_results[4]
+    record = ml_results[5]
 
     ois_grouping.to_csv(os.path.join(plots_path, 'zps_grouping_table_rfo.csv'))
 
@@ -148,6 +149,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     dump(rforest_sigs, os.path.join(plots_path, 'rforest_sigs_zps.joblib'))
     dump(svm_fsel, os.path.join(plots_path, 'svm_fsel_zps.joblib'))
     dump(svm_fsel_ranking, os.path.join(plots_path, 'svm_fsel_ranking_zps.joblib'))
+    dump(record, os.path.join(plots_path, 'record_zps.joblib'))
     #dump(curves, os.path.join(plots_path, 'curves_hot.joblib'))
 
     return

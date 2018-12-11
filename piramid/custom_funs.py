@@ -894,8 +894,6 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                     test_f1_svc]
         row_svc += list(final_cm.flatten()) + [TP, FP, FN, P, R, F1]
 
-        import ipdb; ipdb.set_trace()
-
         tracers.append(pd.Dataframe([ids, y, y_pred_knn0, y_pred_knn, y_pred_rfo0, y_pred_rfo,
                       y_pred_svc0, y_pred_svc], columns=['id', 'y', 'y_pred_knn0',
                       'y_pred_knn', 'y_pred_rfo0', 'y_pred_rfo', 'y_pred_svc0',
@@ -971,8 +969,499 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
     record = pd.concat(tracers)
     ml_cols = group_cols + knn_cols + rfo_cols + svc_cols
     ml_results = pd.DataFrame(rows, columns=ml_cols)
-    return [ml_results, knn_fsel, rforest_sigs, svm_fsel, svm_fsel_ranking]
+    return [ml_results, knn_fsel, rforest_sigs, svm_fsel, svm_fsel_ranking, record]
     #return ml_results
+
+# =============================================================================
+# Paralellizable
+# =============================================================================
+
+def work_ml(params):
+    i_group, pars, data, undetected, cols, target, var_thresh, percentile, n_cores = params
+    ## spliting the data into train and final test
+    train, test = train_test_split(data[['id']+cols+target].dropna(), test_size=0.8,
+                                   stratify=data[cols+target].dropna().IS_REAL)
+    ids = train[['id']]
+    d = train[cols]
+    y = train[target].values.ravel()
+
+    scaler = preprocessing.StandardScaler().fit(d)
+    X = scaler.transform(d)
+    id_test = test[['id']]
+    X_test = scaler.transform(test[cols])
+    y_test = test.IS_REAL.values.ravel()
+
+    # =====================================================================
+    # building the rows of this gigantic table
+    # =====================================================================
+    # separate them in three groups
+    row_knn = []
+    row_rfo = []
+    row_svc = []
+
+    # =============================================================================
+    # univariate cuts
+    # =============================================================================
+    thresh = var_thresh
+    sel = VarianceThreshold(threshold=thresh)
+    X = sel.fit_transform(X)
+    X_test = sel.transform(X_test)
+    newcols = d.columns[sel.get_support()]
+    print('Dropped columns = {}'.format(d.columns[~sel.get_support()]))
+    d = pd.DataFrame(X, columns=newcols)
+
+    percentile = percentile
+    scores, selector, selected_cols = select(X, y, percentile)
+    scoring = pd.DataFrame(scores, index=newcols, columns=[method])
+    selection = scoring.loc[newcols.values[selected_cols][0]]
+    dat = d[selection.index]
+    knn_fsel = list(dat.columns)
+    # =============================================================================
+    # KNN
+    # =============================================================================
+    print('starting with KNN')
+
+    model = neighbors.KNeighborsClassifier(n_neighbors=7,
+                                           weights='uniform', n_jobs=n_cores)
+
+    # experiment before fslection
+    rslt0_knn = experiment(model, X, y, printing=False, nfolds=5)
+    row_knn += list(rslt0_knn['confusion_matrix'].flatten())
+    row_knn.append(rslt0_knn['bacc'])
+    row_knn.append(rslt0_knn['acc'])
+    row_knn.append(rslt0_knn['aprec'])
+    row_knn.append(rslt0_knn['prec'])
+    row_knn.append(rslt0_knn['reca'])
+    row_knn.append(rslt0_knn['f1'])
+
+    final_cm0 = rslt0_knn['confusion_matrix']
+    y_pred_knn0 = rslt0_knn['predictions']
+    #y_knn0 = rslt0_knn['y_test']
+
+    # check that they are the correct figures
+    print(len(d)==np.sum(np.sum(final_cm0)))
+
+    # experiment after fselection
+    rslt_knn = experiment(model, dat.values, y, printing=False, nfolds=5)
+    row_knn += list(rslt_knn['confusion_matrix'].flatten())
+    row_knn.append(rslt_knn['bacc'])
+    row_knn.append(rslt_knn['acc'])
+    row_knn.append(rslt_knn['aprec'])
+    row_knn.append(rslt_knn['prec'])
+    row_knn.append(rslt_knn['reca'])
+    row_knn.append(rslt_knn['f1'])
+
+    final_cm = rslt_knn['confusion_matrix']
+    y_pred_knn = rslt_knn['predictions']
+    #y_knn = rslt_knn['y_test']
+
+    # check that they are the correct figures
+    print(len(dat)==np.sum(np.sum(final_cm)))
+
+    # test on the testset
+    #  before fselection
+    model.fit(X, y)
+    preds = model.predict(X_test)
+    y_pred_test_knn0 = preds
+    test_cm_knn0 = metrics.confusion_matrix(y_test, preds)
+    test_bacc_knn0 = metrics.balanced_accuracy_score(y_test, preds)
+    test_acc_knn0 = metrics.accuracy_score(y_test, preds)
+    test_aprec_knn0 = metrics.average_precision_score(y_test, preds)
+    test_prec_knn0 = metrics.precision_score(y_test, preds)
+    test_reca_knn0 = metrics.recall_score(y_test, preds)
+    test_f1_knn0 = metrics.f1_score(y_test, preds)
+
+    final_cm0 += test_cm_knn0
+    print(len(d)+len(X_test)==np.sum(np.sum(final_cm0)))
+
+    TP0 = final_cm0[1, 1]
+    FP0 = final_cm0[0, 1]
+    FN0 = final_cm0[1, 0] + undetected[0]
+
+    P0 = TP0 / (TP0 + FP0)
+    R0 = TP0 / (TP0 + FN0)
+    F10 = 2*TP0 / (2*TP0 + FN0 + FP0)
+
+    row_knn += list(test_cm_knn0.flatten()) + [test_bacc_knn0, test_acc_knn0,
+                test_aprec_knn0, test_prec_knn0, test_reca_knn0,
+                test_f1_knn0]
+    row_knn += list(final_cm0.flatten()) + [TP0, FP0, FN0, P0, R0, F10]
+
+    #  after fselection
+    model.fit(dat.values, y)
+    preds = model.predict(selector.transform(X_test))
+    y_pred_test_knn = preds
+    test_cm_knn = metrics.confusion_matrix(y_test, preds)
+    test_bacc_knn = metrics.balanced_accuracy_score(y_test, preds)
+    test_acc_knn = metrics.accuracy_score(y_test, preds)
+    test_aprec_knn = metrics.average_precision_score(y_test, preds)
+    test_prec_knn = metrics.precision_score(y_test, preds)
+    test_reca_knn = metrics.recall_score(y_test, preds)
+    test_f1_knn = metrics.f1_score(y_test, preds)
+
+    final_cm += test_cm_knn
+    print(len(d)+len(X_test)==np.sum(np.sum(final_cm)))
+
+    TP = final_cm[1, 1]
+    FP = final_cm[0, 1]
+    FN = final_cm[1, 0] + undetected[0]
+
+    P = TP / (TP + FP)
+    R = TP / (TP + FN)
+    F1 = 2*TP / (2*TP + FN + FP)
+
+    row_knn += list(test_cm_knn.flatten()) + [test_bacc_knn, test_acc_knn,
+                test_aprec_knn, test_prec_knn, test_reca_knn, test_f1_knn]
+    row_knn += list(final_cm.flatten()) + [TP, FP, FN, P, R, F1]
+    # =============================================================================
+    # randomforest
+    # =============================================================================
+    print('starting with random forests')
+
+    corr = d.corr()
+    # remove corr columns
+    correlated_features = set()
+    for i in range(len(corr.columns)):
+        for j in range(i):
+            if abs(corr.iloc[i, j]) > 0.8:
+                colname = corr.columns[i]
+                correlated_features.add(colname)
+    decorr = d.drop(correlated_features, axis=1)
+    corr = decorr.corr()
+
+    model = RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=n_cores)
+    importance = importance_perm_kfold(decorr.values, y, model,
+                                       cols=decorr.columns, method=method)
+
+    res = pd.concat(importance, axis=1)
+    full_cols = list(decorr.index).extend(['Random'])
+    m = res.mean(axis=1).reindex(full_cols)
+    s = res.std(axis=1).reindex(full_cols)
+
+    thresh = m.loc['Random'] + 3*s.loc['Random']
+    spikes = m - 3*s
+    selected = spikes > thresh
+    signif = (m - m.loc['Random'])/s
+    selected = signif>2.5
+    dat = d[selected[selected].index]
+
+    # store the feature importance matrices...
+    rforest_sigs = signif
+
+    n_fts = np.min([len(dat.columns), 7])
+    model = RandomForestClassifier(n_estimators=800, max_features=n_fts,
+                                   min_samples_leaf=20, n_jobs=n_cores)
+
+    # experiment before fselection
+    rslt0_rforest = experiment(model, X, y, printing=False, nfolds=5)
+    row_rfo += list(rslt0_rforest['confusion_matrix'].flatten())
+    row_rfo.append(rslt0_rforest['bacc'])
+    row_rfo.append(rslt0_rforest['acc'])
+    row_rfo.append(rslt0_rforest['aprec'])
+    row_rfo.append(rslt0_rforest['prec'])
+    row_rfo.append(rslt0_rforest['reca'])
+    row_rfo.append(rslt0_rforest['f1'])
+
+    final_cm0 = rslt0_rforest['confusion_matrix']
+    y_pred_rfo0 = rslt0_rforest['predictions']
+    #y_rfo0 = rslt0_rforest['y_test']
+
+    # check that they are the correct figures
+    print(len(d)==np.sum(np.sum(final_cm0)))
+
+    # experiment after fselection
+    rslt_rforest = experiment(model, dat.values, y, printing=False, nfolds=5)
+    row_rfo += list(rslt_rforest['confusion_matrix'].flatten())
+    row_rfo.append(rslt_rforest['bacc'])
+    row_rfo.append(rslt_rforest['acc'])
+    row_rfo.append(rslt_rforest['aprec'])
+    row_rfo.append(rslt_rforest['prec'])
+    row_rfo.append(rslt_rforest['reca'])
+    row_rfo.append(rslt_rforest['f1'])
+
+    final_cm = rslt_rforest['confusion_matrix']
+    y_pred_rfo = rslt_rforest['predictions']
+    #y_rfo = rslt_rforest['y_test']
+    # check that they are the correct figures
+    print(len(dat)==np.sum(np.sum(final_cm)))
+
+    d_test = pd.DataFrame(X_test, columns=newcols)[selected[selected].index]
+
+    # test on the testset
+    #  before fselection
+    model.fit(X, y)
+    preds = model.predict(X_test)
+    y_pred_test_rfo0 = preds
+    test_cm_rforest0 = metrics.confusion_matrix(y_test, preds)
+    test_bacc_rforest0 = metrics.balanced_accuracy_score(y_test, preds)
+    test_acc_rforest0 = metrics.accuracy_score(y_test, preds)
+    test_aprec_rforest0 = metrics.average_precision_score(y_test, preds)
+    test_prec_rforest0 = metrics.precision_score(y_test, preds)
+    test_reca_rforest0 = metrics.recall_score(y_test, preds)
+    test_f1_rforest0 = metrics.f1_score(y_test, preds)
+
+    final_cm0 += test_cm_rforest0
+    print(len(d)+len(X_test)==np.sum(np.sum(final_cm0)))
+
+    TP0 = final_cm0[1, 1]
+    FP0 = final_cm0[0, 1]
+    FN0 = final_cm0[1, 0] + undetected[0]
+
+    P0 = TP0 / (TP0 + FP0)
+    R0 = TP0 / (TP0 + FN0)
+    F10 = 2*TP0 / (2*TP0 + FN0 + FP0)
+
+    row_rfo += list(test_cm_rforest0.flatten()) + [test_bacc_rforest0,
+                test_acc_rforest0, test_aprec_rforest0, test_prec_rforest0,
+                test_reca_rforest0, test_f1_rforest0]
+    row_rfo += list(final_cm0.flatten()) + [TP0, FP0, FN0, P0, R0, F10]
+
+    #  after fselection
+    model.fit(dat.values, y)
+    preds = model.predict(d_test.values)
+    y_pred_test_rfo = preds
+    test_cm_rforest = metrics.confusion_matrix(y_test, preds)
+    test_bacc_rforest = metrics.balanced_accuracy_score(y_test, preds)
+    test_acc_rforest = metrics.accuracy_score(y_test, preds)
+    test_aprec_rforest = metrics.average_precision_score(y_test, preds)
+    test_prec_rforest = metrics.precision_score(y_test, preds)
+    test_reca_rforest = metrics.recall_score(y_test, preds)
+    test_f1_rforest = metrics.f1_score(y_test, preds)
+
+    final_cm += test_cm_rforest
+    print(len(d)+len(d_test)==np.sum(np.sum(final_cm)))
+
+    TP = final_cm[1, 1]
+    FP = final_cm[0, 1]
+    FN = final_cm[1, 0] + undetected[0]
+
+    P = TP / (TP + FP)
+    R = TP / (TP + FN)
+    F1 = 2*TP / (2*TP + FN + FP)
+
+    row_rfo += list(test_cm_rforest.flatten()) + [test_bacc_rforest,
+                test_acc_rforest, test_aprec_rforest, test_prec_rforest,
+                test_reca_rforest, test_f1_rforest]
+    row_rfo += list(final_cm.flatten()) + [TP, FP, FN, P, R, F1]
+    # =============================================================================
+    # SVC
+    # =============================================================================
+    print('starting with SVC')
+    svc = svm.LinearSVC(dual=False, tol=1e-5, max_iter=10000, class_weight='balanced')
+    rfecv = feature_selection.RFECV(estimator=svc, step=1, cv=StratifiedKFold(6),
+                  scoring='f1', n_jobs=n_cores)
+
+    rfecv.fit(np.ascontiguousarray(X), y)
+    print("Optimal number of features : {}" .format(rfecv.n_features_))
+    sel_cols = newcols[rfecv.support_]
+    print(sel_cols)
+    svm_fsel = list(sel_cols)
+    svm_fsel_ranking = [newcols, rfecv.ranking_]
+    dat = d[sel_cols]
+
+    model = svc
+    # experiment before fselection
+    rslt0_svc = experiment(model, X, y, printing=False, nfolds=5)
+    row_svc += list(rslt0_svc['confusion_matrix'].flatten())
+    row_svc.append(rslt0_svc['bacc'])
+    row_svc.append(rslt0_svc['acc'])
+    row_svc.append(rslt0_svc['aprec'])
+    row_svc.append(rslt0_svc['prec'])
+    row_svc.append(rslt0_svc['reca'])
+    row_svc.append(rslt0_svc['f1'])
+
+    final_cm0 = rslt0_svc['confusion_matrix']
+    y_pred_svc0 = rslt0_svc['predictions']
+    #y_svc0 = rslt0_svc['y_test']
+    # check that they are the correct figures
+    print(len(d)==np.sum(np.sum(final_cm0)))
+
+    # experiment after fselection
+    rslt_svc = experiment(model, dat.values, y, printing=False, nfolds=5)
+    row_svc += list(rslt_svc['confusion_matrix'].flatten())
+    row_svc.append(rslt_svc['bacc'])
+    row_svc.append(rslt_svc['acc'])
+    row_svc.append(rslt_svc['aprec'])
+    row_svc.append(rslt_svc['prec'])
+    row_svc.append(rslt_svc['reca'])
+    row_svc.append(rslt_svc['f1'])
+
+    final_cm = rslt_svc['confusion_matrix']
+    y_pred_svc = rslt_svc['predictions']
+    #y_svc = rslt_svc['y_test']
+    # check that they are the correct figures
+    print(len(dat)==np.sum(np.sum(final_cm)))
+
+    d_test = pd.DataFrame(X_test, columns=newcols)[sel_cols].values
+
+    # test on the testset
+    #  before fselection
+    model.fit(X, y)
+    preds = model.predict(X_test)
+    y_pred_test_svc0 = preds
+    test_acc_svc0 = metrics.accuracy_score(y_test, preds)
+    test_cm_svc0 = metrics.confusion_matrix(y_test, preds)
+    test_bacc_svc0 = metrics.balanced_accuracy_score(y_test, preds)
+    test_acc_svc0 = metrics.accuracy_score(y_test, preds)
+    test_aprec_svc0 = metrics.average_precision_score(y_test, preds)
+    test_prec_svc0 = metrics.precision_score(y_test, preds)
+    test_reca_svc0 = metrics.recall_score(y_test, preds)
+    test_f1_svc0 = metrics.f1_score(y_test, preds)
+
+    final_cm0 += test_cm_svc0
+    print(len(d)+len(X_test)==np.sum(np.sum(final_cm0)))
+
+    TP0 = final_cm0[1, 1]
+    FP0 = final_cm0[0, 1]
+    FN0 = final_cm0[1, 0] + undetected[0]
+
+    P0 = TP0 / (TP0 + FP0)
+    R0 = TP0 / (TP0 + FN0)
+    F10 = 2*TP0 / (2*TP0 + FN0 + FP0)
+
+    row_svc += list(test_cm_svc0.flatten()) + [test_bacc_svc0, test_acc_svc0,
+                test_aprec_svc0, test_prec_svc0, test_reca_svc0,
+                test_f1_svc0]
+    row_svc += list(final_cm0.flatten()) + [TP0, FP0, FN0, P0, R0, F10]
+
+    #  after fselection
+    model.fit(dat.values, y)
+    preds = model.predict(d_test)
+    y_pred_test_svc0 = preds
+    test_acc_svc = metrics.accuracy_score(y_test, preds)
+    test_cm_svc = metrics.confusion_matrix(y_test, preds)
+    test_bacc_svc = metrics.balanced_accuracy_score(y_test, preds)
+    test_acc_svc = metrics.accuracy_score(y_test, preds)
+    test_aprec_svc = metrics.average_precision_score(y_test, preds)
+    test_prec_svc = metrics.precision_score(y_test, preds)
+    test_reca_svc = metrics.recall_score(y_test, preds)
+    test_f1_svc = metrics.f1_score(y_test, preds)
+
+    final_cm += test_cm_rforest
+    print(len(d)+len(d_test)==np.sum(np.sum(final_cm)))
+
+    TP = final_cm[1, 1]
+    FP = final_cm[0, 1]
+    FN = final_cm[1, 0] + undetected[0]
+
+    P = TP / (TP + FP)
+    R = TP / (TP + FN)
+    F1 = 2*TP / (2*TP + FN + FP)
+
+    row_svc += list(test_cm_svc.flatten()) + [test_bacc_svc, test_acc_svc,
+                test_aprec_svc, test_prec_svc, test_reca_svc,
+                test_f1_svc]
+    row_svc += list(final_cm.flatten()) + [TP, FP, FN, P, R, F1]
+
+    #  delivering everything
+    tracers.append(pd.Dataframe([ids, y, y_pred_knn0, y_pred_knn, y_pred_rfo0, y_pred_rfo,
+                  y_pred_svc0, y_pred_svc], columns=['id', 'y', 'y_pred_knn0',
+                  'y_pred_knn', 'y_pred_rfo0', 'y_pred_rfo', 'y_pred_svc0',
+                  'y_pred_svc']))
+
+    tracers.append(pd.Dataframe([ids_test, y_test, y_pred_test_knn0,
+                                 y_pred_test_knn, y_pred_test_rfo0,
+                                 y_pred_test_rfo, y_pred_test_svc0,
+                                 y_pred_test_svc], columns=['id', 'y', 'y_pred_knn0',
+                  'y_pred_knn', 'y_pred_rfo0', 'y_pred_rfo', 'y_pred_svc0',
+                  'y_pred_svc']))
+    vals = list(pars) + row_knn + row_rfo + row_svc
+    #rows.append(np.array(vals).flatten())
+    #print('{} groups processed'.format(i_group))
+    return [vals, knn_fsel, rforest_sigs, svm_fsel, svm_fsel_ranking, tracers]
+
+
+def group_ml_paralell(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
+             target=['IS_REAL'], cols=['mag'], var_thresh=0.1, percentile=30.,
+             method='Bramich'):
+    rows = []
+    knn_fsel = []
+    rforest_sigs = []
+    svm_fsel = []
+    svm_fsel_ranking = []
+    tracers = []
+
+    bp = []
+    i_group = 0
+    for pars, data in train_data.groupby(group_cols):
+        i_group += 1
+
+        undetected = und.loc[und[group_cols[0]]==pars[0]]
+        undetected = undetected.loc[undetected[group_cols[1]]==pars[1]]
+        undetected = undetected.loc[undetected[group_cols[2]]==pars[2]]
+        undetected = [len(undetected.simulated_id.drop_duplicates())]
+
+        bp.append([i_group, pars, data, undetected, cols, target,
+                   var_thresh, percentile, n_cores])
+
+    from joblib import Paralell
+    with Parallel(n_jobs=4, backend='threading') as jobs:
+        batch_res = jobs(delayed(work_ml)(params) for params in bp)
+
+
+    knn_cols = ['knn_exp0_c00', 'knn_exp0_c01', 'knn_exp0_c10', 'knn_exp0_c11',
+                'knn_exp0_bacc', 'knn_exp0_acc', 'knn_exp0_prec',
+                'knn_exp0_aprec', 'knn_exp0_reca', 'knn_exp0_f1',
+                'knn_exp_c00', 'knn_exp_c01', 'knn_exp_c10', 'knn_exp_c11',
+                'knn_exp_bacc', 'knn_exp_acc', 'knn_exp_prec', 'knn_exp_aprec',
+                'knn_exp_reca', 'knn_exp_f1',
+                'knn_test0_c00', 'knn_test0_c01', 'knn_test0_c10', 'knn_test0_c11',
+                'knn_test0_bacc', 'knn_test0_acc', 'knn_test0_prec',
+                'knn_test0_aprec', 'knn_test0_reca', 'knn_test0_f1',
+                'knn_fcm0_00', 'knn_fcm0_01', 'knn_fcm0_10', 'knn_fcm0_11',
+                'knn_fcm0_TP', 'knn_fcm0_FP', 'knn_fcm0_FN', 'knn_fcm0_P',
+                'knn_fcm0_R', 'knn_fcm0_F1',
+                'knn_test_c00', 'knn_test_c01', 'knn_test_c10', 'knn_test_c11',
+                'knn_test_bacc', 'knn_test_acc', 'knn_test_prec',
+                'knn_test_aprec', 'knn_test_reca', 'knn_test_f1',
+                'knn_fcm_00', 'knn_fcm_01', 'knn_fcm_10', 'knn_fcm_11',
+                'knn_fcm_TP', 'knn_fcm_FP', 'knn_fcm_FN', 'knn_fcm_P',
+                'knn_fcm_R', 'knn_fcm_F1']
+
+    rfo_cols = ['rfo_exp0_c00', 'rfo_exp0_c01', 'rfo_exp0_c10', 'rfo_exp0_c11',
+                'rfo_exp0_bacc', 'rfo_exp0_acc', 'rfo_exp0_prec',
+                'rfo_exp0_aprec', 'rfo_exp0_reca', 'rfo_exp0_f1',
+                'rfo_exp_c00', 'rfo_exp_c01', 'rfo_exp_c10', 'rfo_exp_c11',
+                'rfo_exp_bacc', 'rfo_exp_acc', 'rfo_exp_prec', 'rfo_exp_aprec',
+                'rfo_exp_reca', 'rfo_exp_f1',
+                'rfo_test0_c00', 'rfo_test0_c01', 'rfo_test0_c10', 'rfo_test0_c11',
+                'rfo_test0_bacc', 'rfo_test0_acc', 'rfo_test0_prec',
+                'rfo_test0_aprec', 'rfo_test0_reca', 'rfo_test0_f1',
+                'rfo_fcm0_00', 'rfo_fcm0_01', 'rfo_fcm0_10', 'rfo_fcm0_11',
+                'rfo_fcm0_TP', 'rfo_fcm0_FP', 'rfo_fcm0_FN', 'rfo_fcm0_P',
+                'rfo_fcm0_R', 'rfo_fcm0_F1',
+                'rfo_test_c00', 'rfo_test_c01', 'rfo_test_c10', 'rfo_test_c11',
+                'rfo_test_bacc', 'rfo_test_acc', 'rfo_test_prec',
+                'rfo_test_aprec', 'rfo_test_reca', 'rfo_test_f1',
+                'rfo_fcm_00', 'rfo_fcm_01', 'rfo_fcm_10', 'rfo_fcm_11',
+                'rfo_fcm_TP', 'rfo_fcm_FP', 'rfo_fcm_FN', 'rfo_fcm_P',
+                'rfo_fcm_R', 'rfo_fcm_F1']
+
+    svc_cols = ['svc_exp0_c00', 'svc_exp0_c01', 'svc_exp0_c10', 'svc_exp0_c11',
+                'svc_exp0_bacc', 'svc_exp0_acc', 'svc_exp0_prec',
+                'svc_exp0_aprec', 'svc_exp0_reca', 'svc_exp0_f1',
+                'svc_exp_c00', 'svc_exp_c01', 'svc_exp_c10', 'svc_exp_c11',
+                'svc_exp_bacc', 'svc_exp_acc', 'svc_exp_prec', 'svc_exp_aprec',
+                'svc_exp_reca', 'svc_exp_f1',
+                'svc_test0_c00', 'svc_test0_c01', 'svc_test0_c10', 'svc_test0_c11',
+                'svc_test0_bacc', 'svc_test0_acc', 'svc_test0_prec',
+                'svc_test0_aprec', 'svc_test0_reca', 'svc_test0_f1',
+                'svc_fcm0_00', 'svc_fcm0_01', 'svc_fcm0_10', 'svc_fcm0_11',
+                'svc_fcm0_TP', 'svc_fcm0_FP', 'svc_fcm0_FN', 'svc_fcm0_P',
+                'svc_fcm0_R', 'svc_fcm0_F1',
+                'svc_test_c00', 'svc_test_c01', 'svc_test_c10', 'svc_test_c11',
+                'svc_test_bacc', 'svc_test_acc', 'svc_test_prec',
+                'svc_test_aprec', 'svc_test_reca', 'svc_test_f1',
+                'svc_fcm_00', 'svc_fcm_01', 'svc_fcm_10', 'svc_fcm_11',
+                'svc_fcm_TP', 'svc_fcm_FP', 'svc_fcm_FN', 'svc_fcm_P',
+                'svc_fcm_R', 'svc_fcm_F1']
+
+    record = pd.concat(tracers)
+    ml_cols = group_cols + knn_cols + rfo_cols + svc_cols
+    ml_results = pd.DataFrame(rows, columns=ml_cols)
+    return [ml_results, knn_fsel, rforest_sigs, svm_fsel, svm_fsel_ranking, record]
+
+
 
 # =============================================================================
 # funcion para ml
