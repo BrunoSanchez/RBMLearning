@@ -1151,7 +1151,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
                 np.sum(subset_sps.IS_REAL)+len(und_s) - len(simus),
                 np.sum(subset_hot.IS_REAL)+len(und_h) - len(simus),
                 np.sum(subset_ois.IS_REAL)+len(und_o) - len(simus)]
-
+    print(discreps)
     ids = np.unique(np.hstack([subset_zps.sim_id.dropna().drop_duplicates().values,
                                und_z.simulated_id.dropna().drop_duplicates()]))
     print('Are the ids of detected + und unique?')
@@ -1168,7 +1168,6 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     newsimus = simulated.loc[simulated['id'].isin(ids)]
     lost_s = newsimus.loc[~newsimus['id'].isin(simus.id_y)]
 
-
     ids = np.unique(np.hstack([subset_ois.sim_id.dropna().drop_duplicates().values,
                                und_o.simulated_id.dropna().drop_duplicates()]))
     print('Are the ids of detected + und unique?')
@@ -1180,22 +1179,38 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     ids = np.unique(np.hstack([subset_hot.sim_id.dropna().drop_duplicates().values,
                                und_h.simulated_id.dropna().drop_duplicates()]))
     print('Are the ids of detected + und unique?')
+    print(len(ids), sum(subset_hot.IS_REAL), len(und_h))
     print(len(ids) == sum(subset_hot.IS_REAL) + len(und_h))
 
     newsimus = simulated.loc[simulated['id'].isin(ids)]
     lost_h = newsimus.loc[~newsimus['id'].isin(simus.id_y)]
 
+    # there seems to be a lack of simulation id recorded in this hot table. 
+    # How to imput them? We first should check on the simulation ids...
+    # The problem is the bogus objects... How to place them in the whole situation?
+    # The answer could be by image_id
+    
+    subhot = pd.merge(left=subset_hot, right=ids_mix[['simulation_id', 'image_id_hot']],
+                      left_on='image_id', right_on='image_id_hot', how='left')
+    subhot['id_simulation'] = subhot['simulation_id']
+    subset_hot = subhot
+    del(subhot)
+    #import ipdb; ipdb.set_trace()
+    #und_h = pd.merge(left=und_h, right=ids_mix[['simulation_id', 'image_id_hot']],
+                   # left_on='image_id', right_on='image_id_hot', how='left')
+    #und_h['id_simulation'] = und_h['simulation_id']
+    
     if np.any(np.array([np.sum(np.sum(lost_h.x!=lost_o.x)),
                         np.sum(np.sum(lost_h.x!=lost_s.x)),
                         np.sum(np.sum(lost_o.x!=lost_s.x)),
                         np.sum(np.sum(lost_z.x!=lost_s.x)),
                         np.sum(np.sum(lost_z.x!=lost_o.x)),
                         np.sum(np.sum(lost_z.x!=lost_h.x))])):
-        print('differnces in lost')
+        print('differences in lost')
     else:
         print('we lost the same simulated objects')
         lost = lost_z
-        del(lost_z)
+        #del(lost_z)
         del(lost_h)
         del(lost_s)
         del(lost_o)
@@ -1218,7 +1233,6 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     subset_sps = subset_sps.loc[~subset_sps.id_simulation.isna()]
     subset_ois = subset_ois.loc[~subset_ois.id_simulation.isna()]
     subset_hot = subset_hot.loc[~subset_hot.id_simulation.isna()]
-
 
     und_z = und_z.loc[~und_z.simulated_id.isna()]
     und_s = und_s.loc[~und_s.simulated_id.isna()]
@@ -1466,6 +1480,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     df2['FalseNeg'] = df2['False Neg']/(df2['Real']+df2['False Neg'])
     df2['FalsePos'] = df2['Bogus']/(df2['Real']+df2['False Neg'])
     #import ipdb; ipdb.set_trace()
+    print(df2['Real']+df2['False Neg'])
     with open(os.path.join(plot_dir, 'table_of_dets.txt'), 'w') as f:
         f.write(df2.to_latex())
         f.write(str(len(simus)))
