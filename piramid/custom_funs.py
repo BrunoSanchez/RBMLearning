@@ -528,7 +528,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         scaler = preprocessing.StandardScaler().fit(d)
         X = scaler.transform(d)
-        id_test = test[['id']
+        id_test = test[['id']]
         X_test = scaler.transform(test[cols])
         y_test = test.IS_REAL.values.ravel()
 
