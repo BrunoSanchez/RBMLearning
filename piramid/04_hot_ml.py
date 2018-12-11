@@ -83,6 +83,9 @@ def main(m1_diam=None, plots_path='./plots/.'):
 
     und = store['c_und_h']
     subset_ois = store['c_subset_hot']
+    
+    simulations = store['simulations']
+    #ids_mix = store['ids_mix']
     store.close()
 
 # =============================================================================
@@ -93,7 +96,7 @@ def main(m1_diam=None, plots_path='./plots/.'):
 
     ids = subset_ois['id'].drop_duplicates().values
     dt_ois = dt_ois.loc[dt_ois['id'].isin(ids)].drop_duplicates()
-
+    
     und = und.loc[~und['image_id'].isin(ids)].drop_duplicates()
 
     und = pd.merge(left=und,
@@ -113,12 +116,57 @@ def main(m1_diam=None, plots_path='./plots/.'):
             'ELONGATION', 'ELLIPTICITY', 'CLASS_STAR', 'MU_THRESHOLD', 'SNR_WIN',
             'DELTAX', 'DELTAY', 'RATIO', 'ROUNDNESS', 'PEAK_CENTROID',
             'ref_fwhm', 'new_fwhm', 'px_scale', 'ref_back_sbright',
-            'new_back_sbright', 'exp_time', 'VALID_MAG', 'mean_offset',
-            'slope', 'mag', 'VALID_MAG_iso', 'mean_offset_iso',
-            'slope_iso', 'mag_iso', 'mean_goyet', 'mean_goyet_iso', 'MU', 'SN']
+            'new_back_sbright', 'exp_time', #'VALID_MAG', 'mean_offset',
+            #'slope', 'mag', 'VALID_MAG_iso', 'mean_offset_iso',
+            #'slope_iso', 'mag_iso', 'mean_goyet', 'mean_goyet_iso', 'MU', 
+            'SN']
 
-    target = ['IS_REAL']
+    target = ['IS_REAL']    
 
+# =============================================================================
+# Imputamos valores perdidos
+# =============================================================================
+    #merge simulations con selected
+    
+    selsimus = pd.merge(left=selected, right=simulations,
+                       left_on='simulation_id', right_on='id', how='inner')
+    cols_sim = ['simulation_id', 'image_id_hot', 'ref_fwhm', 'new_fwhm', 'px_scale', 
+                'ref_back_sbright', 'new_back_sbright', 'exp_time', 
+                'm1_diam', 'mean_goyet_hot']
+    dt_imp = pd.merge(left=dt_ois[['image_id']], right=selsimus[cols_sim], 
+                     left_on='image_id', right_on='image_id_hot', how='left')
+    
+    dt_ois.drop(['id_simulation', 'ref_fwhm', 'new_fwhm', 'px_scale', 'm1_diam', 
+                 'exp_time', 'ref_back_sbright', 'm1_diam'], axis=1, inplace=True)
+    dt_ois['id_simulation'] = dt_imp.simulation_id.values
+    dt_ois['ref_fwhm'] = dt_imp.ref_fwhm.values
+    dt_ois['new_fwhm'] = dt_imp.new_fwhm.values
+    dt_ois['px_scale'] = dt_imp.px_scale.values
+    dt_ois['m1_diam'] = dt_imp.m1_diam.values
+    dt_ois['exp_time'] = dt_imp.exp_time.values
+    dt_ois['ref_back_sbright'] = dt_imp.ref_back_sbright.values
+    dt_ois['new_back_sbright'] = dt_imp.new_back_sbright.values
+    dt_ois['m1_diam'] = dt_imp.m1_diam.values
+    
+    del(dt_imp)
+    #from sklearn.impute import SimpleImputer
+    #const_imp = SimpleImputer(missing_values=np.nan, strategy='most_frequent')
+    #natab = np.sum(dt_ois[cols+target].isna())
+    #for acol in dt_ois.columns:
+     #   if natab[acol] is not 0:
+            # we have to do an mputation of this values
+            
+    #for ids, agroup in samp.groupby(['image_id']):
+        #print(len(agroup))
+    #    if len(agroup)>3:
+    #        subs = samp.loc[samp['image_id']==ids]
+    #        natab = np.sum(subs[cols+target].isna())
+    #        if np.sum(natab)!=0:
+    #            #print(natab)
+    #            if natab['ref_fwhm']!=0:
+    #                print(dt_ois.loc[~dt_ois['image_id']==ids].ref_fwhm.dropna().values)
+    #                #subs['ref_fwhm'] = subs.loc[~subs['ref_fwhm'].isna()].ref_fwhm.values
+    import ipdb; ipdb.set_trace()
 # =============================================================================
 # Para que entre en memoria hacemos un sampling de esto
 # =============================================================================
