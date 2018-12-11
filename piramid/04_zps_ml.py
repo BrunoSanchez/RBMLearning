@@ -124,7 +124,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 # Para que entre en memoria hacemos un sampling de esto
 # =============================================================================
     #train_ois, ftest_ois = train_test_split(dt_ois, test_size=0.7, stratify=dt_ois.IS_REAL)
-    import ipdb; ipdb.set_trace()
+
 # =============================================================================
 # Aca separo en grupos... Agrupo por distintas cosas
 # =============================================================================

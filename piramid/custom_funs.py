@@ -509,6 +509,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
     rforest_sigs = []
     svm_fsel = []
     svm_fsel_ranking = []
+    tracers = []
     i_group = 0
     for pars, data in train_data.groupby(group_cols):
         i_group += 1
@@ -519,13 +520,15 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         undetected = [len(undetected.simulated_id.drop_duplicates())]
 
         ## spliting the data into train and final test
-        train, test = train_test_split(data[cols+target].dropna(), test_size=0.8,
+        train, test = train_test_split(data[['id']+cols+target].dropna(), test_size=0.8,
                                        stratify=data[cols+target].dropna().IS_REAL)
+        ids = train[['id']]
         d = train[cols]
         y = train[target].values.ravel()
 
         scaler = preprocessing.StandardScaler().fit(d)
         X = scaler.transform(d)
+        id_test = test[['id']
         X_test = scaler.transform(test[cols])
         y_test = test.IS_REAL.values.ravel()
 
@@ -562,7 +565,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         model = neighbors.KNeighborsClassifier(n_neighbors=7,
             weights='uniform', n_jobs=-1)
 
-        # experiment befor fslection
+        # experiment before fslection
         rslt0_knn = experiment(model, X, y, printing=False, nfolds=5)
         row_knn += list(rslt0_knn['confusion_matrix'].flatten())
         row_knn.append(rslt0_knn['bacc'])
@@ -573,6 +576,9 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_knn.append(rslt0_knn['f1'])
 
         final_cm0 = rslt0_knn['confusion_matrix']
+        y_pred_knn0 = rslt0_knn['predictions']
+        #y_knn0 = rslt0_knn['y_test']
+
         # check that they are the correct figures
         print(len(d)==np.sum(np.sum(final_cm0)))
 
@@ -587,6 +593,9 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_knn.append(rslt_knn['f1'])
 
         final_cm = rslt_knn['confusion_matrix']
+        y_pred_knn = rslt_knn['predictions']
+        #y_knn = rslt_knn['y_test']
+
         # check that they are the correct figures
         print(len(dat)==np.sum(np.sum(final_cm)))
 
@@ -594,6 +603,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         #  before fselection
         model.fit(X, y)
         preds = model.predict(X_test)
+        y_pred_test_knn0 = preds
         test_cm_knn0 = metrics.confusion_matrix(y_test, preds)
         test_bacc_knn0 = metrics.balanced_accuracy_score(y_test, preds)
         test_acc_knn0 = metrics.accuracy_score(y_test, preds)
@@ -621,6 +631,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         #  after fselection
         model.fit(dat.values, y)
         preds = model.predict(selector.transform(X_test))
+        y_pred_test_knn = preds
         test_cm_knn = metrics.confusion_matrix(y_test, preds)
         test_bacc_knn = metrics.balanced_accuracy_score(y_test, preds)
         test_acc_knn = metrics.accuracy_score(y_test, preds)
@@ -693,6 +704,9 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_rfo.append(rslt0_rforest['f1'])
 
         final_cm0 = rslt0_rforest['confusion_matrix']
+        y_pred_rfo0 = rslt0_rforest['predictions']
+        #y_rfo0 = rslt0_rforest['y_test']
+
         # check that they are the correct figures
         print(len(d)==np.sum(np.sum(final_cm0)))
 
@@ -707,6 +721,8 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_rfo.append(rslt_rforest['f1'])
 
         final_cm = rslt_rforest['confusion_matrix']
+        y_pred_rfo = rslt_rforest['predictions']
+        #y_rfo = rslt_rforest['y_test']
         # check that they are the correct figures
         print(len(dat)==np.sum(np.sum(final_cm)))
 
@@ -716,6 +732,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         #  before fselection
         model.fit(X, y)
         preds = model.predict(X_test)
+        y_pred_test_rfo0 = preds
         test_cm_rforest0 = metrics.confusion_matrix(y_test, preds)
         test_bacc_rforest0 = metrics.balanced_accuracy_score(y_test, preds)
         test_acc_rforest0 = metrics.accuracy_score(y_test, preds)
@@ -743,6 +760,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         #  after fselection
         model.fit(dat.values, y)
         preds = model.predict(d_test.values)
+        y_pred_test_rfo = preds
         test_cm_rforest = metrics.confusion_matrix(y_test, preds)
         test_bacc_rforest = metrics.balanced_accuracy_score(y_test, preds)
         test_acc_rforest = metrics.accuracy_score(y_test, preds)
@@ -794,6 +812,8 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_svc.append(rslt0_svc['f1'])
 
         final_cm0 = rslt0_svc['confusion_matrix']
+        y_pred_svc0 = rslt0_svc['predictions']
+        #y_svc0 = rslt0_svc['y_test']
         # check that they are the correct figures
         print(len(d)==np.sum(np.sum(final_cm0)))
 
@@ -808,6 +828,8 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_svc.append(rslt_svc['f1'])
 
         final_cm = rslt_svc['confusion_matrix']
+        y_pred_svc = rslt_svc['predictions']
+        #y_svc = rslt_svc['y_test']
         # check that they are the correct figures
         print(len(dat)==np.sum(np.sum(final_cm)))
 
@@ -817,6 +839,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         #  before fselection
         model.fit(X, y)
         preds = model.predict(X_test)
+        y_pred_test_svc0 = preds
         test_acc_svc0 = metrics.accuracy_score(y_test, preds)
         test_cm_svc0 = metrics.confusion_matrix(y_test, preds)
         test_bacc_svc0 = metrics.balanced_accuracy_score(y_test, preds)
@@ -845,6 +868,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         #  after fselection
         model.fit(dat.values, y)
         preds = model.predict(d_test)
+        y_pred_test_svc0 = preds
         test_acc_svc = metrics.accuracy_score(y_test, preds)
         test_cm_svc = metrics.confusion_matrix(y_test, preds)
         test_bacc_svc = metrics.balanced_accuracy_score(y_test, preds)
@@ -871,6 +895,18 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         row_svc += list(final_cm.flatten()) + [TP, FP, FN, P, R, F1]
 
         #import ipdb; ipdb.set_trace()
+
+        tracers.append(pd.Dataframe([ids, y, y_pred_knn0, y_pred_knn, y_pred_rfo0, y_pred_rfo,
+                      y_pred_svc0, y_pred_svc], columns=['id', 'y', 'y_pred_knn0',
+                      'y_pred_knn', 'y_pred_rfo0', 'y_pred_rfo', 'y_pred_svc0',
+                      'y_pred_svc']))
+
+        tracers.append(pd.Dataframe([ids_test, y_test, y_pred_test_knn0,
+                                     y_pred_test_knn, y_pred_test_rfo0,
+                                     y_pred_test_rfo, y_pred_test_svc0,
+                                     y_pred_test_svc], columns=['id', 'y', 'y_pred_knn0',
+                      'y_pred_knn', 'y_pred_rfo0', 'y_pred_rfo', 'y_pred_svc0',
+                      'y_pred_svc']))
         vals = list(pars) + row_knn + row_rfo + row_svc
         rows.append(np.array(vals).flatten())
         print('{} groups processed'.format(i_group))
