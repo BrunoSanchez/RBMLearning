@@ -1373,7 +1373,7 @@ def work_ml(params):
 
 def group_ml_paralell(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
              target=['IS_REAL'], cols=['mag'], var_thresh=0.1, percentile=30.,
-             method='Bramich'):
+             method='Bramich', n_cores=4):
     rows = []
     knn_fsel = []
     rforest_sigs = []
@@ -1395,9 +1395,8 @@ def group_ml_paralell(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_f
                    var_thresh, percentile, n_cores])
 
     from joblib import Paralell
-    with Parallel(n_jobs=4, backend='threading') as jobs:
+    with Parallel(n_jobs=, backend='threading') as jobs:
         batch_res = jobs(delayed(work_ml)(params) for params in bp)
-
 
     knn_cols = ['knn_exp0_c00', 'knn_exp0_c01', 'knn_exp0_c10', 'knn_exp0_c11',
                 'knn_exp0_bacc', 'knn_exp0_acc', 'knn_exp0_prec',
