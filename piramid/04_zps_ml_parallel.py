@@ -170,4 +170,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     import sys
-    sys.exit(main(args.m1_diam, args.jobs, args.ncores, args.path))
+    sys.exit(main(args.m1_diam, args.path, args.jobs, args.ncores))
