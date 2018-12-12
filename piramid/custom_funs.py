@@ -1411,7 +1411,7 @@ def group_ml_parallel(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_f
                    var_thresh, percentile, n_cores, method])
 
     from joblib import Parallel, delayed
-    with Parallel(n_jobs=n_jobs, prefer='threads') as jobs:
+    with Parallel(n_jobs=n_jobs, prefer='processes') as jobs:
         batch_res = jobs(delayed(work_ml)(params) for params in bp)
 
     rows = []
