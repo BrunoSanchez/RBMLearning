@@ -1372,7 +1372,7 @@ def work_ml(params):
                     'y_pred_rfo', 'y_pred_svc0', 'y_pred_svc'], dtype=int))
     del(train_predictions)
 
-    test_predictions = np.array([ids_test.values.ravel(), y_test,
+    test_predictions = np.array([id_test.values.ravel(), y_test,
                                  y_pred_test_knn0, y_pred_test_knn,
                                  y_pred_test_rfo0, y_pred_test_rfo,
                                  y_pred_test_svc0, y_pred_test_svc])
