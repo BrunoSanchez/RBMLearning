@@ -896,6 +896,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 
         train_predictions = np.array([ids, y, y_pred_knn0, y_pred_knn, y_pred_rfo0,
                                      y_pred_rfo, y_pred_svc0, y_pred_svc])
+        import ipdb; ipdb.set_trace()
         print(train_predictions.shape)
         tracers.append(pd.DataFrame(train_predictions, columns=['id', 'y',
                         'y_pred_knn0', 'y_pred_knn', 'y_pred_rfo0',
@@ -1397,7 +1398,7 @@ def group_ml_parallel(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_f
                    var_thresh, percentile, n_cores, method])
 
     from joblib import Parallel, delayed
-    with Parallel(n_jobs=n_jobs, backend='threading') as jobs:
+    with Parallel(n_jobs=n_jobs, prefer='threads') as jobs:
         batch_res = jobs(delayed(work_ml)(params) for params in bp)
 
     knn_cols = ['knn_exp0_c00', 'knn_exp0_c01', 'knn_exp0_c10', 'knn_exp0_c11',
