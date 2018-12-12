@@ -894,10 +894,12 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                     test_f1_svc]
         row_svc += list(final_cm.flatten()) + [TP, FP, FN, P, R, F1]
 
-        tracers.append(pd.DataFrame([ids, y, y_pred_knn0, y_pred_knn, y_pred_rfo0, y_pred_rfo,
-                      y_pred_svc0, y_pred_svc], columns=['id', 'y', 'y_pred_knn0',
-                      'y_pred_knn', 'y_pred_rfo0', 'y_pred_rfo', 'y_pred_svc0',
-                      'y_pred_svc']))
+        train_predictions = np.array([ids, y, y_pred_knn0, y_pred_knn, y_pred_rfo0,
+                                     y_pred_rfo, y_pred_svc0, y_pred_svc])
+        print(train_predictions.shape)
+        tracers.append(pd.DataFrame(train_predictions, columns=['id', 'y',
+                        'y_pred_knn0', 'y_pred_knn', 'y_pred_rfo0',
+                        'y_pred_rfo', 'y_pred_svc0', 'y_pred_svc']))
 
         tracers.append(pd.DataFrame([ids_test, y_test, y_pred_test_knn0,
                                      y_pred_test_knn, y_pred_test_rfo0,
