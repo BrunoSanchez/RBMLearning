@@ -83,7 +83,7 @@ def main(m1_diam=None, plots_path='./plots/.'):
 
     und = store['c_und_h']
     subset_ois = store['c_subset_hot']
-    
+
     simulations = store['simulations']
     #ids_mix = store['ids_mix']
     store.close()
@@ -96,7 +96,7 @@ def main(m1_diam=None, plots_path='./plots/.'):
 
     ids = subset_ois['id'].drop_duplicates().values
     dt_ois = dt_ois.loc[dt_ois['id'].isin(ids)].drop_duplicates()
-    
+
     und = und.loc[~und['image_id'].isin(ids)].drop_duplicates()
 
     und = pd.merge(left=und,
@@ -118,25 +118,25 @@ def main(m1_diam=None, plots_path='./plots/.'):
             'ref_fwhm', 'new_fwhm', 'px_scale', 'ref_back_sbright',
             'new_back_sbright', 'exp_time', #'VALID_MAG', 'mean_offset',
             #'slope', 'mag', 'VALID_MAG_iso', 'mean_offset_iso',
-            #'slope_iso', 'mag_iso', 'mean_goyet', 'mean_goyet_iso', 'MU', 
+            #'slope_iso', 'mag_iso', 'mean_goyet', 'mean_goyet_iso', 'MU',
             'SN']
 
-    target = ['IS_REAL']    
+    target = ['IS_REAL']
 
 # =============================================================================
 # Imputamos valores perdidos
 # =============================================================================
     #merge simulations con selected
-    
+
     selsimus = pd.merge(left=selected, right=simulations,
                        left_on='simulation_id', right_on='id', how='inner')
-    cols_sim = ['simulation_id', 'image_id_hot', 'ref_fwhm', 'new_fwhm', 'px_scale', 
-                'ref_back_sbright', 'new_back_sbright', 'exp_time', 
+    cols_sim = ['simulation_id', 'image_id_hot', 'ref_fwhm', 'new_fwhm', 'px_scale',
+                'ref_back_sbright', 'new_back_sbright', 'exp_time',
                 'm1_diam', 'mean_goyet_hot']
-    dt_imp = pd.merge(left=dt_ois[['image_id']], right=selsimus[cols_sim], 
+    dt_imp = pd.merge(left=dt_ois[['image_id']], right=selsimus[cols_sim],
                      left_on='image_id', right_on='image_id_hot', how='left')
-    
-    dt_ois.drop(['id_simulation', 'ref_fwhm', 'new_fwhm', 'px_scale', 'm1_diam', 
+
+    dt_ois.drop(['id_simulation', 'ref_fwhm', 'new_fwhm', 'px_scale', 'm1_diam',
                  'exp_time', 'ref_back_sbright', 'm1_diam'], axis=1, inplace=True)
     dt_ois['id_simulation'] = dt_imp.simulation_id.values
     dt_ois['ref_fwhm'] = dt_imp.ref_fwhm.values
@@ -147,7 +147,7 @@ def main(m1_diam=None, plots_path='./plots/.'):
     dt_ois['ref_back_sbright'] = dt_imp.ref_back_sbright.values
     dt_ois['new_back_sbright'] = dt_imp.new_back_sbright.values
     dt_ois['m1_diam'] = dt_imp.m1_diam.values
-    
+
     del(dt_imp)
     #from sklearn.impute import SimpleImputer
     #const_imp = SimpleImputer(missing_values=np.nan, strategy='most_frequent')
@@ -155,7 +155,7 @@ def main(m1_diam=None, plots_path='./plots/.'):
     #for acol in dt_ois.columns:
      #   if natab[acol] is not 0:
             # we have to do an mputation of this values
-            
+
     #for ids, agroup in samp.groupby(['image_id']):
         #print(len(agroup))
     #    if len(agroup)>3:
@@ -166,7 +166,7 @@ def main(m1_diam=None, plots_path='./plots/.'):
     #            if natab['ref_fwhm']!=0:
     #                print(dt_ois.loc[~dt_ois['image_id']==ids].ref_fwhm.dropna().values)
     #                #subs['ref_fwhm'] = subs.loc[~subs['ref_fwhm'].isna()].ref_fwhm.values
-    import ipdb; ipdb.set_trace()
+    #import ipdb; ipdb.set_trace()
 # =============================================================================
 # Para que entre en memoria hacemos un sampling de esto
 # =============================================================================
@@ -186,7 +186,8 @@ def main(m1_diam=None, plots_path='./plots/.'):
     knn_fsel = ml_results[1]
     rforest_sigs = ml_results[2]
     svm_fsel = ml_results[3]
-    svm_fsel_ranking = ml_results[3]
+    svm_fsel_ranking = ml_results[4]
+    record = ml_results[5]
 
     ois_grouping.to_csv(os.path.join(plots_path, 'hot_grouping_table_rfo.csv'))
 
@@ -195,6 +196,7 @@ def main(m1_diam=None, plots_path='./plots/.'):
     dump(rforest_sigs, os.path.join(plots_path, 'rforest_sigs_hot.joblib'))
     dump(svm_fsel, os.path.join(plots_path, 'svm_fsel_hot.joblib'))
     dump(svm_fsel_ranking, os.path.join(plots_path, 'svm_fsel_ranking_hot.joblib'))
+    dump(record, os.path.join(plots_path, 'record_hot.joblib'))
     #dump(curves, os.path.join(plots_path, 'curves_hot.joblib'))
 
     return
