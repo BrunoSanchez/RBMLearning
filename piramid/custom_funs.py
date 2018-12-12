@@ -977,7 +977,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
 # =============================================================================
 
 def work_ml(params):
-    i_group, pars, data, undetected, cols, target, var_thresh, percentile, n_cores = params
+    i_group, pars, data, undetected, cols, target, var_thresh, percentile, n_cores, method = params
     ## spliting the data into train and final test
     train, test = train_test_split(data[['id']+cols+target].dropna(), test_size=0.8,
                                    stratify=data[cols+target].dropna().IS_REAL)
@@ -1392,7 +1392,7 @@ def group_ml_parallel(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_f
         undetected = [len(undetected.simulated_id.drop_duplicates())]
 
         bp.append([i_group, pars, data, undetected, cols, target,
-                   var_thresh, percentile, n_cores])
+                   var_thresh, percentile, n_cores, method])
 
     from joblib import Parallel, delayed
     with Parallel(n_jobs=n_jobs, backend='threading') as jobs:
