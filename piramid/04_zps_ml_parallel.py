@@ -50,7 +50,7 @@ plt.rcParams["patch.force_edgecolor"] = True
 plt.rcParams['text.usetex'] = False
 
 
-def main(m1_diam=1.54, plots_path='./plots/.'):
+def main(m1_diam=1.54, plots_path='./plots/.', jobs=1, ncores=-1):
     plot_dir = os.path.abspath(plots_path)
     if not os.path.isdir(plot_dir):
         os.makedirs(plot_dir)
@@ -134,7 +134,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
     #dt_ois = dt_ois.sample(frac=0.25)
     #und = und.sample(frac=0.25)
     ml_results = cf.group_ml_parallel(dt_ois, und, cols=cols, method='Zackay',
-                                      n_cores=2, n_jobs=16)
+                                      n_cores=ncores, n_jobs=jobs)
 
     ois_grouping = ml_results[0]
     knn_fsel = ml_results[1]
@@ -162,7 +162,11 @@ if __name__ == '__main__':
     parser.add_argument("-m", "--m1_diam", help="diameter to filter",
                         default=None, type=float)
     parser.add_argument("path", help="path to plot files", default='./plots')
+    parser.add_argument("-j", "--jobs", help="number of parallel jobs",
+                        default=1, type=int)
+    parser.add_argument("-n", "--ncores", help="number of cores for ML techniques",
+                        default=-1, type=int)
     args = parser.parse_args()
 
     import sys
-    sys.exit(main(args.m1_diam, args.path))
+    sys.exit(main(args.m1_diam, args.jobs, args.ncores, args.path))
