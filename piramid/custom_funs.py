@@ -1335,7 +1335,7 @@ def work_ml(params):
     #  after fselection
     model.fit(dat.values, y)
     preds = model.predict(d_test)
-    y_pred_test_svc0 = preds
+    y_pred_test_svc = preds
     test_acc_svc = metrics.accuracy_score(y_test, preds)
     test_cm_svc = metrics.confusion_matrix(y_test, preds)
     test_bacc_svc = metrics.balanced_accuracy_score(y_test, preds)
