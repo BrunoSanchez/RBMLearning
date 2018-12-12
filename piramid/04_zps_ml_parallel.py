@@ -161,11 +161,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-m", "--m1_diam", help="diameter to filter",
                         default=None, type=float)
-    parser.add_argument("path", help="path to plot files", default='./plots')
     parser.add_argument("-j", "--jobs", help="number of parallel jobs",
                         default=1, type=int)
     parser.add_argument("-n", "--ncores", help="number of cores for ML techniques",
                         default=-1, type=int)
+
+    parser.add_argument("path", help="path to plot files", default='./plots')
     args = parser.parse_args()
 
     import sys

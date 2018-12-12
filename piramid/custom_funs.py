@@ -1461,7 +1461,6 @@ def group_ml_parallel(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_f
     return [ml_results, knn_fsel, rforest_sigs, svm_fsel, svm_fsel_ranking, record]
 
 
-
 # =============================================================================
 # funcion para ml
 # =============================================================================
