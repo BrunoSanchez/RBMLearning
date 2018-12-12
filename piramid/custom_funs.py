@@ -894,20 +894,25 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                     test_f1_svc]
         row_svc += list(final_cm.flatten()) + [TP, FP, FN, P, R, F1]
 
-        train_predictions = np.array([ids, y, y_pred_knn0, y_pred_knn, y_pred_rfo0,
+        train_predictions = np.array([ids.values.ravel(), y,
+                                     y_pred_knn0, y_pred_knn, y_pred_rfo0,
                                      y_pred_rfo, y_pred_svc0, y_pred_svc])
-        import ipdb; ipdb.set_trace()
-        print(train_predictions.shape)
-        tracers.append(pd.DataFrame(train_predictions, columns=['id', 'y',
-                        'y_pred_knn0', 'y_pred_knn', 'y_pred_rfo0',
-                        'y_pred_rfo', 'y_pred_svc0', 'y_pred_svc']))
 
-        tracers.append(pd.DataFrame([ids_test, y_test, y_pred_test_knn0,
-                                     y_pred_test_knn, y_pred_test_rfo0,
-                                     y_pred_test_rfo, y_pred_test_svc0,
-                                     y_pred_test_svc], columns=['id', 'y', 'y_pred_knn0',
-                      'y_pred_knn', 'y_pred_rfo0', 'y_pred_rfo', 'y_pred_svc0',
-                      'y_pred_svc']))
+        tracers.append(pd.DataFrame(train_predictions.T, columns=['id', 'y',
+                        'y_pred_knn0', 'y_pred_knn', 'y_pred_rfo0',
+                        'y_pred_rfo', 'y_pred_svc0', 'y_pred_svc'], dtype=int))
+        del(train_predictions)
+
+        test_predictions = np.array([ids_test.values.ravel(), y_test,
+                                     y_pred_test_knn0, y_pred_test_knn,
+                                     y_pred_test_rfo0, y_pred_test_rfo,
+                                     y_pred_test_svc0, y_pred_test_svc])
+        tracers.append(pd.DataFrame(test_predictions.T, columns=['id', 'y',
+                                    'y_pred_knn0', 'y_pred_knn', 'y_pred_rfo0',
+                                    'y_pred_rfo', 'y_pred_svc0', 'y_pred_svc'],
+                                    dtype=int))
+        del(test_predictions)
+
         vals = list(pars) + row_knn + row_rfo + row_svc
         rows.append(np.array(vals).flatten())
         print('{} groups processed'.format(i_group))
@@ -1357,17 +1362,25 @@ def work_ml(params):
     row_svc += list(final_cm.flatten()) + [TP, FP, FN, P, R, F1]
 
     #  delivering everything
-    tracers.append(pd.Dataframe([ids, y, y_pred_knn0, y_pred_knn, y_pred_rfo0, y_pred_rfo,
-                  y_pred_svc0, y_pred_svc], columns=['id', 'y', 'y_pred_knn0',
-                  'y_pred_knn', 'y_pred_rfo0', 'y_pred_rfo', 'y_pred_svc0',
-                  'y_pred_svc']))
 
-    tracers.append(pd.Dataframe([ids_test, y_test, y_pred_test_knn0,
-                                 y_pred_test_knn, y_pred_test_rfo0,
-                                 y_pred_test_rfo, y_pred_test_svc0,
-                                 y_pred_test_svc], columns=['id', 'y', 'y_pred_knn0',
-                  'y_pred_knn', 'y_pred_rfo0', 'y_pred_rfo', 'y_pred_svc0',
-                  'y_pred_svc']))
+    train_predictions = np.array([ids.values.ravel(), y,
+                                 y_pred_knn0, y_pred_knn, y_pred_rfo0,
+                                 y_pred_rfo, y_pred_svc0, y_pred_svc])
+
+    tracers.append(pd.DataFrame(train_predictions.T, columns=['id', 'y',
+                    'y_pred_knn0', 'y_pred_knn', 'y_pred_rfo0',
+                    'y_pred_rfo', 'y_pred_svc0', 'y_pred_svc'], dtype=int))
+    del(train_predictions)
+
+    test_predictions = np.array([ids_test.values.ravel(), y_test,
+                                 y_pred_test_knn0, y_pred_test_knn,
+                                 y_pred_test_rfo0, y_pred_test_rfo,
+                                 y_pred_test_svc0, y_pred_test_svc])
+    tracers.append(pd.DataFrame(test_predictions.T, columns=['id', 'y',
+                                'y_pred_knn0', 'y_pred_knn', 'y_pred_rfo0',
+                                'y_pred_rfo', 'y_pred_svc0', 'y_pred_svc'],
+                                dtype=int))
+    del(test_predictions)
     vals = list(pars) + row_knn + row_rfo + row_svc
     #rows.append(np.array(vals).flatten())
     #print('{} groups processed'.format(i_group))
