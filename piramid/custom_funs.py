@@ -1362,7 +1362,7 @@ def work_ml(params):
     row_svc += list(final_cm.flatten()) + [TP, FP, FN, P, R, F1]
 
     #  delivering everything
-
+    tracers = []
     train_predictions = np.array([ids.values.ravel(), y,
                                  y_pred_knn0, y_pred_knn, y_pred_rfo0,
                                  y_pred_rfo, y_pred_svc0, y_pred_svc])
@@ -1413,6 +1413,21 @@ def group_ml_parallel(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_f
     from joblib import Parallel, delayed
     with Parallel(n_jobs=n_jobs, prefer='threads') as jobs:
         batch_res = jobs(delayed(work_ml)(params) for params in bp)
+
+    rows = []
+    knn_fsel = []
+    rforest_sigs = []
+    svm_fsel = []
+    svm_fsel_ranking = []
+    tracers = []
+    for ares in batch_res:
+        vals, knn_fs, rforest_sig, svm_fs, svm_fsel_rank, tracer = ares
+        rows.append(np.array(vals).flatten())
+        knn_fsel.append(knn_fs)
+        rforest_sigs.append(rforest_sig)
+        svm_fsel.append(svm_fs)
+        svm_fsel_ranking.append(svm_fsel_rank)
+        tracers.append(tracer)
 
     knn_cols = ['knn_exp0_c00', 'knn_exp0_c01', 'knn_exp0_c10', 'knn_exp0_c11',
                 'knn_exp0_bacc', 'knn_exp0_acc', 'knn_exp0_prec',
