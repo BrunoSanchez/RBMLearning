@@ -133,7 +133,7 @@ def main(m1_diam=1.54, plots_path='./plots/.'):
 
     #dt_ois = dt_ois.sample(frac=0.25)
     #und = und.sample(frac=0.25)
-    ml_results = cf.group_ml_parallel(dt_ois, und, cols=cols, method='Zackay',
+    ml_results = cf.group_ml_paralell(dt_ois, und, cols=cols, method='Zackay',
                                       n_cores=2, n_jobs=16)
 
     ois_grouping = ml_results[0]
