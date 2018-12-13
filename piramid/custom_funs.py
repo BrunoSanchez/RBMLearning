@@ -1381,6 +1381,7 @@ def work_ml(params):
                                 'y_pred_rfo', 'y_pred_svc0', 'y_pred_svc'],
                                 dtype=int))
     del(test_predictions)
+    tracers = pd.concat(tracers)
     vals = list(pars) + row_knn + row_rfo + row_svc
     #rows.append(np.array(vals).flatten())
     #print('{} groups processed'.format(i_group))
