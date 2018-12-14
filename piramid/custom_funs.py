@@ -1024,6 +1024,7 @@ def work_ml(params):
     selection = scoring.loc[newcols.values[selected_cols][0]]
     dat = d[selection.index]
     knn_fsel = list(dat.columns)
+    knn_fsel_score = scoring
     # =============================================================================
     # KNN
     # =============================================================================
@@ -1264,7 +1265,7 @@ def work_ml(params):
     sel_cols = newcols[rfecv.support_]
     print(sel_cols)
     svm_fsel = list(sel_cols)
-    svm_fsel_ranking = [newcols, rfecv.ranking_]
+    svm_fsel_ranking = [newcols, rfecv.ranking_, rfecv.grid_scores_]
     dat = d[sel_cols]
 
     model = svc
@@ -1385,19 +1386,12 @@ def work_ml(params):
     vals = list(pars) + row_knn + row_rfo + row_svc
     #rows.append(np.array(vals).flatten())
     #print('{} groups processed'.format(i_group))
-    return [vals, knn_fsel, rforest_sigs, svm_fsel, svm_fsel_ranking, tracers]
+    return [vals, knn_fsel, knn_fsel_score, rforest_sigs, svm_fsel, svm_fsel_ranking, tracers]
 
 
 def group_ml_parallel(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
              target=['IS_REAL'], cols=['mag'], var_thresh=0.1, percentile=30.,
              method='Bramich', n_cores=4, n_jobs=9):
-    rows = []
-    knn_fsel = []
-    rforest_sigs = []
-    svm_fsel = []
-    svm_fsel_ranking = []
-    tracers = []
-
     bp = []
     i_group = 0
     for pars, data in train_data.groupby(group_cols):
@@ -1417,14 +1411,16 @@ def group_ml_parallel(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_f
 
     rows = []
     knn_fsel = []
+    knn_fsel_score = []
     rforest_sigs = []
     svm_fsel = []
     svm_fsel_ranking = []
     tracers = []
     for ares in batch_res:
-        vals, knn_fs, rforest_sig, svm_fs, svm_fsel_rank, tracer = ares
+        vals, knn_fs, knn_fscor, rforest_sig, svm_fs, svm_fsel_rank, tracer = ares
         rows.append(np.array(vals).flatten())
         knn_fsel.append(knn_fs)
+        knn_fsel_score.append(knn_fscor)
         rforest_sigs.append(rforest_sig)
         svm_fsel.append(svm_fs)
         svm_fsel_ranking.append(svm_fsel_rank)
@@ -1490,7 +1486,7 @@ def group_ml_parallel(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_f
     record = pd.concat(tracers)
     ml_cols = group_cols + knn_cols + rfo_cols + svc_cols
     ml_results = pd.DataFrame(rows, columns=ml_cols)
-    return [ml_results, knn_fsel, rforest_sigs, svm_fsel, svm_fsel_ranking, record]
+    return [ml_results, knn_fsel, knn_fsel_score, rforest_sigs, svm_fsel, svm_fsel_ranking, record]
 
 
 # =============================================================================
