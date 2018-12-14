@@ -979,7 +979,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
     record = pd.concat(tracers)
     ml_cols = group_cols + knn_cols + rfo_cols + svc_cols
     ml_results = pd.DataFrame(rows, columns=ml_cols)
-    return [ml_results, knn_fsel, rforest_sigs, svm_fsel, svm_fsel_ranking, record]
+    return [ml_results, knn_fsel, knn_fsel_scores, rforest_sigs, svm_fsel, svm_fsel_ranking, record]
     #return ml_results
 
 # =============================================================================
