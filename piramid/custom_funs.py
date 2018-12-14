@@ -870,7 +870,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         #  after fselection
         model.fit(dat.values, y)
         preds = model.predict(d_test)
-        y_pred_test_svc0 = preds
+        y_pred_test_svc = preds
         test_acc_svc = metrics.accuracy_score(y_test, preds)
         test_cm_svc = metrics.confusion_matrix(y_test, preds)
         test_bacc_svc = metrics.balanced_accuracy_score(y_test, preds)
@@ -905,7 +905,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
                         'y_pred_rfo', 'y_pred_svc0', 'y_pred_svc'], dtype=int))
         del(train_predictions)
 
-        test_predictions = np.array([ids_test.values.ravel(), y_test,
+        test_predictions = np.array([id_test.values.ravel(), y_test,
                                      y_pred_test_knn0, y_pred_test_knn,
                                      y_pred_test_rfo0, y_pred_test_rfo,
                                      y_pred_test_svc0, y_pred_test_svc])
