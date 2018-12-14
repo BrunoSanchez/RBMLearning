@@ -138,15 +138,17 @@ def main(m1_diam=1.54, plots_path='./plots/.', jobs=1, ncores=-1):
 
     ois_grouping = ml_results[0]
     knn_fsel = ml_results[1]
-    rforest_sigs = ml_results[2]
-    svm_fsel = ml_results[3]
-    svm_fsel_ranking = ml_results[4]
-    record = ml_results[5]
+    knn_fsel_scores = ml_results[2]
+    rforest_sigs = ml_results[3]
+    svm_fsel = ml_results[4]
+    svm_fsel_ranking = ml_results[5]
+    record = ml_results[6]
 
     ois_grouping.to_csv(os.path.join(plots_path, 'zps_grouping_table_rfo.csv'))
 
     from joblib import dump, load
     dump(knn_fsel, os.path.join(plots_path, 'knn_fsel_zps.joblib'))
+    dump(knn_fsel_scores, os.path.join(plots_path, 'knn_fsel_scores_zps.joblib'))
     dump(rforest_sigs, os.path.join(plots_path, 'rforest_sigs_zps.joblib'))
     dump(svm_fsel, os.path.join(plots_path, 'svm_fsel_zps.joblib'))
     dump(svm_fsel_ranking, os.path.join(plots_path, 'svm_fsel_ranking_zps.joblib'))
