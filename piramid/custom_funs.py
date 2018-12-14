@@ -506,6 +506,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
              method='Bramich'):
     rows = []
     knn_fsel = []
+    knn_fsel_scores = []
     rforest_sigs = []
     svm_fsel = []
     svm_fsel_ranking = []
@@ -557,6 +558,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         selection = scoring.loc[newcols.values[selected_cols][0]]
         dat = d[selection.index]
         knn_fsel.append(list(dat.columns))
+        knn_fsel_scores.append(scoring)
         # =============================================================================
         # KNN
         # =============================================================================
@@ -679,9 +681,9 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         m = res.mean(axis=1).reindex(full_cols)
         s = res.std(axis=1).reindex(full_cols)
 
-        thresh = m.loc['Random'] + 3*s.loc['Random']
-        spikes = m - 3*s
-        selected = spikes > thresh
+        #thresh = m.loc['Random'] + 3*s.loc['Random']
+        #spikes = m - 3*s
+        #selected = spikes > thresh
         signif = (m - m.loc['Random'])/s
         selected = signif>2.5
         dat = d[selected[selected].index]
@@ -797,7 +799,7 @@ def group_ml(train_data, und, group_cols=['m1_diam', 'exp_time', 'new_fwhm'],
         sel_cols = newcols[rfecv.support_]
         print(sel_cols)
         svm_fsel.append(list(sel_cols))
-        svm_fsel_ranking.append([newcols, rfecv.ranking_])
+        svm_fsel_ranking.append([newcols, rfecv.ranking_, rfecv.grid_scores_])
         dat = d[sel_cols]
 
         model = svc
