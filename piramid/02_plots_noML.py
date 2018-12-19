@@ -601,10 +601,10 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
     pars = ['id', 'mean_goyet', 'image_id', 'id_simulation', 'mag', 'sim_mag', 'sim_id',
             'goyet', 'goyet_iso', 'mean_goyet_iso', 'IS_REAL', 'p05', 'p95']
-    subset_zps = dt_zps[pars+['FLAGS']]
-    subset_ois = dt_ois[pars+['FLAGS']]
+    subset_zps = dt_zps[pars+['FLAGS', 'FLUX_APER', 'MAG_APER']]
+    subset_ois = dt_ois[pars+['FLAGS', 'FLUX_APER', 'MAG_APER']]
     subset_sps = dt_sps[pars]
-    subset_hot = dt_hot[pars+['FLAGS']]
+    subset_hot = dt_hot[pars+['FLAGS', 'FLUX_APER', 'MAG_APER']]
 
     del(dt_zps)
     del(dt_sps)
@@ -682,10 +682,10 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
 # vetamos por mean goyet
 # =============================================================================
-    subset_zps_hi = subset_zps[subset_zps.mean_goyet>=0.05]
-    subset_hot_hi = subset_hot[subset_hot.mean_goyet>=0.05]
-    subset_sps_hi = subset_sps[subset_sps.mean_goyet>=0.05]
-    subset_ois_hi = subset_ois[subset_ois.mean_goyet>=0.05]
+    #subset_zps_hi = subset_zps[subset_zps.mean_goyet>=0.05]
+    #subset_hot_hi = subset_hot[subset_hot.mean_goyet>=0.05]
+    #subset_sps_hi = subset_sps[subset_sps.mean_goyet>=0.05]
+    #subset_ois_hi = subset_ois[subset_ois.mean_goyet>=0.05]
 
 #~ # =============================================================================
 #~ # Como quedan las distros de goyet individuales
@@ -723,46 +723,46 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
 # Como quedan los diagramas de error de magnitud vs magnitud simulada
 # =============================================================================
-    plt.figure(figsize=(8,4))
-    bins = np.arange(6.5, 26.5, .5)
-    ff = subset_hot_hi.FLAGS<=4
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res_robust(subset_hot_hi[ff], bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
+    #plt.figure(figsize=(8,4))
+    #bins = np.arange(6.5, 26.5, .5)
+    #ff = subset_hot_hi.FLAGS<=4
+    #mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res_robust(subset_hot_hi[ff], bins=bins)
+    #plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
 
     #ff = subset_sps_hi.FLAGS<=1
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res_robust(subset_sps_hi, bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
+    #mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res_robust(subset_sps_hi, bins=bins)
+    #plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
 
-    ff = subset_zps_hi.FLAGS<=4
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res_robust(subset_zps_hi[ff], bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
+    #ff = subset_zps_hi.FLAGS<=4
+    #mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res_robust(subset_zps_hi[ff], bins=bins)
+    #plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
 
-    ff = subset_ois_hi.FLAGS<=4
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res_robust(subset_ois_hi[ff], bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
+    #ff = subset_ois_hi.FLAGS<=4
+    #mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res_robust(subset_ois_hi[ff], bins=bins)
+    #plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
 
-    plt.tick_params(labelsize=16)
-    plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
-    plt.xlabel('Sim Mag', fontsize=16)
-    plt.title('Simulated Data', fontsize=14)
-    plt.legend(loc='best', fontsize=14)
+    #plt.tick_params(labelsize=16)
+    #plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
+    #plt.xlabel('Sim Mag', fontsize=16)
+    #plt.title('Simulated Data', fontsize=14)
+    #plt.legend(loc='best', fontsize=14)
 
-    plt.xlim(8, 22.5)
-    plt.ylim(-2, 3)
-    plt.tight_layout()
-    plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_hi_goyet.svg'),
-                format='svg', dpi=480)
-    plt.close()
+    #plt.xlim(8, 22.5)
+    #plt.ylim(-2, 3)
+    #plt.tight_layout()
+    #plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_hi_goyet.svg'),
+    #            format='svg', dpi=480)
+    #plt.close()
 # =============================================================================
 # Liberamos algo de memoria
 # =============================================================================
 
-    del(subset_hot_hi)
-    del(subset_sps_hi)
-    del(subset_zps_hi)
-    del(subset_ois_hi)
+    #del(subset_hot_hi)
+    #del(subset_sps_hi)
+    #del(subset_zps_hi)
+    #del(subset_ois_hi)
 
-    gc.collect()
+    #gc.collect()
 
 # =============================================================================
 # Mean goyet bajo
@@ -778,74 +778,74 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
 # =============================================================================
 # Como quedan las distros de goyet individuales
 # =============================================================================
-    plt.figure(figsize=(9,3))
-    plt.title('mag offsets over mag simulated')
-    plt.subplot(141)
-    dmag = subset_zps_lo.goyet
-    dmag = dmag.dropna()
-    plt.hist(dmag, log=True)
-    plt.xlabel('delta mag zps')
+    #plt.figure(figsize=(9,3))
+    #plt.title('mag offsets over mag simulated')
+    #plt.subplot(141)
+    #dmag = subset_zps_lo.goyet
+    #dmag = dmag.dropna()
+    #plt.hist(dmag, log=True)
+    #plt.xlabel('delta mag zps')
 
-    plt.subplot(142)
-    dmag = subset_ois_lo.goyet
-    dmag = dmag.dropna()
-    plt.hist(dmag, log=True)
-    plt.xlabel('delta mag ois')
+    #plt.subplot(142)
+    #dmag = subset_ois_lo.goyet
+    #dmag = dmag.dropna()
+    #plt.hist(dmag, log=True)
+    #plt.xlabel('delta mag ois')
 
-    plt.subplot(143)
-    dmag = subset_hot_lo.goyet
-    dmag = dmag.dropna()
-    plt.hist(dmag, log=True)
-    plt.xlabel('delta mag hot')
+    #plt.subplot(143)
+    #dmag = subset_hot_lo.goyet
+    #dmag = dmag.dropna()
+    #plt.hist(dmag, log=True)
+    #plt.xlabel('delta mag hot')
 
-    plt.subplot(144)
-    dmag = subset_sps_lo.goyet
-    dmag = dmag.dropna()
-    plt.hist(dmag, log=True)
-    plt.xlabel('delta mag sps')
+    #plt.subplot(144)
+    #dmag = subset_sps_lo.goyet
+    #dmag = dmag.dropna()
+    #plt.hist(dmag, log=True)
+    #plt.xlabel('delta mag sps')
 
-    plt.tight_layout()
-    plt.savefig(os.path.join(plot_dir, 'delta_over_mags_lo_goyet.svg'), dpi=400)
-    plt.clf()
-    plt.close()
+    #plt.tight_layout()
+    #plt.savefig(os.path.join(plot_dir, 'delta_over_mags_lo_goyet.svg'), dpi=400)
+    #plt.clf()
+    #plt.close()
 # =============================================================================
 # Como quedan los diagramas de error de magnitud vs magnitud simulada
 # =============================================================================
-    dm = 0.0
-    plt.figure(figsize=(8,4))
-    bins = np.arange(6.5, 26.5, .5)
-    ff = subset_hot_lo.FLAGS<=0
-    ff = ff & (subset_hot_lo.mag > subset_hot_lo.p05+dm) & (subset_hot_lo.mag < subset_hot_lo.p95)
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo.loc[ff], bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
+    #dm = 0.0
+    #plt.figure(figsize=(8,4))
+    #bins = np.arange(6.5, 26.5, .5)
+    #ff = subset_hot_lo.FLAGS<=0
+    #ff = ff & (subset_hot_lo.mag > subset_hot_lo.p05+dm) & (subset_hot_lo.mag < subset_hot_lo.p95)
+    #mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_hot_lo.loc[ff], bins=bins)
+    #plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='g--', label='Hotpants')
 
-    #ff = subset_sps_lo.FLAGS<=0
-    ff = ff & (subset_sps_lo.mag > subset_sps_lo.p05+dm) & (subset_sps_lo.mag < subset_sps_lo.p95)
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_lo.loc[ff], bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
+    # #ff = subset_sps_lo.FLAGS<=0
+    #ff = ff & (subset_sps_lo.mag > subset_sps_lo.p05+dm) & (subset_sps_lo.mag < subset_sps_lo.p95)
+    #mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_sps_lo.loc[ff], bins=bins)
+    #plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='m:', label='Scorr')
 
-    ff = subset_zps_lo.FLAGS<=0
-    ff = ff & (subset_zps_lo.mag > subset_zps_lo.p05+dm) & (subset_zps_lo.mag < subset_zps_lo.p95)
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_lo.loc[ff], bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
+    #ff = subset_zps_lo.FLAGS<=0
+    #ff = ff & (subset_zps_lo.mag > subset_zps_lo.p05+dm) & (subset_zps_lo.mag < subset_zps_lo.p95)
+    #mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_zps_lo.loc[ff], bins=bins)
+    #plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='b.-', label='Zackay')
 
-    ff = subset_ois_lo.FLAGS<=0
-    ff = ff & (subset_ois_lo.mag > subset_ois_lo.p05+dm) & (subset_ois_lo.mag < subset_ois_lo.p95)
-    mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_lo.loc[ff], bins=bins)
-    plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
+    #ff = subset_ois_lo.FLAGS<=0
+    #ff = ff & (subset_ois_lo.mag > subset_ois_lo.p05+dm) & (subset_ois_lo.mag < subset_ois_lo.p95)
+    #mean_det, stdv_det, sqrtn, mean_sim = cf.binning_res(subset_ois_lo.loc[ff], bins=bins)
+    #plt.errorbar(mean_sim, mean_det, yerr=stdv_det/sqrtn, fmt='ro-', label='Bramich')
 
-    plt.tick_params(labelsize=16)
-    plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
-    plt.xlabel('Sim Mag', fontsize=16)
-    plt.title('Simulated Data', fontsize=14)
-    plt.legend(loc='best', fontsize=14)
+    #plt.tick_params(labelsize=16)
+    #plt.ylabel('Mag Aper - Sim Mag', fontsize=16)
+    #plt.xlabel('Sim Mag', fontsize=16)
+    #plt.title('Simulated Data', fontsize=14)
+    #plt.legend(loc='best', fontsize=14)
 
-    plt.xlim(8, 22.5)
-    plt.ylim(-2, 3)
-    plt.tight_layout()
-    plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_lo_goyet.svg'),
-                format='svg', dpi=480)
-    plt.close()
+    #plt.xlim(8, 22.5)
+    #plt.ylim(-2, 3)
+    #plt.tight_layout()
+    #plt.savefig(os.path.join(plot_dir, 'mag_diff_vs_simmag_lo_goyet.svg'),
+    #            format='svg', dpi=480)
+    #plt.close()
 # =============================================================================
 # Como quedan los diagramas de error de magnitud vs magnitud simulada
 # =============================================================================
@@ -1256,6 +1256,21 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
         store.flush(fsync=True)
 
 # =============================================================================
+# imputar magnitudes de hot
+# =============================================================================
+    import ipdb; ipdb.set_trace()
+    nomags = subset_hot.loc[subset_hot['mag'].isna()]
+    nomags['mag_offset'] = nomags['sim_mag'] - nomags['MAG_APER']
+    cals = cf.cal_mags(nomags)
+    subset_hot = pd.merge(left=subset_hot, right=cals, on='image_id', how='left', suffixes=('', '_cl'))
+    fails = subset_hot['mag'].isna()
+    subset_hot.loc[fails,'mag'] = subset_hot.loc[fails,'slope']*subset_hot.loc[fails,'MAG_APER']+subset_hot.loc[fails,'mean_offset']
+    fails = subset_hot['mag'].isna()
+    subset_hot.loc[fails,'mag'] = sigma_clipped_stats(subset_hot.slope.values)[1]*subset_hot.loc[fails,'MAG_APER']+sigma_clipped_stats(subset_hot.mean_offset.values)[1]
+    
+    #subset_hot.loc[subset_hot['mag'].isna()]['mag'] = 
+    #subset_hot['mag'] = subset_hot['mag_h']
+# =============================================================================
 # plot de funcion de luminosidad inyectada
 # =============================================================================
     plt.figure(figsize=(6,3))
@@ -1303,7 +1318,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     else:
         plt.ylabel(r'$N(m)dm$', fontsize=16)
     plt.ylim(1, 1e8)
-    plt.xlim(7., 23.5)
+    plt.xlim(7., 25.5)
     plt.title('Real', fontsize=16)
     #plt.ylabel(r'$N(m)dm$', fontsize=16)
     plt.legend(loc='best', fontsize=16)
@@ -1402,7 +1417,7 @@ def main(m1_diam=1.54, plots_path='./plots/.', store_flush=False,
     else:
         plt.ylabel(r'$N(m)dm$', fontsize=16)
     plt.ylim(1, 1e8)
-    plt.xlim(7., 23.5)
+    plt.xlim(7., 25.5)
     plt.title('Real', fontsize=16)
     #plt.ylabel(r'$N(m)dm$', fontsize=16)
     plt.legend(loc='best', fontsize=16)
